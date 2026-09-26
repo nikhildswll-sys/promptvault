@@ -817,51 +817,49 @@ function getUserPrompts() {
 }
 
 async function loadAllCustomPrompts() {
-  let loaded = [];
+  let loaded = null;
 
-  // 1. Try server API /api/prompts
+  // 1. Try server API /api/prompts (PRIMARY CLOUD SOURCE OF TRUTH)
   try {
     if (typeof window !== 'undefined' && window.location.protocol.startsWith('http')) {
       const res = await fetch('/api/prompts');
       if (res.ok) {
         const json = await res.json();
-        const sPrompts = Array.isArray(json) ? json : (json && Array.isArray(json.data) ? json.data : []);
-        if (sPrompts.length > 0) {
+        const sPrompts = Array.isArray(json) ? json : (json && Array.isArray(json.data) ? json.data : null);
+        if (sPrompts !== null) {
           loaded = sPrompts;
         }
       }
     }
   } catch(e) {}
 
-  // 2. Try IndexedDB
-  if (!loaded.length && typeof dbGetAllCustomPrompts === 'function') {
-    try {
-      const dbPrompts = await dbGetAllCustomPrompts();
-      if (dbPrompts && dbPrompts.length > 0) {
-        loaded = dbPrompts;
+  // 2. Offline / Local fallback if server is unreachable
+  if (loaded === null) {
+    if (typeof dbGetAllCustomPrompts === 'function') {
+      try {
+        const dbPrompts = await dbGetAllCustomPrompts();
+        if (dbPrompts && dbPrompts.length > 0) {
+          loaded = dbPrompts;
+        }
+      } catch(e){}
+    }
+
+    if (!loaded || !loaded.length) {
+      const userLocal = getUserPrompts();
+      if (userLocal && userLocal.length > 0) {
+        loaded = userLocal;
       }
-    } catch(e){}
-  }
+    }
 
-  // 3. Try LocalStorage
-  if (!loaded.length) {
-    const userLocal = getUserPrompts();
-    if (userLocal && userLocal.length > 0) {
-      loaded = userLocal;
+    if (!loaded || !loaded.length) {
+      loaded = typeof SEED_CUSTOM_PROMPTS !== 'undefined' ? [...SEED_CUSTOM_PROMPTS] : [];
     }
   }
 
-  // 4. Merge SEED prompts if not already present
-  for (const sp of SEED_CUSTOM_PROMPTS) {
-    if (!loaded.some(p => String(p.id) === String(sp.id))) {
-      loaded.push(sp);
-    }
-  }
+  cachedCustomPrompts = loaded || [];
 
-  cachedCustomPrompts = loaded;
-
-  // Sync to IndexedDB and LocalStorage in current origin
-  if (typeof dbSavePrompt === 'function') {
+  // Sync to IndexedDB for offline cache
+  if (typeof dbSavePrompt === 'function' && cachedCustomPrompts.length > 0) {
     for (const p of cachedCustomPrompts) {
       dbSavePrompt(p).catch(() => {});
     }
@@ -996,6 +994,13 @@ async function deleteUserPromptAsync(id) {
 
   try {
     localStorage.setItem('promptvault_user_prompts', JSON.stringify(cachedCustomPrompts));
+  } catch(e){}
+
+  // Call Server API to delete from MongoDB Atlas & JSON
+  try {
+    if (typeof window !== 'undefined' && window.location.protocol.startsWith('http')) {
+      await fetch('/api/prompts/' + encodeURIComponent(strId), { method: 'DELETE' });
+    }
   } catch(e){}
 
   return true;

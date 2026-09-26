@@ -206,9 +206,9 @@ nav{
 
 /* Header Body */
 .pheader-body{padding:26px}
-.cat-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
-.cat-tag{background:#f3f0ff;color:var(--p);font-weight:800;font-size:.76rem;padding:4px 12px;border-radius:50px;border:1.5px solid #d4c8ff}
-.meta-tag{color:var(--mu);font-size:.76rem;font-weight:600}
+.cat-row{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.cat-tag{background:#f3f0ff;color:var(--p);font-weight:800;font-size:.76rem;padding:5px 13px;border-radius:50px;border:1.5px solid #d4c8ff;display:inline-flex;align-items:center;gap:5px}
+.meta-tag{background:#f8fafc;color:#475569;font-size:.74rem;font-weight:700;padding:5px 12px;border-radius:50px;border:1px solid #e2e8f0;display:inline-flex;align-items:center;gap:5px}
 #prompt-title{font-size:1.8rem;font-weight:900;margin-bottom:10px;line-height:1.25;letter-spacing:-0.02em}
 #prompt-desc{color:var(--mu);font-size:.95rem;line-height:1.68;margin-bottom:18px}
 .stats-row2{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
@@ -1020,9 +1020,9 @@ async function initPromptPage() {
 
   // Header Details
   const catIcon = (typeof getCategoryIcon === 'function') ? getCategoryIcon(prompt.cat) : (prompt.catIcon || '📁');
-  document.getElementById('p-cat').textContent = catIcon + ' ' + (prompt.cat || 'General');
-  document.getElementById('p-ai-tag').textContent = '• Best for ' + (prompt.aiName || 'AI');
-  document.getElementById('p-uses').textContent = '• ' + (prompt.uses || '100+') + ' uses';
+  document.getElementById('p-cat').innerHTML = `${catIcon} ${prompt.cat || 'General'}`;
+  document.getElementById('p-ai-tag').innerHTML = `🤖 Best for ${prompt.aiName || 'AI'}`;
+  document.getElementById('p-uses').innerHTML = `🔥 ${prompt.uses || '100+'} uses`;
   document.getElementById('prompt-title').textContent = prompt.title;
   document.getElementById('prompt-desc').textContent = prompt.desc || '';
   document.getElementById('p-rating').textContent = prompt.rating || '5.0';
