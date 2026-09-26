@@ -2148,6 +2148,10 @@ async function handleAdminSubmit(e) {
 
 <div class="toast" id="toast">✅ Action completed!</div>
 
+<!-- Firebase SDK & PromptVault Auth Engine -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="auth.js"></script>
 <script src="db.js"></script>
 <script src="prompts.js"></script>
 <script>
@@ -2167,10 +2171,16 @@ function hideAuthError() {
 }
 
 function triggerGoogleLoginPrompt() {
-  if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
-    google.accounts.id.prompt();
-  } else {
-    showAuthError("Google Sign-In is initializing. You can also use direct password login below!");
+  if (typeof loginWithGoogle === 'function') {
+    loginWithGoogle().then(user => {
+      if (user) {
+        if (user.email.toLowerCase() === ADMIN_ALLOWED_EMAIL) {
+          unlockAdminDashboard(user);
+        } else {
+          showAuthError(`Access Denied: Signed in as ${user.email}. Only ${ADMIN_ALLOWED_EMAIL} is authorized as Administrator.`);
+        }
+      }
+    });
   }
 }
 

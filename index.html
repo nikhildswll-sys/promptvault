@@ -1630,6 +1630,7 @@ footer{background:#0d0d1a;color:#fff;padding:50px 80px 26px}
       <input placeholder="Search prompts..." id="search-input" oninput="filterPrompts()"/>
     </div>
     <button type="button" class="btn-nav-showcase" onclick="openWelcomeShowcase()" title="View Curated 5 Examples & Celebration Pass">✨ Welcome Showcase</button>
+    <div id="nav-auth-container"></div>
   </div>
 </nav>
 
@@ -1996,8 +1997,10 @@ footer{background:#0d0d1a;color:#fff;padding:50px 80px 26px}
   </div>
 </div>
 
-<div class="toast" id="toast">✅ Opening prompt page...</div>
-
+<!-- Firebase SDK & PromptVault Auth Engine -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="auth.js"></script>
 <script src="db.js"></script>
 <script src="prompts.js"></script>
 <script>
