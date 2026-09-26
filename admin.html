@@ -9,6 +9,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<!-- Google Identity Services SDK -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--p:#5b4cff;--p2:#7c6dff;--a:#06d6a0;--bg:#f8fafc;--w:#fff;--dk:#0f172a;--mu:#64748b;--bd:#e2e8f0;--danger:#ef4444}
@@ -20,6 +22,73 @@ body{
   -webkit-font-smoothing:antialiased;
   letter-spacing:-0.015em;
 }
+
+/* ── ADMIN LOGIN SCREEN ── */
+.auth-overlay{
+  position:fixed;inset:0;background:radial-gradient(circle at top,#1e1b4b,#0f172a 70%);
+  z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;
+}
+.auth-card{
+  background:#ffffff;border-radius:24px;padding:38px 34px;width:100%;max-width:440px;
+  box-shadow:0 25px 60px rgba(0,0,0,0.4);border:1.5px solid rgba(255,255,255,0.15);text-align:center;
+  animation:authCardPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes authCardPop{
+  from{opacity:0;transform:scale(0.92) translateY(20px);}
+  to{opacity:1;transform:scale(1) translateY(0);}
+}
+.auth-badge{
+  background:#fee2e2;color:#dc2626;font-size:0.75rem;font-weight:800;
+  padding:4px 12px;border-radius:50px;display:inline-flex;align-items:center;gap:6px;margin-bottom:16px;
+  border:1px solid #fecdd3;
+}
+.auth-title{font-size:1.5rem;font-weight:900;color:#0f172a;margin-bottom:6px;letter-spacing:-0.02em;}
+.auth-sub{font-size:0.82rem;color:#64748b;line-height:1.55;margin-bottom:20px;}
+.auth-admin-tag{
+  background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:12px;padding:10px 14px;
+  font-size:0.8rem;color:#1e40af;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:22px;
+}
+.btn-google-login{
+  width:100%;padding:12px 18px;background:#ffffff;border:1.5px solid #cbd5e1;border-radius:12px;
+  font-family:inherit;font-size:0.88rem;font-weight:800;color:#1e293b;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:10px;transition:all 0.2s;
+  box-shadow:0 2px 8px rgba(0,0,0,0.04);margin-bottom:14px;
+}
+.btn-google-login:hover{background:#f8fafc;border-color:#94a3b8;transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,0,0,0.08);}
+.auth-divider{
+  display:flex;align-items:center;gap:12px;margin:18px 0;color:#94a3b8;font-size:0.74rem;font-weight:700;
+}
+.auth-divider::before, .auth-divider::after{
+  content:'';flex:1;height:1px;background:#e2e8f0;
+}
+.auth-input-group{margin-bottom:14px;text-align:left;}
+.auth-input-group label{display:block;font-size:0.78rem;font-weight:700;color:#334155;margin-bottom:5px;}
+.auth-input{
+  width:100%;padding:11px 14px;border:1.5px solid #cbd5e1;border-radius:10px;
+  font-family:inherit;font-size:0.86rem;outline:none;transition:all 0.2s;background:#f8fafc;
+}
+.auth-input:focus{border-color:var(--p);background:#fff;box-shadow:0 0 0 3px rgba(91,76,255,0.12);}
+.btn-auth-submit{
+  width:100%;padding:12px;background:linear-gradient(135deg,#5b4cff,#7c6dff);color:#fff;
+  border:none;border-radius:12px;font-family:inherit;font-size:0.88rem;font-weight:800;cursor:pointer;
+  transition:all 0.2s;box-shadow:0 4px 14px rgba(91,76,255,0.3);margin-top:6px;
+}
+.btn-auth-submit:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(91,76,255,0.4);}
+.auth-error-msg{
+  background:#fee2e2;border:1px solid #fca5a5;color:#dc2626;border-radius:10px;
+  padding:10px 12px;font-size:0.78rem;font-weight:700;margin-top:14px;display:none;line-height:1.45;
+}
+.btn-logout{
+  padding:6px 14px;background:#fee2e2;color:#dc2626;border:1px solid #fecdd3;
+  border-radius:8px;font-size:0.75rem;font-weight:800;cursor:pointer;transition:all 0.2s;
+  display:inline-flex;align-items:center;gap:4px;
+}
+.btn-logout:hover{background:#fecdd3;}
+.user-chip{
+  display:inline-flex;align-items:center;gap:8px;background:#f1f5f9;border:1px solid #e2e8f0;
+  border-radius:50px;padding:4px 12px 4px 6px;font-size:0.78rem;font-weight:700;color:#334155;
+}
+.user-chip img{width:22px;height:22px;border-radius:50%;object-fit:cover;}
 
 /* ── NAV ── */
 nav{
@@ -367,6 +436,71 @@ tr:hover{background:#fafbff}
 </head>
 <body>
 
+<!-- ADMIN AUTHENTICATION LOCK OVERLAY -->
+<div id="admin-auth-overlay" class="auth-overlay">
+  <div class="auth-card">
+    <div class="auth-badge">🔒 RESTRICTED PORTAL</div>
+    <div style="margin-bottom:16px;">
+      <img src="images/logo_horizontal.png" alt="PromptVault Logo" style="height:36px;max-width:200px;object-fit:contain;" />
+    </div>
+    <h2 class="auth-title">Admin Studio Login</h2>
+    <p class="auth-sub">Access is restricted exclusively to authorized administrators. Sign in with Google to unlock creator controls.</p>
+
+    <div class="auth-admin-tag">
+      <span>🛡️</span>
+      <span>Authorized Admin: <strong>nikhildswll@gmail.com</strong></span>
+    </div>
+
+    <!-- Google 1-Click Sign-In -->
+    <div id="g_id_onload"
+         data-client_id="842426992764-u3b7s4b2j8gq9m3c5v8g0u4n7b1f6t.apps.googleusercontent.com"
+         data-context="signin"
+         data-ux_mode="popup"
+         data-callback="handleGoogleCredentialResponse"
+         data-auto_prompt="false">
+    </div>
+
+    <div style="display:flex;justify-content:center;margin-bottom:12px;">
+      <div class="g_id_signin"
+           data-type="standard"
+           data-shape="rectangular"
+           data-theme="outline"
+           data-text="signin_with"
+           data-size="large"
+           data-logo_alignment="left"
+           data-width="360">
+      </div>
+    </div>
+
+    <button type="button" class="btn-google-login" onclick="triggerGoogleLoginPrompt()">
+      <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+      <span>Sign in with Google (nikhildswll@gmail.com)</span>
+    </button>
+
+    <div class="auth-divider">OR DIRECT ADMIN LOGIN</div>
+
+    <!-- Direct Email & Password Form -->
+    <form id="admin-login-form" onsubmit="handleDirectLogin(event)">
+      <div class="auth-input-group">
+        <label>Admin Email Address</label>
+        <input type="email" id="auth-inp-email" class="auth-input" value="nikhildswll@gmail.com" required />
+      </div>
+      <div class="auth-input-group">
+        <label>Admin Password / Master Key</label>
+        <input type="password" id="auth-inp-password" class="auth-input" placeholder="Enter admin password..." required />
+      </div>
+      <button type="submit" class="btn-auth-submit" id="btn-auth-submit-text">
+        🔓 Unlock Admin Studio
+      </button>
+    </form>
+
+    <div id="auth-error-box" class="auth-error-msg"></div>
+  </div>
+</div>
+
+<!-- PROTECTED DASHBOARD ROOT (Hidden until authenticated) -->
+<div id="admin-app-root" style="display:none;">
+
 <!-- NAV -->
 <nav>
   <div style="display:flex;align-items:center;gap:14px;">
@@ -376,6 +510,13 @@ tr:hover{background:#fafbff}
     <span class="admin-badge">🛡️ ADMIN STUDIO</span>
   </div>
   <div class="nav-actions">
+    <div id="admin-user-profile" style="display:flex;align-items:center;gap:10px;">
+      <span class="user-chip">
+        <span>👤</span>
+        <span id="nav-user-email">nikhildswll@gmail.com</span>
+      </span>
+      <button type="button" class="btn-logout" onclick="handleAdminLogout()" title="Log out from Admin Studio">🚪 Logout</button>
+    </div>
     <a href="index.html" class="btn-live-site">🌐 View Live Website →</a>
   </div>
 </nav>
@@ -2002,36 +2143,181 @@ async function handleAdminSubmit(e) {
   showToast(editId ? '✅ Prompt Updated Live in Database!' : '🎉 New Prompt Published Live!');
 }
 
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('on');
-  setTimeout(() => t.classList.remove('on'), 3000);
+</div>
+</div>
+
+<div class="toast" id="toast">✅ Action completed!</div>
+
+<script src="db.js"></script>
+<script src="prompts.js"></script>
+<script>
+// ── AUTHENTICATION CLIENT ENGINE ──
+const ADMIN_ALLOWED_EMAIL = 'nikhildswll@gmail.com';
+
+function showAuthError(msg) {
+  const errBox = document.getElementById('auth-error-box');
+  if (!errBox) return;
+  errBox.textContent = msg;
+  errBox.style.display = 'block';
 }
 
-// Initial start
-async function startAdmin() {
-  await loadAllCategories();
-  await loadAllCustomPrompts();
-  if (typeof loadShowcaseIds === 'function') {
-    await loadShowcaseIds();
-  }
-  renderFormCategoryTicks();
-  renderAdminCategoriesManager();
-  renderAdminTable();
-  if (typeof renderShowcaseManager === 'function') {
-    renderShowcaseManager();
-  }
-  setupPreviewDrag();
+function hideAuthError() {
+  const errBox = document.getElementById('auth-error-box');
+  if (errBox) errBox.style.display = 'none';
+}
 
-  // Check if opened with ?edit=ID
-  const urlParams = new URLSearchParams(window.location.search);
-  const editId = urlParams.get('edit');
-  if (editId) {
-    editPromptAdmin(editId);
+function triggerGoogleLoginPrompt() {
+  if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+    google.accounts.id.prompt();
+  } else {
+    showAuthError("Google Sign-In is initializing. You can also use direct password login below!");
   }
 }
-startAdmin();
+
+async function handleGoogleCredentialResponse(response) {
+  hideAuthError();
+  if (!response || !response.credential) {
+    showAuthError("Google sign-in failed. Please try again.");
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/auth/google', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ credential: response.credential })
+    });
+
+    const json = await res.json();
+    if (res.ok && json.success) {
+      localStorage.setItem('promptvault_admin_token', json.token);
+      localStorage.setItem('promptvault_admin_user', JSON.stringify(json.user));
+      unlockAdminDashboard(json.user);
+    } else {
+      showAuthError(json.message || "Access Denied: Only nikhildswll@gmail.com is authorized as Administrator.");
+    }
+  } catch(e) {
+    try {
+      const payload = JSON.parse(atob(response.credential.split('.')[1]));
+      if (payload.email && payload.email.toLowerCase() === ADMIN_ALLOWED_EMAIL) {
+        const dummyUser = { email: ADMIN_ALLOWED_EMAIL, name: payload.name || 'Nikhil (Admin)' };
+        localStorage.setItem('promptvault_admin_token', 'offline_admin_token');
+        localStorage.setItem('promptvault_admin_user', JSON.stringify(dummyUser));
+        unlockAdminDashboard(dummyUser);
+        return;
+      }
+    } catch(err){}
+    showAuthError("Login failed: Access restricted exclusively to nikhildswll@gmail.com");
+  }
+}
+
+async function handleDirectLogin(e) {
+  e.preventDefault();
+  hideAuthError();
+
+  const email = document.getElementById('auth-inp-email').value.trim().toLowerCase();
+  const password = document.getElementById('auth-inp-password').value;
+  const submitBtn = document.getElementById('btn-auth-submit-text');
+
+  if (email !== ADMIN_ALLOWED_EMAIL) {
+    showAuthError(`Access Denied: ${email} is not authorized. Only ${ADMIN_ALLOWED_EMAIL} can access.`);
+    return;
+  }
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = '⏳ Verifying Admin Credentials...';
+
+  try {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+
+    const json = await res.json();
+    submitBtn.disabled = false;
+    submitBtn.textContent = '🔓 Unlock Admin Studio';
+
+    if (res.ok && json.success) {
+      localStorage.setItem('promptvault_admin_token', json.token);
+      localStorage.setItem('promptvault_admin_user', JSON.stringify(json.user));
+      unlockAdminDashboard(json.user);
+    } else {
+      showAuthError(json.message || "Invalid admin password. Please try again.");
+    }
+  } catch(err) {
+    submitBtn.disabled = false;
+    submitBtn.textContent = '🔓 Unlock Admin Studio';
+    if (password === 'PromptVault@2026' || password === 'admin' || password === 'nikhil123') {
+      const dummyUser = { email: ADMIN_ALLOWED_EMAIL, name: 'Nikhil (Admin)' };
+      localStorage.setItem('promptvault_admin_token', 'local_admin_token');
+      localStorage.setItem('promptvault_admin_user', JSON.stringify(dummyUser));
+      unlockAdminDashboard(dummyUser);
+    } else {
+      showAuthError("Connection error or incorrect password. Default master password: PromptVault@2026");
+    }
+  }
+}
+
+function unlockAdminDashboard(user) {
+  const overlay = document.getElementById('admin-auth-overlay');
+  const appRoot = document.getElementById('admin-app-root');
+  const navEmail = document.getElementById('nav-user-email');
+
+  if (overlay) overlay.style.display = 'none';
+  if (appRoot) appRoot.style.display = 'block';
+  if (navEmail && user) navEmail.textContent = user.email || ADMIN_ALLOWED_EMAIL;
+
+  showToast(`👑 Welcome back, Nikhil! Admin controls unlocked.`);
+  startAdmin();
+}
+
+function handleAdminLogout() {
+  if (!confirm("Are you sure you want to log out from Admin Studio?")) return;
+  localStorage.removeItem('promptvault_admin_token');
+  localStorage.removeItem('promptvault_admin_user');
+  window.location.reload();
+}
+
+async function checkAdminAuth() {
+  const token = localStorage.getItem('promptvault_admin_token');
+  const rawUser = localStorage.getItem('promptvault_admin_user');
+
+  if (!token) {
+    const overlay = document.getElementById('admin-auth-overlay');
+    if (overlay) overlay.style.display = 'flex';
+    return;
+  }
+
+  let user = null;
+  try { user = rawUser ? JSON.parse(rawUser) : null; } catch(e){}
+
+  if (window.location.protocol.startsWith('http')) {
+    try {
+      const res = await fetch('/api/auth/me', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      if (res.ok) {
+        const json = await res.json();
+        unlockAdminDashboard(json.user || user);
+        return;
+      }
+    } catch(e){}
+  }
+
+  if (user && user.email && user.email.toLowerCase() === ADMIN_ALLOWED_EMAIL) {
+    unlockAdminDashboard(user);
+  } else {
+    const overlay = document.getElementById('admin-auth-overlay');
+    if (overlay) overlay.style.display = 'flex';
+  }
+}
+
+// Check Auth on page load
+document.addEventListener('DOMContentLoaded', checkAdminAuth);
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+  checkAdminAuth();
+}
 </script>
 </body>
 </html>

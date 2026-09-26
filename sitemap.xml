@@ -13,36 +13,6 @@
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>http://localhost:3000/prompt.html?id=user_showcase_redbull</loc>
-    <lastmod>2026-09-26</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>http://localhost:3000/prompt.html?id=user_showcase_cocacola</loc>
-    <lastmod>2026-09-26</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>http://localhost:3000/prompt.html?id=user_1790339194052</loc>
-    <lastmod>2026-09-26</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>http://localhost:3000/prompt.html?id=user_1790337749006</loc>
-    <lastmod>2026-09-26</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>http://localhost:3000/prompt.html?id=user_showcase_earbuds</loc>
-    <lastmod>2026-09-26</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
     <loc>http://localhost:3000/index.html?cat=Art%20%26%20Design#prompts</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>weekly</changefreq>

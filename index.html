@@ -1622,7 +1622,7 @@ footer{background:#0d0d1a;color:#fff;padding:50px 80px 26px}
     <li><a href="#prompts">Prompts</a></li>
     <li><a href="#categories">Categories</a></li>
     <li><a href="#ai-tools">AI Tools</a></li>
-    <li><a href="admin.html" style="color:var(--p);font-weight:700;">🔐 Admin Studio</a></li>
+    <li><a href="#trending">🔥 Trending</a></li>
   </ul>
   <div class="nr">
     <div class="sb">
@@ -1630,7 +1630,6 @@ footer{background:#0d0d1a;color:#fff;padding:50px 80px 26px}
       <input placeholder="Search prompts..." id="search-input" oninput="filterPrompts()"/>
     </div>
     <button type="button" class="btn-nav-showcase" onclick="openWelcomeShowcase()" title="View Curated 5 Examples & Celebration Pass">✨ Welcome Showcase</button>
-    <a href="admin.html" class="btn-nav-add" style="background:#0f172a;border:1px solid #334155;color:#fff;">🔐 Admin Studio</a>
   </div>
 </nav>
 
@@ -1645,7 +1644,7 @@ footer{background:#0d0d1a;color:#fff;padding:50px 80px 26px}
     <p class="sub">Find, copy, and use high-performance prompts for ChatGPT, Gemini, Claude, DeepSeek, Grok, and more. 100% free with rich instructions.</p>
     <div class="hbtns">
       <button class="hbp" onclick="document.getElementById('prompts').scrollIntoView({behavior:'smooth'})">🚀 Explore Prompts →</button>
-      <a href="admin.html" class="hbs" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;">🔐 Admin Studio</a>
+      <button type="button" class="hbs" onclick="openWelcomeShowcase()" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px;">✨ Curated Showcase</button>
     </div>
     <div class="ai-pills">
       <a href="#ai-tools" class="pill"><img src="logos/chatgpt.jpg" alt="ChatGPT" style="border-radius:5px"/>ChatGPT</a>
@@ -1848,7 +1847,7 @@ footer{background:#0d0d1a;color:#fff;padding:50px 80px 26px}
     <p>PromptVault gives you ready-made, expert-crafted prompts for ChatGPT, Gemini, Claude, DeepSeek and Grok. No subscriptions. No paywalls. Just copy, paste, and create.</p>
     <div class="promo-btns">
       <button class="pb1" onclick="document.getElementById('prompts').scrollIntoView({behavior:'smooth'})">⚡ Explore Free Prompts</button>
-      <a href="admin.html" class="pb2" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;">🔐 Admin Studio</a>
+      <button class="pb2" onclick="openWelcomeShowcase()" style="cursor:pointer;">✨ Curated Showcase Pass</button>
     </div>
   </div>
   <div class="promo-right">

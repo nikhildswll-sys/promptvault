@@ -213,6 +213,126 @@ function saveDB(data) {
   }
 }
 
+// ── AUTHENTICATION ENGINE ──
+const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || 'nikhildswll@gmail.com').toLowerCase();
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'PromptVault@2026';
+
+function decodeGoogleToken(credential) {
+  try {
+    const parts = credential.split('.');
+    if (parts.length !== 3) return null;
+    const payloadStr = Buffer.from(parts[1], 'base64').toString('utf-8');
+    return JSON.parse(payloadStr);
+  } catch (e) {
+    return null;
+  }
+}
+
+function generateAdminToken(email, name, picture) {
+  const payload = {
+    email,
+    name: name || 'Nikhil (Admin)',
+    picture: picture || null,
+    role: 'admin',
+    exp: Date.now() + (30 * 24 * 60 * 60 * 1000) // 30 days session
+  };
+  return Buffer.from(JSON.stringify(payload)).toString('base64');
+}
+
+function verifyAdminToken(token) {
+  try {
+    if (!token) return null;
+    const str = Buffer.from(token, 'base64').toString('utf-8');
+    const parsed = JSON.parse(str);
+    if (parsed.exp && parsed.exp > Date.now() && parsed.email.toLowerCase() === ADMIN_EMAIL) {
+      return parsed;
+    }
+    return null;
+  } catch(e) {
+    return null;
+  }
+}
+
+// ── AUTHENTICATION ROUTES ──
+
+// 1. Google 1-Click Sign-In
+app.post('/api/auth/google', (req, res) => {
+  const { credential } = req.body;
+  if (!credential) {
+    return res.status(400).json({ success: false, message: 'Google credential token is required' });
+  }
+
+  const payload = decodeGoogleToken(credential);
+  if (!payload || !payload.email) {
+    return res.status(400).json({ success: false, message: 'Invalid Google token' });
+  }
+
+  const userEmail = payload.email.toLowerCase();
+  if (userEmail !== ADMIN_EMAIL) {
+    return res.status(403).json({
+      success: false,
+      message: `Access Denied: Only ${ADMIN_EMAIL} is authorized as Administrator. (${userEmail} does not have access)`
+    });
+  }
+
+  const token = generateAdminToken(userEmail, payload.name, payload.picture);
+  res.json({
+    success: true,
+    message: 'Welcome Nikhil! Admin access granted.',
+    token,
+    user: {
+      email: userEmail,
+      name: payload.name || 'Nikhil (Admin)',
+      picture: payload.picture || null
+    }
+  });
+});
+
+// 2. Direct Admin Password Login
+app.post('/api/auth/login', (req, res) => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    return res.status(400).json({ success: false, message: 'Email and password are required' });
+  }
+
+  const cleanEmail = email.trim().toLowerCase();
+  if (cleanEmail !== ADMIN_EMAIL) {
+    return res.status(403).json({
+      success: false,
+      message: `Access Denied: Only ${ADMIN_EMAIL} is authorized as Administrator.`
+    });
+  }
+
+  if (password !== ADMIN_PASSWORD) {
+    return res.status(401).json({ success: false, message: 'Invalid password for ' + ADMIN_EMAIL });
+  }
+
+  const token = generateAdminToken(cleanEmail, 'Nikhil (Admin)', null);
+  res.json({
+    success: true,
+    message: 'Welcome Nikhil! Admin access granted.',
+    token,
+    user: {
+      email: cleanEmail,
+      name: 'Nikhil (Admin)',
+      picture: null
+    }
+  });
+});
+
+// 3. Verify Admin Session Token
+app.get('/api/auth/me', (req, res) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader ? authHeader.replace(/^Bearer\s+/i, '') : req.query.token;
+  const user = verifyAdminToken(token);
+
+  if (!user) {
+    return res.status(401).json({ success: false, message: 'Unauthorized / Session expired' });
+  }
+
+  res.json({ success: true, user });
+});
+
 // ── REST API ROUTES ──
 
 // Categories API
