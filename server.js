@@ -533,7 +533,7 @@ app.post('/api/showcase', async (req, res) => {
 const SITEMAP_FILE = path.join(__dirname, 'sitemap.xml');
 const ROBOTS_FILE = path.join(__dirname, 'robots.txt');
 
-function generateSitemapXml(baseUrl = 'http://localhost:3000') {
+function generateSitemapXml(baseUrl = 'https://promptvault.site', promptsList = null) {
   const cleanBase = baseUrl.replace(/\/+$/, '');
   const now = new Date().toISOString().split('T')[0];
 
@@ -542,7 +542,7 @@ function generateSitemapXml(baseUrl = 'http://localhost:3000') {
     { loc: `${cleanBase}/index.html`, priority: '0.9', changefreq: 'daily' }
   ];
 
-  const prompts = loadDB();
+  const prompts = Array.isArray(promptsList) ? promptsList : loadDB();
   const promptPages = prompts.map(p => ({
     loc: `${cleanBase}/prompt.html?id=${p.id}`,
     priority: p.isTrending ? '0.9' : '0.8',
@@ -576,7 +576,7 @@ function generateSitemapXml(baseUrl = 'http://localhost:3000') {
 
 function writeSitemapOnDisk(baseUrl) {
   try {
-    const xml = generateSitemapXml(baseUrl || process.env.BASE_URL || 'http://localhost:3000');
+    const xml = generateSitemapXml(baseUrl || process.env.BASE_URL || 'https://promptvault.site');
     fs.writeFileSync(SITEMAP_FILE, xml, 'utf-8');
     return true;
   } catch(e) {
@@ -584,7 +584,7 @@ function writeSitemapOnDisk(baseUrl) {
   }
 }
 
-function writeRobotsOnDisk(baseUrl = 'http://localhost:3000') {
+function writeRobotsOnDisk(baseUrl = 'https://promptvault.site') {
   try {
     const txt = `# PromptVault Robots.txt - Auto-Generated SEO
 User-agent: *
@@ -610,10 +610,19 @@ Sitemap: ${baseUrl}/sitemap.xml
   }
 }
 
-// Sitemap.xml endpoint
-app.get('/sitemap.xml', (req, res) => {
+// Sitemap.xml endpoint (Dynamic Real-Time Generator)
+app.get('/sitemap.xml', async (req, res) => {
   const baseUrl = process.env.BASE_URL || (req.protocol + '://' + req.get('host'));
-  const xml = generateSitemapXml(baseUrl);
+  let prompts = loadDB();
+  if (isMongoConnected) {
+    try {
+      const mongoPrompts = await PromptModel.find({}).lean();
+      if (mongoPrompts && mongoPrompts.length > 0) {
+        prompts = mongoPrompts;
+      }
+    } catch(e){}
+  }
+  const xml = generateSitemapXml(baseUrl, prompts);
   res.header('Content-Type', 'application/xml');
   res.send(xml);
 });
