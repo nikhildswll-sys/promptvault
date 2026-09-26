@@ -990,9 +990,14 @@ tr:hover{background:#fafbff}
   </div>
 
 </div>
+</div> <!-- /admin-app-root -->
 
 <div class="toast" id="toast">✅ Saved to Database!</div>
 
+<!-- Firebase SDK & PromptVault Auth Engine -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="auth.js"></script>
 <script src="db.js"></script>
 <script src="prompts.js"></script>
 <script>
@@ -2105,18 +2110,27 @@ async function handleAdminSubmit(e) {
   showToast(editId ? '✅ Prompt Updated Live in Database!' : '🎉 New Prompt Published Live!');
 }
 
-</div>
-</div>
+async function startAdmin() {
+  await loadAllCategories();
+  await loadAllCustomPrompts();
+  if (typeof loadShowcaseIds === 'function') {
+    await loadShowcaseIds();
+  }
+  setupPreviewDrag();
+  renderAdminTable();
+  renderTrendingManager();
+  renderFormCategoryTicks();
+  renderAdminCategoriesManager();
+  renderShowcaseManager();
 
-<div class="toast" id="toast">✅ Action completed!</div>
+  // Check if edit query parameter is present (e.g. ?edit=user_123)
+  const urlParams = new URLSearchParams(window.location.search);
+  const editId = urlParams.get('edit');
+  if (editId) {
+    editPromptAdmin(editId);
+  }
+}
 
-<!-- Firebase SDK & PromptVault Auth Engine -->
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-<script src="auth.js"></script>
-<script src="db.js"></script>
-<script src="prompts.js"></script>
-<script>
 // ── AUTHENTICATION CLIENT ENGINE ──
 const ADMIN_ALLOWED_EMAIL = 'nikhildswll@gmail.com';
 
