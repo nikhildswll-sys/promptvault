@@ -1,0 +1,1706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title id="seo-page-title">Prompt – PromptVault</title>
+<meta name="description" id="seo-meta-desc" content="Free AI prompt template with variable customizer, pro tips, and expected outcomes. For ChatGPT, Midjourney, Claude & DeepSeek." />
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
+<link rel="canonical" href="" id="seo-canonical" />
+<link rel="icon" type="image/png" href="images/favicon.png" />
+<link rel="apple-touch-icon" href="images/favicon.png" />
+
+<!-- Open Graph / WhatsApp Preview -->
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="PromptVault" />
+<meta property="og:title" id="og-title" content="Prompt – PromptVault" />
+<meta property="og:description" id="og-desc" content="Free AI prompt template ready to copy and customize." />
+<meta property="og:image" id="og-image" content="" />
+<meta property="og:url" id="og-url" content="" />
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" id="tw-title" content="Prompt – PromptVault" />
+<meta name="twitter:description" id="tw-desc" content="Free AI prompt template ready to copy and customize." />
+<meta name="twitter:image" id="tw-image" content="" />
+
+<!-- Dynamic Schema.org JSON-LD -->
+<script type="application/ld+json" id="schema-jsonld"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --p:#5b4cff;
+  --p2:#7c6dff;
+  --a:#06d6a0;
+  --bg:#f6f7fb;
+  --w:#fff;
+  --dk:#0d0d1a;
+  --mu:#64748b;
+  --bd:#e2e8f0;
+}
+body{
+  font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  background:var(--bg);
+  color:var(--dk);
+  -webkit-font-smoothing:antialiased;
+  letter-spacing:-0.01em;
+  padding-bottom:70px;
+}
+
+/* ── ANNOUNCEMENT BAR ── */
+.ann-bar{
+  background:linear-gradient(90deg,#ea580c,#dc2626,#7c3aed,#ea580c);
+  background-size:300% 100%;
+  animation:barbg 5s linear infinite;
+  color:#fff;text-align:center;padding:10px 24px;
+  font-size:.84rem;font-weight:700;position:relative;z-index:1000;
+  display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;
+  box-shadow:0 3px 12px rgba(220,38,38,0.22);
+}
+@keyframes barbg{0%{background-position:0% 50%}100%{background-position:300% 50%}}
+.ann-bar a{
+  background:#fff;
+  color:#dc2626;
+  text-decoration:none;
+  font-weight:800;
+  padding:4px 14px;
+  border-radius:50px;
+  font-size:0.75rem;
+  transition:all 0.2s;
+  box-shadow:0 2px 8px rgba(0,0,0,0.15);
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+}
+.ann-bar a:hover{
+  transform:scale(1.04);
+  background:#fff5f5;
+}
+.ann-close{position:absolute;right:14px;background:none;border:none;color:#fff;font-size:1.1rem;cursor:pointer;opacity:.8;top:50%;transform:translateY(-50%)}
+.ann-close:hover{opacity:1}
+
+/* ── NAV ── */
+nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 56px;height:66px;background:rgba(255,255,255,.98);
+  backdrop-filter:blur(14px);border-bottom:1px solid var(--bd);
+  position:sticky;top:0;z-index:999;
+}
+.logo{display:flex;align-items:center;text-decoration:none;transition:opacity 0.2s}
+.logo:hover{opacity:0.92}
+.site-nav-logo{height:40px;width:auto;max-width:210px;object-fit:contain;display:block;transition:transform 0.2s ease}
+.logo:hover .site-nav-logo{transform:scale(1.025)}
+.lbox{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--p),var(--a));display:flex;align-items:center;justify-content:center}
+.lbox svg{width:18px;height:18px;fill:#fff}
+.logo b{color:var(--p)}
+.nl{display:flex;gap:24px;list-style:none}
+.nl a{text-decoration:none;color:var(--mu);font-weight:600;font-size:.87rem;transition:color .2s}
+.nl a:hover{color:var(--p)}
+.nr{display:flex;align-items:center;gap:10px}
+.bsi{padding:7px 16px;border:1.5px solid var(--bd);border-radius:9px;font-weight:700;font-size:.82rem;background:#fff;cursor:pointer;transition:all .2s;text-decoration:none;color:var(--dk)}
+.bsi:hover{border-color:var(--p);color:var(--p)}
+.bgs{padding:7px 18px;background:var(--p);color:#fff;border:none;border-radius:9px;font-weight:700;font-size:.82rem;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.bgs:hover{background:var(--p2)}
+
+/* ── BREADCRUMB ── */
+.bc{
+  padding:14px 80px;background:#fff;border-bottom:1px solid var(--bd);
+  display:flex;align-items:center;justify-content:space-between;font-size:.82rem;color:var(--mu);
+}
+.bc-left{display:flex;align-items:center;gap:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bc a{color:var(--mu);text-decoration:none;font-weight:500}
+.bc a:hover{color:var(--p)}
+.bc span{color:var(--bd)}
+.p-nav-btn{
+  display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:#fff;
+  border:1.5px solid var(--bd);border-radius:8px;font-size:0.78rem;font-weight:700;
+  text-decoration:none;color:var(--dk);transition:all 0.2s;
+}
+.p-nav-btn:hover{border-color:var(--p);color:var(--p);background:#f3f0ff}
+
+/* ── MAIN LAYOUT ── */
+.main{
+  display:grid;grid-template-columns:1fr 370px;gap:32px;
+  padding:32px 80px 50px;max-width:1440px;margin:0 auto;align-items:start;
+}
+
+/* ── PROMPT HEADER CARD ── */
+.pheader{background:#fff;border-radius:22px;border:1.5px solid var(--bd);overflow:hidden;margin-bottom:24px;box-shadow:0 6px 24px rgba(0,0,0,0.02)}
+
+/* GALLERY / SHOWCASE */
+.gallery-container{
+  background:#090912;
+  position:relative;
+  overflow:hidden;
+  border-bottom:1.5px solid var(--bd);
+}
+.gallery-viewport{
+  width:100%;
+  min-height:340px;
+  max-height:560px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  position:relative;
+  background:#0b0d18;
+}
+.gallery-main-img{
+  max-width:100%;
+  max-height:560px;
+  width:auto;
+  height:auto;
+  display:block;
+  margin:0 auto;
+  transition:all 0.25s ease;
+  user-select:none;
+}
+.gallery-nav-arrow{
+  position:absolute;top:50%;transform:translateY(-50%);
+  width:44px;height:44px;border-radius:50%;
+  background:rgba(255,255,255,0.85);backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,0.4);color:#0f172a;
+  font-size:1.4rem;font-weight:800;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all 0.2s;z-index:10;box-shadow:0 4px 16px rgba(0,0,0,0.25);
+}
+.gallery-nav-arrow:hover{
+  background:#fff;transform:translateY(-50%) scale(1.1);color:var(--p);
+}
+.gallery-nav-prev{left:14px}
+.gallery-nav-next{right:14px}
+
+.gallery-count-badge{
+  position:absolute;top:14px;right:14px;
+  background:rgba(0,0,0,0.72);backdrop-filter:blur(8px);
+  color:#fff;font-size:0.75rem;font-weight:800;padding:5px 12px;
+  border-radius:30px;display:flex;align-items:center;gap:6px;z-index:9;
+  border:1px solid rgba(255,255,255,0.15);
+}
+.gallery-ai-badge{
+  position:absolute;bottom:14px;right:14px;
+  background:#fff;border-radius:12px;padding:6px 12px;
+  display:flex;align-items:center;gap:7px;font-weight:800;font-size:.8rem;
+  box-shadow:0 4px 16px rgba(0,0,0,.25);z-index:9;
+}
+.gallery-ai-badge img{width:20px;height:20px;object-fit:contain}
+
+/* Thumbnails Strip */
+.gallery-strip{
+  display:flex;align-items:center;gap:10px;padding:12px 18px;
+  background:#131526;overflow-x:auto;-webkit-overflow-scrolling:touch;
+}
+.g-thumb{
+  width:64px;height:64px;border-radius:10px;overflow:hidden;
+  border:2px solid transparent;cursor:pointer;flex-shrink:0;
+  opacity:0.6;transition:all 0.2s;background:#0d0d1a;
+}
+.g-thumb:hover{opacity:0.9;transform:scale(1.05)}
+.g-thumb.active{
+  border-color:var(--p);opacity:1;box-shadow:0 0 0 2px rgba(91,76,255,0.4);transform:scale(1.06);
+}
+.g-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+
+/* Header Body */
+.pheader-body{padding:26px}
+.cat-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.cat-tag{background:#f3f0ff;color:var(--p);font-weight:800;font-size:.76rem;padding:4px 12px;border-radius:50px;border:1.5px solid #d4c8ff}
+.meta-tag{color:var(--mu);font-size:.76rem;font-weight:600}
+#prompt-title{font-size:1.8rem;font-weight:900;margin-bottom:10px;line-height:1.25;letter-spacing:-0.02em}
+#prompt-desc{color:var(--mu);font-size:.95rem;line-height:1.68;margin-bottom:18px}
+.stats-row2{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.stat2{display:flex;align-items:center;gap:5px;font-size:.82rem;color:var(--mu);font-weight:600}
+.stat2 strong{color:var(--dk)}
+.author-chip{display:flex;align-items:center;gap:7px}
+.av2{width:28px;height:28px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:800;flex-shrink:0}
+.tags-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.tag{background:#f1f5f9;color:var(--mu);font-size:.74rem;font-weight:700;padding:4px 12px;border-radius:50px;border:1px solid var(--bd)}
+
+/* ── SECTION CARD ── */
+.section-card{background:#fff;border-radius:22px;border:1.5px solid var(--bd);margin-bottom:24px;overflow:hidden;box-shadow:0 6px 24px rgba(0,0,0,0.02)}
+.sc-head{padding:18px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #f1f5f9;background:#fcfdff}
+.sc-head h3{font-size:1.02rem;font-weight:900;display:flex;align-items:center;gap:8px}
+.sc-body{padding:24px}
+
+/* ── PROMPT STUDIO & VARIABLE CUSTOMIZER ── */
+.prompt-studio{
+  background:#0d0f1d;
+  border:1.5px solid #1e2238;
+  border-radius:18px;
+  overflow:hidden;
+  box-shadow:0 12px 36px rgba(0,0,0,0.22);
+}
+.studio-topbar{
+  background:#14172a;
+  padding:12px 18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  border-bottom:1px solid #232842;
+  flex-wrap:wrap;
+  gap:10px;
+}
+.window-dots{display:flex;align-items:center;gap:6px}
+.w-dot{width:11px;height:11px;border-radius:50%}
+.w-dot.red{background:#ef4444}
+.w-dot.yellow{background:#f59e0b}
+.w-dot.green{background:#10b981}
+
+.studio-tabs{display:flex;background:#090a12;border-radius:8px;padding:3px;gap:3px}
+.s-tab{
+  padding:5px 14px;border-radius:6px;font-size:0.76rem;font-weight:700;
+  color:#94a3b8;border:none;background:transparent;cursor:pointer;transition:all 0.2s;
+}
+.s-tab:hover{color:#fff}
+.s-tab.active{background:var(--p);color:#fff;box-shadow:0 2px 8px rgba(91,76,255,0.4)}
+
+.prompt-stats-badge{
+  font-size:0.75rem;font-weight:700;color:#94a3b8;
+  background:rgba(255,255,255,0.06);padding:4px 10px;border-radius:6px;
+}
+
+/* Variable Fields Form Area */
+.vars-builder-area{
+  padding:20px;
+  background:#101324;
+  border-bottom:1px solid #1e2238;
+}
+.vars-header{
+  display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;
+}
+.vars-header-title{
+  font-size:0.86rem;font-weight:800;color:#f8fafc;display:flex;align-items:center;gap:6px;
+}
+.vars-header-title span{color:var(--a);font-size:0.74rem;font-weight:600}
+.btn-reset-vars{
+  background:none;border:none;color:#94a3b8;font-size:0.75rem;font-weight:700;
+  cursor:pointer;padding:3px 8px;border-radius:6px;transition:color 0.2s;
+}
+.btn-reset-vars:hover{color:#f8fafc;text-decoration:underline}
+
+.vars-grid{
+  display:grid;grid-template-columns:repeat(auto-fill, minmax(240px, 1fr));gap:12px;
+}
+.var-field{
+  display:flex;flex-direction:column;gap:5px;
+}
+.var-field label{
+  font-size:0.75rem;font-weight:800;color:#cbd5e1;text-transform:uppercase;letter-spacing:0.03em;
+}
+.var-field input{
+  background:#181c33;border:1.5px solid #282f50;border-radius:8px;
+  padding:9px 12px;color:#f8fafc;font-family:'JetBrains Mono',monospace;
+  font-size:0.82rem;outline:none;transition:all 0.2s;
+}
+.var-field input:focus{
+  border-color:var(--p);background:#1f2442;box-shadow:0 0 0 2px rgba(91,76,255,0.25);
+}
+
+/* Prompt Box Display */
+.prompt-box-wrapper{padding:20px;position:relative}
+.prompt-code-box{
+  font-family:'JetBrains Mono','Courier New',monospace;
+  font-size:.86rem;line-height:1.75;color:#e2e8f0;
+  white-space:pre-wrap;word-break:break-word;
+  max-height:420px;overflow-y:auto;
+  padding-right:8px;
+}
+.prompt-code-box::-webkit-scrollbar{width:6px}
+.prompt-code-box::-webkit-scrollbar-thumb{background:#232842;border-radius:8px}
+
+.prompt-code-box .placeholder{
+  color:#fbbf24;font-weight:700;background:rgba(251,191,36,0.12);
+  padding:1px 6px;border-radius:4px;border:1px dashed rgba(251,191,36,0.35);
+}
+.prompt-code-box .filled-val{
+  color:#34d399;font-weight:800;background:rgba(52,211,153,0.14);
+  padding:1px 6px;border-radius:4px;border:1px solid rgba(52,211,153,0.4);
+}
+
+.copy-row{display:flex;gap:12px;margin-top:16px}
+.btn-copy-main{
+  flex:1;padding:15px;background:var(--p);color:#fff;border:none;
+  border-radius:12px;font-weight:800;font-size:.95rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:all .25s;box-shadow:0 4px 18px rgba(91,76,255,.35);
+}
+.btn-copy-main:hover{background:var(--p2);transform:translateY(-2px);box-shadow:0 8px 26px rgba(91,76,255,.45)}
+.btn-copy-main.ok{background:#06d6a0;box-shadow:0 4px 18px rgba(6,214,160,.4)}
+.btn-share{
+  padding:15px 22px;background:#fff;border:1.5px solid var(--bd);border-radius:12px;
+  font-weight:800;font-size:.88rem;cursor:pointer;transition:all .2s;color:var(--dk);
+}
+.btn-share:hover{border-color:var(--p);color:var(--p)}
+
+/* ── HOW TO USE ── */
+.steps-list{list-style:none;display:flex;flex-direction:column;gap:14px}
+.step-item{display:flex;align-items:flex-start;gap:14px}
+.step-num{
+  width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--p),var(--a));
+  color:#fff;font-weight:900;font-size:.82rem;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;margin-top:1px;
+}
+.step-text{font-size:.9rem;color:#334155;line-height:1.6;padding-top:3px}
+
+/* ── RIGHT SIDEBAR ── */
+.sidebar-card{background:#fff;border-radius:22px;border:1.5px solid var(--bd);padding:24px;margin-bottom:24px;box-shadow:0 6px 24px rgba(0,0,0,0.02)}
+.sidebar-card h3{font-weight:900;font-size:1rem;margin-bottom:16px}
+
+/* AI Info */
+.ai-info-box{display:flex;align-items:center;gap:14px;padding:16px;background:#f8faff;border-radius:14px;border:1.5px solid var(--bd);margin-bottom:14px}
+.ai-logo-box{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.ai-logo-box img{width:40px;height:40px;object-fit:contain}
+.ai-info-text strong{font-size:.95rem;font-weight:800;display:block;margin-bottom:3px}
+.ai-info-text span{font-size:.76rem;color:var(--mu)}
+.open-ai-btn{
+  width:100%;padding:12px;background:var(--p);color:#fff;border:none;border-radius:11px;
+  font-weight:800;font-size:.86rem;cursor:pointer;transition:all .2s;margin-top:6px;
+}
+.open-ai-btn:hover{background:var(--p2);transform:translateY(-1px)}
+
+/* Rating Widget */
+.rating-big{text-align:center;padding:10px 0 6px}
+.rating-num{font-size:3rem;font-weight:900;color:var(--dk);line-height:1}
+.stars-row{display:flex;justify-content:center;gap:4px;margin:8px 0;font-size:1.3rem}
+.rating-sub{font-size:.78rem;color:var(--mu);font-weight:600}
+
+.user-rating-box{
+  background:#f8fafc;border:1.5px solid var(--bd);border-radius:14px;
+  padding:16px;margin:16px 0;text-align:center;
+}
+.user-rating-box h4{font-size:.85rem;font-weight:800;color:var(--dk);margin-bottom:4px}
+.star-rating-input{display:flex;justify-content:center;gap:8px;font-size:1.85rem;cursor:pointer;margin:6px 0}
+.star-btn{color:#cbd5e1;transition:all 0.15s;user-select:none;display:inline-block}
+.star-btn:hover, .star-btn.hovered, .star-btn.active{color:#f59e0b;transform:scale(1.18)}
+.rating-msg{font-size:0.78rem;font-weight:700;color:#059669;min-height:20px;margin-top:4px}
+
+.rating-bars{margin-top:14px}
+.rbar{display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:.76rem;color:var(--mu);font-weight:600}
+.rbar-track{flex:1;height:7px;background:#f1f5f9;border-radius:50px;overflow:hidden}
+.rbar-fill{height:100%;border-radius:50px;background:linear-gradient(90deg,var(--p),var(--a));transition:width 0.5s ease}
+
+/* Related Prompts */
+.related-card{display:flex;align-items:center;gap:12px;padding:12px;border-radius:14px;border:1.5px solid var(--bd);margin-bottom:10px;cursor:pointer;transition:all .2s;text-decoration:none;color:var(--dk)}
+.related-card:hover{border-color:var(--p);background:#f8f8ff;transform:translateX(3px)}
+.rc-thumb{width:46px;height:46px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0}
+.rc-title{font-weight:800;font-size:.84rem;margin-bottom:3px}
+.rc-cat{font-size:.72rem;color:var(--mu)}
+
+/* ── CAROUSEL ── */
+.carousel-section{max-width:1440px;margin:20px auto 60px;padding:0 80px}
+.carousel-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:18px}
+.carousel-header h2{font-size:1.4rem;font-weight:900;letter-spacing:-0.02em}
+.carousel-header p{color:var(--mu);font-size:.84rem;margin-top:4px}
+.carousel-nav-btns{display:flex;gap:8px}
+.c-nav-btn{
+  width:40px;height:40px;border-radius:10px;border:1.5px solid var(--bd);background:#fff;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem;
+  color:var(--dk);font-weight:800;transition:all 0.2s;
+}
+.c-nav-btn:hover{border-color:var(--p);color:var(--p);background:#f3f0ff}
+.prompts-carousel{
+  display:flex;gap:20px;overflow-x:auto;padding:8px 4px 20px;
+  scroll-behavior:smooth;scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;scrollbar-width:thin;
+}
+.c-card{
+  flex:0 0 300px;scroll-snap-align:start;background:#fff;border-radius:18px;
+  border:1.5px solid var(--bd);overflow:hidden;text-decoration:none;color:var(--dk);
+  transition:all 0.25s;display:flex;flex-direction:column;
+}
+.c-card:hover{transform:translateY(-6px);border-color:var(--p);box-shadow:0 12px 30px rgba(91,76,255,0.12)}
+.c-card-thumb{height:180px;position:relative;display:flex;align-items:center;justify-content:center;font-size:2.8rem;overflow:hidden;background:#f8fafc}
+.c-card-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.c-card-cat{position:absolute;top:10px;left:10px;background:rgba(0,0,0,0.45);backdrop-filter:blur(6px);color:#fff;font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:50px}
+.c-card-ai{position:absolute;bottom:10px;right:10px;width:30px;height:30px;background:#fff;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.15);display:flex;align-items:center;justify-content:center}
+.c-card-ai img{width:20px;height:20px;object-fit:contain}
+.c-card-body{padding:15px;flex:1;display:flex;flex-direction:column}
+.c-card-title{font-size:0.92rem;font-weight:800;margin-bottom:6px;line-height:1.3}
+.c-card-desc{font-size:0.76rem;color:var(--mu);line-height:1.5;margin-bottom:12px;flex:1}
+.c-card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:10px;border-top:1px solid #f1f5f9}
+.c-card-author{display:flex;align-items:center;gap:6px;font-size:0.72rem;color:var(--mu)}
+.c-card-av{width:22px;height:22px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:800}
+.c-card-rating{font-size:0.76rem;font-weight:700;color:#f59e0b}
+
+/* ── STICKY MOBILE BOTTOM BAR ── */
+.mobile-copy-bar{
+  position:fixed;bottom:0;left:0;right:0;background:rgba(13,13,26,0.96);
+  backdrop-filter:blur(16px);border-top:1px solid rgba(255,255,255,0.12);
+  padding:12px 20px;display:none;align-items:center;justify-content:space-between;
+  gap:14px;z-index:998;
+}
+.m-bar-info{overflow:hidden}
+.m-bar-title{color:#fff;font-weight:800;font-size:0.86rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-bar-sub{color:#94a3b8;font-size:0.72rem}
+.m-bar-btn{
+  background:var(--p);color:#fff;border:none;border-radius:10px;
+  padding:10px 18px;font-weight:800;font-size:0.82rem;white-space:nowrap;cursor:pointer;
+  box-shadow:0 4px 14px rgba(91,76,255,0.4);
+}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(5px);z-index:1000;display:none;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal{background:#fff;border-radius:20px;padding:28px;width:90%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.modal h3{font-weight:900;font-size:1.15rem;margin-bottom:6px}
+.modal p{color:var(--mu);font-size:.85rem;margin-bottom:20px}
+.share-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.share-btn{padding:12px;border-radius:11px;font-weight:700;font-size:.84rem;cursor:pointer;border:1.5px solid var(--bd);background:#fff;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:7px}
+.share-btn:hover{border-color:var(--p);color:var(--p)}
+.modal-close{float:right;background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--mu)}
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;bottom:26px;right:26px;background:#0d0d1a;color:#fff;
+  padding:13px 22px;border-radius:12px;font-weight:800;font-size:.84rem;
+  opacity:0;transform:translateY(10px);transition:all .3s;pointer-events:none;
+  z-index:9999;border-left:4px solid var(--a);box-shadow:0 8px 30px rgba(0,0,0,.3);
+}
+.toast.on{opacity:1;transform:translateY(0)}
+
+/* ── FOOTER ── */
+footer{background:#0d0d1a;color:#fff;padding:46px 80px 24px;margin-top:20px}
+.ft{display:flex;justify-content:space-between;gap:36px;margin-bottom:34px}
+.fb .logo{color:#fff}
+.fb p{color:#64748b;font-size:.82rem;margin-top:10px;max-width:240px;line-height:1.65}
+.fl h4{font-weight:800;margin-bottom:12px;font-size:.88rem}
+.fl ul{list-style:none}
+.fl li{margin-bottom:8px}
+.fl a{color:#64748b;text-decoration:none;font-size:.8rem;transition:color .2s}
+.fl a:hover{color:#fff}
+.fbot{border-top:1px solid #1e293b;padding-top:20px;display:flex;justify-content:space-between;color:#64748b;font-size:.78rem}
+
+/* Gradients */
+.g1{background:linear-gradient(135deg,#11998e,#38ef7d)}
+.g2{background:linear-gradient(135deg,#5b4cff,#9b59b6)}
+.g3{background:linear-gradient(135deg,#f093fb,#f5576c)}
+.g4{background:linear-gradient(135deg,#4facfe,#00f2fe)}
+.g5{background:linear-gradient(135deg,#f7971e,#ffd200)}
+.g6{background:linear-gradient(135deg,#30cfd0,#5b4cff)}
+.g7{background:linear-gradient(135deg,#fa709a,#fee140)}
+.g8{background:linear-gradient(135deg,#56ccf2,#2f80ed)}
+
+/* ── RESPONSIVE MOBILE CSS ── */
+@media(max-width:960px){
+  .main{grid-template-columns:1fr;padding:24px 20px}
+  .bc{padding:12px 20px}
+  nav{padding:0 20px}
+  .carousel-section{padding:0 20px}
+  footer{padding:40px 20px 20px}
+  .ft{flex-direction:column;gap:24px}
+}
+@media(max-width:768px){
+  nav{
+    padding: 0 12px;
+    height: 54px;
+    gap: 8px;
+  }
+  .logo{
+    font-size: 1.05rem;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .site-nav-logo{height:30px;max-width:150px}
+  .lbox{
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+  }
+  .lbox svg{
+    width: 14px;
+    height: 14px;
+  }
+  .nl{display:none}
+  .nr{
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .bsi{
+    padding: 5px 10px;
+    font-size: 0.72rem;
+    border-radius: 7px;
+  }
+  .bgs{
+    padding: 5px 10px;
+    font-size: 0.72rem;
+    border-radius: 7px;
+  }
+  .bc{
+    padding: 8px 12px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    overflow: hidden;
+  }
+  .bc-left{
+    max-width: 65%;
+    font-size: 0.75rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .p-nav-btn{
+    padding: 4px 8px;
+    font-size: 0.7rem;
+  }
+  .main{
+    padding: 12px 12px 80px;
+  }
+  .pheader{
+    border-radius: 16px;
+    margin-bottom: 16px;
+  }
+  .gallery-viewport{
+    min-height: auto;
+    height: 310px;
+    max-height: 340px;
+    background: #090a14;
+  }
+  .gallery-main-img{
+    width: 100%;
+    height: 100%;
+    max-height: 340px;
+    object-fit: contain;
+  }
+  .gallery-ai-badge{
+    bottom: 10px;
+    right: 10px;
+    padding: 4px 9px;
+    font-size: 0.72rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+  .gallery-ai-badge img{
+    width: 16px;
+    height: 16px;
+  }
+  .gallery-count-badge{
+    top: 10px;
+    right: 10px;
+    padding: 3px 8px;
+    font-size: 0.68rem;
+  }
+  .gallery-nav-arrow{
+    width: 36px;
+    height: 36px;
+    font-size: 1.1rem;
+  }
+  .pheader-body{
+    padding: 16px;
+  }
+  #prompt-title{
+    font-size: 1.3rem;
+    line-height: 1.3;
+    margin-bottom: 8px;
+    word-break: break-word;
+  }
+  #prompt-desc{
+    font-size: 0.85rem;
+    line-height: 1.55;
+    margin-bottom: 14px;
+  }
+  .stats-row2{
+    gap: 12px;
+    font-size: 0.76rem;
+  }
+  .sc-head{
+    padding: 14px 16px;
+  }
+  .sc-body{
+    padding: 16px;
+  }
+  .prompt-studio{
+    border-radius: 14px;
+  }
+  .studio-topbar{
+    padding: 10px 14px;
+  }
+  .prompt-box-wrapper{
+    padding: 14px;
+  }
+  .prompt-code-box{
+    font-size: 0.79rem;
+    line-height: 1.65;
+  }
+  .vars-builder-area{
+    padding: 14px;
+  }
+  .vars-grid{
+    grid-template-columns: 1fr;
+  }
+  .copy-row{
+    flex-direction: column;
+    gap: 8px;
+  }
+  .btn-copy-main{
+    padding: 12px;
+    font-size: 0.88rem;
+  }
+  .btn-share{
+    padding: 11px;
+    font-size: 0.82rem;
+    width: 100%;
+  }
+  .mobile-copy-bar{
+    display: flex;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ANNOUNCEMENT BAR -->
+<div class="ann-bar" id="ann-bar">
+  <span style="background:rgba(255,255,255,0.22);backdrop-filter:blur(4px);padding:3px 10px;border-radius:50px;font-size:0.72rem;font-weight:900;letter-spacing:0.5px;border:1px solid rgba(255,255,255,0.35);display:inline-flex;align-items:center;gap:4px;">
+    ⏳ LIMITED TIME
+  </span>
+  <span class="ann-desktop">🔥 <strong>100% FREE FOR LIMITED TIME!</strong> Access all premium prompts completely free • </span>
+  <a href="index.html#prompts">Explore All Prompts →</a>
+  <button class="ann-close" onclick="document.getElementById('ann-bar').style.display='none'">✕</button>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="logo" title="PromptVault">
+    <img src="images/logo_horizontal.png" alt="PromptVault Logo" class="site-nav-logo" />
+  </a>
+  <ul class="nl">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="index.html#prompts">Prompts</a></li>
+    <li><a href="index.html#categories">Categories</a></li>
+    <li><a href="index.html#ai-tools">AI Tools</a></li>
+    <li><a href="admin.html" style="color:var(--p);font-weight:700;">🔐 Admin Studio</a></li>
+  </ul>
+  <div class="nr">
+    <a href="index.html" class="bsi">← Back</a>
+    <a href="admin.html" class="bgs" style="background:#0f172a;border:1px solid #334155;">🔐 Admin Studio</a>
+  </div>
+</nav>
+
+<!-- BREADCRUMB -->
+<div class="bc">
+  <div class="bc-left">
+    <a href="index.html">Home</a>
+    <span>/</span>
+    <a href="index.html#prompts">Prompts</a>
+    <span>/</span>
+    <span id="bc-title" style="color:var(--dk);font-weight:700">Loading...</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+    <a id="btn-bc-prev" href="#" class="p-nav-btn" title="Previous Prompt">← Prev</a>
+    <a id="btn-bc-next" href="#" class="p-nav-btn" title="Next Prompt">Next →</a>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- LEFT -->
+  <div class="left">
+
+    <!-- Prompt Header Card & Gallery Showcase -->
+    <div class="pheader">
+      
+      <!-- Multi-Image Gallery Showcase -->
+      <div class="gallery-container" id="gallery-container">
+        <div class="gallery-viewport" id="gallery-viewport">
+          <!-- Populated by JS -->
+          <span id="pthumb-emoji" style="font-size:4.5rem;display:none;">⚡</span>
+          <img id="gallery-main-img" class="gallery-main-img" src="" alt="Prompt Visual" style="display:none;" />
+          <button id="gallery-prev-btn" class="gallery-nav-arrow gallery-nav-prev" onclick="slidePhoto(-1)" style="display:none;" title="Previous Photo">‹</button>
+          <button id="gallery-next-btn" class="gallery-nav-arrow gallery-nav-next" onclick="slidePhoto(1)" style="display:none;" title="Next Photo">›</button>
+          <div id="gallery-count-badge" class="gallery-count-badge" style="display:none;">📸 1 / 3</div>
+          <div class="gallery-ai-badge" id="ai-badge-large"></div>
+        </div>
+        <!-- Thumbnails row if multiple images -->
+        <div class="gallery-strip" id="gallery-strip" style="display:none;">
+          <!-- Generated by JS -->
+        </div>
+      </div>
+
+      <!-- Header Information -->
+      <div class="pheader-body">
+        <div class="cat-row">
+          <span class="cat-tag" id="p-cat">Category</span>
+          <span class="meta-tag" id="p-ai-tag">• For AI</span>
+          <span class="meta-tag" id="p-uses">• Uses</span>
+        </div>
+        <h1 id="prompt-title">Loading prompt...</h1>
+        <p id="prompt-desc"></p>
+        <div class="stats-row2">
+          <div class="stat2">⭐ <strong id="p-rating">0</strong> community rating</div>
+          <div class="author-chip">
+            <div class="av2" id="p-author-av">?</div>
+            <span class="stat2">by <strong id="p-author">Author</strong></span>
+          </div>
+        </div>
+        <div class="tags-row" id="p-tags"></div>
+      </div>
+    </div>
+
+    <!-- ELEVATED PROMPT STUDIO & VARIABLE FILLER -->
+    <div class="section-card">
+      <div class="sc-head">
+        <h3>⚡ Prompt Template & Studio</h3>
+        <span class="prompt-stats-badge" id="prompt-stats">📝 0 Words • 0 Chars</span>
+      </div>
+      <div class="sc-body">
+        
+        <div class="prompt-studio">
+          <!-- Studio Top Toolbar -->
+          <div class="studio-topbar">
+            <div class="window-dots">
+              <span class="w-dot red"></span>
+              <span class="w-dot yellow"></span>
+              <span class="w-dot green"></span>
+            </div>
+            <div class="studio-tabs">
+              <button class="s-tab active" id="tab-btn-vars" onclick="switchPromptTab('vars')">⚡ Live Variable Fill</button>
+              <button class="s-tab" id="tab-btn-raw" onclick="switchPromptTab('raw')">📄 Raw Template</button>
+            </div>
+          </div>
+
+          <!-- Variable Inputs Area (Active by default if brackets exist) -->
+          <div class="vars-builder-area" id="vars-builder-area">
+            <div class="vars-header">
+              <div class="vars-header-title">
+                <span>⚡ Interactive Fill:</span> Replace brackets below & preview live!
+              </div>
+              <button class="btn-reset-vars" onclick="resetVariableValues()">↺ Reset Variables</button>
+            </div>
+            <div class="vars-grid" id="vars-grid">
+              <!-- Dynamically populated variable input fields -->
+            </div>
+          </div>
+
+          <!-- Real-Time Code Box -->
+          <div class="prompt-box-wrapper">
+            <div class="prompt-code-box" id="prompt-code-box">Loading template...</div>
+          </div>
+        </div>
+
+        <!-- Action Buttons Row -->
+        <div class="copy-row">
+          <button class="btn-copy-main" id="copy-btn" onclick="copyCurrentPrompt()">
+            📋 Copy Prompt to Clipboard
+          </button>
+          <button class="btn-share" onclick="document.querySelector('.modal-overlay').classList.add('show')">🔗 Share</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 🎯 EXPECTED OUTCOME SECTION -->
+    <div class="section-card" id="outcome-card-section" style="border:1.5px solid #86efac;box-shadow:0 8px 30px rgba(16,185,129,0.06);">
+      <div class="sc-head" style="background:linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);border-bottom:1.5px solid #bbf7d0;">
+        <h3 style="color:#166534;font-size:1.05rem;font-weight:900;display:flex;align-items:center;gap:8px;">
+          <span>🎯 Expected Outcome — What This Prompt Delivers</span>
+        </h3>
+        <span style="background:#dcfce7;color:#15803d;font-size:0.72rem;font-weight:800;padding:3px 12px;border-radius:50px;border:1px solid #86efac;display:inline-flex;align-items:center;gap:4px;">
+          ✨ AI OUTPUT PREVIEW
+        </span>
+      </div>
+      <div class="sc-body" id="outcome-card-body" style="padding:22px;">
+        <!-- Populated dynamically via JS -->
+      </div>
+    </div>
+
+    <!-- How To Use -->
+    <div class="section-card">
+      <div class="sc-head"><h3>🚀 How to Use This Prompt</h3></div>
+      <div class="sc-body">
+        <ol class="steps-list" id="how-to-use"></ol>
+      </div>
+    </div>
+
+    <!-- Tips -->
+    <div class="section-card">
+      <div class="sc-head"><h3>💡 Pro Tips for Best Results</h3></div>
+      <div class="sc-body" style="display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;gap:12px;align-items:flex-start;padding:14px;background:#f0fff9;border-radius:14px;border:1.5px solid #a7f3d0">
+          <span style="font-size:1.3rem">🎯</span>
+          <div>
+            <div style="font-weight:800;font-size:.88rem;margin-bottom:2px">Be Specific with Variable Details</div>
+            <div style="font-size:.82rem;color:var(--mu);line-height:1.55">The more detailed and context-rich you fill the bracket variables, the sharper and more tailored the AI output will be.</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;padding:14px;background:#f3f0ff;border-radius:14px;border:1.5px solid #d4c8ff">
+          <span style="font-size:1.3rem">🔄</span>
+          <div>
+            <div style="font-weight:800;font-size:.88rem;margin-bottom:2px">Iterate & Ask for Variations</div>
+            <div style="font-size:.82rem;color:var(--mu);line-height:1.55">If the initial output needs tuning, ask your AI: "Give me 3 alternate versions emphasizing X angle" or "Shorten this by 20%".</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;padding:14px;background:#fff7f0;border-radius:14px;border:1.5px solid #fed7aa">
+          <span style="font-size:1.3rem">💾</span>
+          <div>
+            <div style="font-weight:800;font-size:.88rem;margin-bottom:2px">Bookmark & Combine Prompts</div>
+            <div style="font-size:.82rem;color:var(--mu);line-height:1.55">Chain this prompt with a follow-up review prompt to get comprehensive 360° output.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /left -->
+
+  <!-- RIGHT SIDEBAR -->
+  <div class="right">
+
+    <!-- AI Tool Card -->
+    <div class="sidebar-card">
+      <h3>🤖 Recommended AI</h3>
+      <div class="ai-info-box">
+        <div class="ai-logo-box" id="sidebar-ai-logo-box">
+          <img id="sidebar-ai-logo" src="" alt=""/>
+        </div>
+        <div class="ai-info-text">
+          <strong id="sidebar-ai-name">AI Tool</strong>
+          <span>Optimal platform for this prompt</span>
+        </div>
+      </div>
+      <button class="open-ai-btn" id="open-ai-btn" onclick="openAI()">Launch AI Tool →</button>
+    </div>
+
+    <!-- Rating (Interactive for Users) -->
+    <div class="sidebar-card">
+      <h3>⭐ Community Rating</h3>
+      <div class="rating-big">
+        <div class="rating-num" id="sidebar-rating">5.0</div>
+        <div class="stars-row" id="sidebar-stars">⭐⭐⭐⭐⭐</div>
+        <div class="rating-sub" id="sidebar-uses">Based on community reviews</div>
+      </div>
+
+      <!-- User Interactive Rating -->
+      <div class="user-rating-box">
+        <h4 id="user-rating-header">Rate this Prompt:</h4>
+        <div class="star-rating-input" id="star-rating-input" onmouseleave="resetStarHover()">
+          <span class="star-btn" data-val="1" onmouseover="hoverStar(1)" onclick="userRatePrompt(1)">★</span>
+          <span class="star-btn" data-val="2" onmouseover="hoverStar(2)" onclick="userRatePrompt(2)">★</span>
+          <span class="star-btn" data-val="3" onmouseover="hoverStar(3)" onclick="userRatePrompt(3)">★</span>
+          <span class="star-btn" data-val="4" onmouseover="hoverStar(4)" onclick="userRatePrompt(4)">★</span>
+          <span class="star-btn" data-val="5" onmouseover="hoverStar(5)" onclick="userRatePrompt(5)">★</span>
+        </div>
+        <div class="rating-msg" id="rating-msg">Click a star to rate!</div>
+      </div>
+
+      <div class="rating-bars" id="rating-bars">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+
+    <!-- Quick Copy Banner -->
+    <div class="sidebar-card" style="background:linear-gradient(135deg,#5b4cff,#06d6a0);border:none">
+      <h3 style="color:#fff;margin-bottom:8px">⚡ Fast Copy</h3>
+      <p style="color:rgba(255,255,255,.88);font-size:.82rem;line-height:1.6;margin-bottom:14px">Copy this template, fill in your details, and run it in your favorite AI tool.</p>
+      <button onclick="copyCurrentPrompt()" style="width:100%;padding:12px;background:#fff;color:var(--p);border:none;border-radius:11px;font-weight:800;font-size:.88rem;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,0.15)">📋 Copy Prompt Now</button>
+    </div>
+
+    <!-- Related Prompts -->
+    <div class="sidebar-card">
+      <h3>🔗 Related Prompts</h3>
+      <div id="related-prompts"></div>
+    </div>
+
+  </div><!-- /right -->
+
+</div><!-- /main -->
+
+<!-- SCROLLABLE NEXT PROMPTS & VISUALS CAROUSEL -->
+<div class="carousel-section">
+  <div class="carousel-header">
+    <div>
+      <h2>🔥 Explore More Prompts & Visuals</h2>
+      <p>Continuous scroll through next prompts, visuals & templates</p>
+    </div>
+    <div class="carousel-nav-btns">
+      <button class="c-nav-btn" onclick="scrollCarousel(-1)" title="Previous">◀</button>
+      <button class="c-nav-btn" onclick="scrollCarousel(1)" title="Next">▶</button>
+    </div>
+  </div>
+  <div class="prompts-carousel" id="prompts-carousel">
+    <!-- Populated by JavaScript -->
+  </div>
+</div>
+
+<!-- STICKY MOBILE BOTTOM BAR -->
+<div class="mobile-copy-bar" id="mobile-copy-bar">
+  <div class="m-bar-info">
+    <div class="m-bar-title" id="m-bar-title">Prompt</div>
+    <div class="m-bar-sub">100% Free Prompt Template</div>
+  </div>
+  <button class="m-bar-btn" id="m-copy-btn" onclick="copyCurrentPrompt()">📋 Copy Prompt</button>
+</div>
+
+<!-- SHARE MODAL -->
+<div class="modal-overlay" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="modal">
+    <button class="modal-close" onclick="document.querySelector('.modal-overlay').classList.remove('show')">✕</button>
+    <h3>Share this Prompt</h3>
+    <p>Share this prompt template with your friends and teammates</p>
+    <div class="share-btns">
+      <button class="share-btn" onclick="copyLink()">🔗 Copy Link</button>
+      <button class="share-btn" onclick="shareWhatsApp()">💬 WhatsApp</button>
+      <button class="share-btn" onclick="shareTwitter()">🐦 Twitter/X</button>
+      <button class="share-btn" onclick="shareTelegram()">📱 Telegram</button>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="ft">
+    <div class="fb">
+      <a href="index.html" class="logo" style="margin-bottom:12px;display:inline-block;" title="PromptVault">
+        <img src="images/logo_horizontal_dark.png" alt="PromptVault Logo" style="height:38px;width:auto;display:block;" />
+      </a>
+      <p>Free AI prompt library for ChatGPT, Gemini, Claude, DeepSeek and Grok.</p>
+    </div>
+    <div class="fl"><h4>Explore</h4><ul><li><a href="index.html">Home</a></li><li><a href="index.html#prompts">All Prompts</a></li><li><a href="index.html#ai-tools">AI Tools</a></li></ul></div>
+    <div class="fl"><h4>Studio</h4><ul><li><a href="admin.html">🔐 Admin Studio</a></li><li><a href="index.html#categories">Categories</a></li></ul></div>
+    <div class="fl"><h4>Company</h4><ul><li><a href="#">About</a></li><li><a href="#">Privacy Policy</a></li></ul></div>
+  </div>
+  <div class="fbot">
+    <span>© 2025 PromptVault. Free for everyone. 🇮🇳</span>
+    <span>Made with ❤️ in India</span>
+  </div>
+</footer>
+
+<div class="toast" id="toast">✅ Copied! Paste it in your AI tool.</div>
+
+<script src="db.js"></script>
+<script src="prompts.js"></script>
+<script>
+let currentPromptId = null;
+let currentPromptData = null;
+let currentActivePhotoIdx = 0;
+let promptImagesList = [];
+let currentStudioTab = 'vars'; // 'vars' or 'raw'
+let variableValues = {};
+
+async function initPromptPage() {
+  await loadAllCategories();
+  await loadAllCustomPrompts();
+  
+  const params = new URLSearchParams(window.location.search);
+  const pid = params.get('id') || 1;
+  currentPromptId = pid;
+  const prompt = getPromptById(pid);
+  currentPromptData = prompt;
+  window.currentPrompt = prompt;
+
+  if (!prompt) {
+    document.getElementById('prompt-title').textContent = 'Prompt Not Found';
+    return;
+  }
+
+  // Update Dynamic SEO, OpenGraph & Schema.org Rich Snippets
+  updateDynamicSEO(prompt);
+
+  // Update breadcrumb and mobile titles
+  document.getElementById('bc-title').textContent = prompt.title;
+  document.getElementById('m-bar-title').textContent = prompt.title;
+
+  setupNavButtons(pid);
+
+  // 1. SETUP MULTI-IMAGE GALLERY
+  setupMultiImageGallery(prompt);
+
+  // AI Badge
+  const logo = AI_LOGOS[prompt.ai] || AI_LOGOS.chatgpt;
+  const aiBadge = document.getElementById('ai-badge-large');
+  if (aiBadge) {
+    aiBadge.innerHTML = `
+      <img src="${logo.file}" alt="${prompt.aiName || 'AI'}" style="${logo.style}"/>
+      ${prompt.aiName || 'AI'}
+    `;
+  }
+
+  // Header Details
+  const catIcon = (typeof getCategoryIcon === 'function') ? getCategoryIcon(prompt.cat) : (prompt.catIcon || '📁');
+  document.getElementById('p-cat').textContent = catIcon + ' ' + (prompt.cat || 'General');
+  document.getElementById('p-ai-tag').textContent = '• Best for ' + (prompt.aiName || 'AI');
+  document.getElementById('p-uses').textContent = '• ' + (prompt.uses || '100+') + ' uses';
+  document.getElementById('prompt-title').textContent = prompt.title;
+  document.getElementById('prompt-desc').textContent = prompt.desc || '';
+  document.getElementById('p-rating').textContent = prompt.rating || '5.0';
+
+  // Author
+  const authorName = prompt.author || 'Creator';
+  const av = document.getElementById('p-author-av');
+  av.textContent = authorName[0] || 'C';
+  av.style.background = prompt.authorColor || '#5b4cff';
+  document.getElementById('p-author').textContent = authorName;
+
+  // Tags
+  const tags = Array.isArray(prompt.tags) ? prompt.tags : (prompt.tags ? prompt.tags.split(',') : []);
+  const tagsEl = document.getElementById('p-tags');
+  tagsEl.innerHTML = tags.map(t => `<span class="tag">#${t.trim()}</span>`).join('');
+
+  // 2. SETUP PROMPT STUDIO & VARIABLES
+  setupPromptStudio(prompt.prompt || '');
+
+  // 2.5 SETUP EXPECTED OUTCOME SECTION
+  renderOutcomeSection(prompt);
+
+  // How to use
+  const howEl = document.getElementById('how-to-use');
+  const steps = Array.isArray(prompt.howToUse) && prompt.howToUse.length ? prompt.howToUse : [
+    "Copy the prompt using the button above",
+    "Replace all [BRACKETS] with your specific details",
+    `Open ${prompt.aiName || 'your preferred AI'} and paste the prompt`,
+    "Review the generated output and refine if needed"
+  ];
+  howEl.innerHTML = steps.map((step, i) => `
+    <li class="step-item">
+      <div class="step-num">${i+1}</div>
+      <div class="step-text">${step}</div>
+    </li>
+  `).join('');
+
+  // Sidebar AI info
+  const slogo = AI_LOGOS[prompt.ai] || AI_LOGOS.chatgpt;
+  document.getElementById('sidebar-ai-logo').src = slogo.file;
+  document.getElementById('sidebar-ai-logo').style = slogo.style;
+  document.getElementById('sidebar-ai-logo-box').style.background = slogo.bg;
+  document.getElementById('sidebar-ai-name').textContent = prompt.aiName || 'AI';
+
+  // 3. RATING LOGIC
+  renderRatingWidget(pid);
+
+  // Related prompts
+  const all = getAllPrompts();
+  const related = all.filter(p => String(p.id) !== String(prompt.id) && (p.cat === prompt.cat || p.ai === prompt.ai)).slice(0,3);
+  const relEl = document.getElementById('related-prompts');
+  relEl.innerHTML = related.map(r => `
+    <a href="prompt.html?id=${r.id}" class="related-card">
+      <div class="rc-thumb ${r.gradient || 'g1'}">${r.emoji || '⚡'}</div>
+      <div>
+        <div class="rc-title">${r.title}</div>
+        <div class="rc-cat">${r.catIcon || '📁'} ${r.cat} • ${r.aiName || 'AI'}</div>
+      </div>
+    </a>
+  `).join('') || '<p style="font-size:.82rem;color:var(--mu)">No related prompts found.</p>';
+
+  // Render Horizontal Prompts & Visuals Carousel
+  renderPromptsCarousel(pid);
+}
+
+// ── EXPECTED OUTCOME SECTION RENDERER ──
+function renderOutcomeSection(prompt) {
+  const sec = document.getElementById('outcome-card-section');
+  const body = document.getElementById('outcome-card-body');
+  if (!sec || !body) return;
+
+  const rawOutcome = prompt.outcome ? prompt.outcome.trim() : '';
+
+  if (rawOutcome) {
+    sec.style.display = 'block';
+
+    const lines = rawOutcome.split('\n').map(l => l.trim()).filter(Boolean);
+    const hasBullets = lines.some(l => l.startsWith('•') || l.startsWith('-') || l.startsWith('*') || /^\d+[\.\)]/.test(l));
+
+    let outcomeContentHtml = '';
+    if (hasBullets) {
+      outcomeContentHtml = `
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          ${lines.map(line => {
+            const cleanLine = line.replace(/^[•\-\*]\s*/, '').replace(/^\d+[\.\)]\s*/, '');
+            return `
+              <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px;">
+                <span style="color:#10b981;font-size:1.1rem;line-height:1;margin-top:2px;flex-shrink:0;">✅</span>
+                <span style="font-size:0.88rem;color:#1e293b;line-height:1.55;font-weight:600;">${cleanLine}</span>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    } else {
+      outcomeContentHtml = `
+        <div style="display:flex;align-items:flex-start;gap:14px;padding:18px 20px;background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:14px;">
+          <span style="font-size:1.8rem;line-height:1;flex-shrink:0;">🎯</span>
+          <div>
+            <div style="font-weight:800;font-size:0.95rem;color:#166534;margin-bottom:6px;">Expected AI Output & Deliverable:</div>
+            <p style="font-size:0.88rem;color:#1e293b;line-height:1.68;margin:0;white-space:pre-line;">${rawOutcome}</p>
+          </div>
+        </div>
+      `;
+    }
+
+    body.innerHTML = `
+      <div style="margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+        <span style="font-size:0.82rem;color:var(--mu);font-weight:700;">
+          When executed in <strong>${prompt.aiName || 'AI'}</strong>, this prompt delivers:
+        </span>
+        <span style="font-size:0.72rem;background:#ecfdf5;color:#047857;padding:3px 9px;border-radius:6px;font-weight:800;border:1px solid #a7f3d0;">
+          ⚡ Guaranteed Output Format
+        </span>
+      </div>
+      ${outcomeContentHtml}
+    `;
+  } else if (prompt.desc) {
+    sec.style.display = 'block';
+    body.innerHTML = `
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:18px 20px;background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:14px;">
+        <span style="font-size:1.8rem;line-height:1;flex-shrink:0;">🎯</span>
+        <div>
+          <div style="font-weight:800;font-size:0.95rem;color:#166534;margin-bottom:4px;">Expected Outcome & Goal:</div>
+          <p style="font-size:0.88rem;color:#1e293b;line-height:1.65;margin:0;">${prompt.desc}</p>
+        </div>
+      </div>
+    `;
+  } else {
+    sec.style.display = 'none';
+  }
+}
+
+// ── MULTI-IMAGE GALLERY IMPLEMENTATION ──
+function setupMultiImageGallery(prompt) {
+  // Normalize prompt.images
+  promptImagesList = [];
+  if (Array.isArray(prompt.images) && prompt.images.length > 0) {
+    promptImagesList = prompt.images.map(img => {
+      if (typeof img === 'string') {
+        return { url: img, posX: prompt.imgPosX ?? 50, posY: prompt.imgPosY ?? 50, zoom: prompt.imgZoom ?? 1 };
+      }
+      return {
+        url: img.url,
+        posX: img.posX !== undefined ? img.posX : (prompt.imgPosX ?? 50),
+        posY: img.posY !== undefined ? img.posY : (prompt.imgPosY ?? 50),
+        zoom: img.zoom !== undefined ? img.zoom : (prompt.imgZoom ?? 1)
+      };
+    });
+  } else if (prompt.customImage) {
+    promptImagesList = [{
+      url: prompt.customImage,
+      posX: prompt.imgPosX ?? 50,
+      posY: prompt.imgPosY ?? 50,
+      zoom: prompt.imgZoom ?? 1
+    }];
+  }
+
+  const viewport = document.getElementById('gallery-viewport');
+  const mainImg = document.getElementById('gallery-main-img');
+  const emoji = document.getElementById('pthumb-emoji');
+  const prevBtn = document.getElementById('gallery-prev-btn');
+  const nextBtn = document.getElementById('gallery-next-btn');
+  const countBadge = document.getElementById('gallery-count-badge');
+  const strip = document.getElementById('gallery-strip');
+
+  if (promptImagesList.length === 0) {
+    // Gradient and emoji mode
+    viewport.className = 'gallery-viewport ' + (prompt.gradient || 'g1');
+    emoji.style.display = 'block';
+    emoji.textContent = prompt.emoji || '⚡';
+    mainImg.style.display = 'none';
+    prevBtn.style.display = 'none';
+    nextBtn.style.display = 'none';
+    countBadge.style.display = 'none';
+    strip.style.display = 'none';
+    return;
+  }
+
+  viewport.className = 'gallery-viewport';
+  emoji.style.display = 'none';
+  mainImg.style.display = 'block';
+  currentActivePhotoIdx = 0;
+
+  if (promptImagesList.length > 1) {
+    prevBtn.style.display = 'flex';
+    nextBtn.style.display = 'flex';
+    countBadge.style.display = 'flex';
+    strip.style.display = 'flex';
+
+    // Build thumbnail strip
+    strip.innerHTML = promptImagesList.map((img, idx) => `
+      <div class="g-thumb ${idx === 0 ? 'active' : ''}" onclick="selectPhoto(${idx})">
+        <img src="${img.url}" alt="Sample ${idx+1}"/>
+      </div>
+    `).join('');
+  } else {
+    prevBtn.style.display = 'none';
+    nextBtn.style.display = 'none';
+    countBadge.style.display = 'none';
+    strip.style.display = 'none';
+  }
+
+  renderActivePhoto();
+}
+
+function selectPhoto(idx) {
+  if (idx < 0 || idx >= promptImagesList.length) return;
+  currentActivePhotoIdx = idx;
+  renderActivePhoto();
+}
+
+function slidePhoto(dir) {
+  if (!promptImagesList.length) return;
+  currentActivePhotoIdx = (currentActivePhotoIdx + dir + promptImagesList.length) % promptImagesList.length;
+  renderActivePhoto();
+}
+
+function renderActivePhoto() {
+  const imgData = promptImagesList[currentActivePhotoIdx];
+  if (!imgData) return;
+
+  const mainImg = document.getElementById('gallery-main-img');
+  mainImg.src = imgData.url;
+  
+  const posX = imgData.posX !== undefined ? imgData.posX : 50;
+  const posY = imgData.posY !== undefined ? imgData.posY : 50;
+  const zoom = imgData.zoom !== undefined ? imgData.zoom : 1;
+
+  mainImg.style.objectFit = 'contain';
+  mainImg.style.objectPosition = `${posX}% ${posY}%`;
+  mainImg.style.transform = `scale(${zoom})`;
+  mainImg.style.transformOrigin = `${posX}% ${posY}%`;
+
+  const countBadge = document.getElementById('gallery-count-badge');
+  if (countBadge && promptImagesList.length > 1) {
+    countBadge.textContent = `📸 Sample ${currentActivePhotoIdx + 1} of ${promptImagesList.length}`;
+  }
+
+  // Update thumbnail active ring
+  const thumbs = document.querySelectorAll('.g-thumb');
+  thumbs.forEach((t, i) => {
+    t.classList.toggle('active', i === currentActivePhotoIdx);
+  });
+}
+
+// ── PROMPT STUDIO & VARIABLE FILLER ──
+function setupPromptStudio(rawPrompt) {
+  // Calculate word and character count
+  const words = rawPrompt.trim().split(/\s+/).filter(Boolean).length;
+  const chars = rawPrompt.length;
+  document.getElementById('prompt-stats').textContent = `📝 ${words} Words • ${chars} Chars`;
+
+  // Find all [BRACKETS]
+  const regex = /\[([A-Z0-9_\s\/-]+)\]/g;
+  const matches = [...rawPrompt.matchAll(regex)].map(m => m[1]);
+  const uniqueVars = [...new Set(matches)];
+
+  variableValues = {};
+  const varsArea = document.getElementById('vars-builder-area');
+  const varsGrid = document.getElementById('vars-grid');
+
+  if (uniqueVars.length === 0) {
+    varsArea.style.display = 'none';
+    document.getElementById('tab-btn-vars').style.display = 'none';
+    switchPromptTab('raw');
+    renderPromptOutput();
+    return;
+  }
+
+  varsArea.style.display = 'block';
+  document.getElementById('tab-btn-vars').style.display = 'inline-block';
+
+  // Build input fields
+  varsGrid.innerHTML = uniqueVars.map(v => {
+    variableValues[v] = '';
+    const cleanLabel = v.replace(/_/g, ' ');
+    return `
+      <div class="var-field">
+        <label for="var-${v}">${cleanLabel}</label>
+        <input type="text" id="var-${v}" placeholder="Enter ${cleanLabel.toLowerCase()}..." oninput="handleVarInput('${v}', this.value)" />
+      </div>
+    `;
+  }).join('');
+
+  renderPromptOutput();
+}
+
+function handleVarInput(varKey, value) {
+  variableValues[varKey] = value;
+  renderPromptOutput();
+}
+
+function resetVariableValues() {
+  for (let k in variableValues) {
+    variableValues[k] = '';
+    const inp = document.getElementById(`var-${k}`);
+    if (inp) inp.value = '';
+  }
+  renderPromptOutput();
+}
+
+function switchPromptTab(tab) {
+  currentStudioTab = tab;
+  const btnVars = document.getElementById('tab-btn-vars');
+  const btnRaw = document.getElementById('tab-btn-raw');
+  const varsArea = document.getElementById('vars-builder-area');
+
+  if (tab === 'vars') {
+    btnVars.classList.add('active');
+    btnRaw.classList.remove('active');
+    varsArea.style.display = 'block';
+  } else {
+    btnRaw.classList.add('active');
+    btnVars.classList.remove('active');
+    varsArea.style.display = 'none';
+  }
+
+  renderPromptOutput();
+}
+
+function renderPromptOutput() {
+  const p = currentPromptData;
+  if (!p) return;
+  const raw = p.prompt || '';
+  const box = document.getElementById('prompt-code-box');
+
+  if (currentStudioTab === 'raw') {
+    // Show raw with bracket badges
+    const highlighted = raw.replace(/\[([^\]]+)\]/g, '<span class="placeholder">[$1]</span>');
+    box.innerHTML = highlighted;
+    return;
+  }
+
+  // If in 'vars' tab, replace brackets with user's typed values
+  let output = raw;
+  for (let k in variableValues) {
+    const val = variableValues[k].trim();
+    const regex = new RegExp(`\\[${k}\\]`, 'g');
+    if (val) {
+      output = output.replace(regex, `<span class="filled-val">${val}</span>`);
+    } else {
+      output = output.replace(regex, `<span class="placeholder">[${k}]</span>`);
+    }
+  }
+
+  box.innerHTML = output;
+}
+
+function getProcessedPromptText() {
+  const p = currentPromptData;
+  if (!p) return '';
+  const raw = p.prompt || '';
+
+  if (currentStudioTab === 'raw') {
+    return raw;
+  }
+
+  let finalTxt = raw;
+  for (let k in variableValues) {
+    const val = variableValues[k].trim();
+    const regex = new RegExp(`\\[${k}\\]`, 'g');
+    if (val) {
+      finalTxt = finalTxt.replace(regex, val);
+    }
+  }
+  return finalTxt;
+}
+
+function copyCurrentPrompt() {
+  const text = getProcessedPromptText();
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copy-btn');
+    const mBtn = document.getElementById('m-copy-btn');
+    if (btn) {
+      btn.textContent = '✅ Copied to Clipboard!';
+      btn.classList.add('ok');
+    }
+    if (mBtn) {
+      mBtn.textContent = '✅ Copied!';
+    }
+    showToast('✅ Prompt copied to clipboard! Paste in your AI tool.');
+    setTimeout(() => {
+      if (btn) {
+        btn.textContent = '📋 Copy Prompt to Clipboard';
+        btn.classList.remove('ok');
+      }
+      if (mBtn) {
+        mBtn.textContent = '📋 Copy Prompt';
+      }
+    }, 2800);
+  });
+}
+
+// ── NAV BUTTONS ──
+function setupNavButtons(currentId) {
+  const all = getAllPrompts();
+  const idx = all.findIndex(p => String(p.id) === String(currentId));
+  const prevBtn = document.getElementById('btn-bc-prev');
+  const nextBtn = document.getElementById('btn-bc-next');
+
+  if (idx > 0) {
+    prevBtn.href = `prompt.html?id=${all[idx - 1].id}`;
+  } else {
+    prevBtn.href = `prompt.html?id=${all[all.length - 1].id}`;
+  }
+
+  if (idx >= 0 && idx < all.length - 1) {
+    nextBtn.href = `prompt.html?id=${all[idx + 1].id}`;
+  } else {
+    nextBtn.href = `prompt.html?id=${all[0].id}`;
+  }
+}
+
+// ── RATING LOGIC ──
+function renderRatingWidget(promptId) {
+  const rData = getPromptRatingData(promptId);
+  
+  document.getElementById('p-rating').textContent = rData.avg;
+  document.getElementById('sidebar-rating').textContent = rData.avg;
+  document.getElementById('sidebar-uses').textContent = `Based on ${rData.count} community reviews`;
+
+  const fullStars = Math.round(parseFloat(rData.avg));
+  let starsStr = '';
+  for (let i = 0; i < 5; i++) {
+    starsStr += i < fullStars ? '⭐' : '☆';
+  }
+  document.getElementById('sidebar-stars').textContent = starsStr;
+
+  const btns = document.querySelectorAll('#star-rating-input .star-btn');
+  btns.forEach(btn => {
+    const val = parseInt(btn.getAttribute('data-val'), 10);
+    btn.classList.toggle('active', !!(rData.userRated && val <= rData.userRated));
+  });
+
+  const msgEl = document.getElementById('rating-msg');
+  if (rData.userRated) {
+    msgEl.innerHTML = `✨ You rated this <strong>${rData.userRated} / 5 stars</strong>`;
+    document.getElementById('user-rating-header').textContent = 'Your Rating:';
+  } else {
+    msgEl.textContent = 'Click a star to rate!';
+    document.getElementById('user-rating-header').textContent = 'Rate this Prompt:';
+  }
+
+  // Draw Breakdown Bars
+  const barsEl = document.getElementById('rating-bars');
+  const total = rData.count || 1;
+  let barsHtml = '';
+  for (let s = 5; s >= 1; s--) {
+    const count = (rData.breakdown && rData.breakdown[s]) || 0;
+    const pct = Math.round((count / total) * 100);
+    barsHtml += `
+      <div class="rbar">
+        <span style="width:14px;font-weight:800;">${s}★</span>
+        <div class="rbar-track"><div class="rbar-fill" style="width:${pct}%"></div></div>
+        <span style="width:34px;text-align:right;">${pct}%</span>
+      </div>
+    `;
+  }
+  barsEl.innerHTML = barsHtml;
+}
+
+function hoverStar(val) {
+  const btns = document.querySelectorAll('#star-rating-input .star-btn');
+  btns.forEach(btn => {
+    const v = parseInt(btn.getAttribute('data-val'), 10);
+    btn.classList.toggle('hovered', v <= val);
+  });
+}
+
+function resetStarHover() {
+  const btns = document.querySelectorAll('#star-rating-input .star-btn');
+  btns.forEach(btn => btn.classList.remove('hovered'));
+}
+
+function userRatePrompt(stars) {
+  if (!currentPromptId) return;
+  const newData = ratePrompt(currentPromptId, stars);
+  renderRatingWidget(currentPromptId);
+  showToast(`⭐ Thanks! You rated this ${stars} / 5 stars.`);
+}
+
+// ── HORIZONTAL SCROLLABLE CAROUSEL ──
+function renderPromptsCarousel(currentId) {
+  const carousel = document.getElementById('prompts-carousel');
+  const all = getAllPrompts();
+  const others = all.filter(p => String(p.id) !== String(currentId));
+
+  carousel.innerHTML = others.map(p => {
+    const logo = AI_LOGOS[p.ai] || AI_LOGOS.chatgpt;
+    const posX = p.imgPosX !== undefined ? p.imgPosX : 50;
+    const posY = p.imgPosY !== undefined ? p.imgPosY : 50;
+    const zoom = p.imgZoom || 1;
+    const primaryImg = (p.images && p.images[0] && p.images[0].url) ? p.images[0].url : p.customImage;
+    const thumbHtml = primaryImg 
+      ? `<img src="${primaryImg}" alt="${p.title}" style="width:100%;height:100%;object-fit:cover;object-position:${posX}% ${posY}%;transform:scale(${zoom});transform-origin:${posX}% ${posY}%;display:block;" />` 
+      : `<span>${p.emoji || '⚡'}</span>`;
+
+    const catIcon = (typeof getCategoryIcon === 'function') ? getCategoryIcon(p.cat) : (p.catIcon || '📁');
+    return `
+      <a href="prompt.html?id=${p.id}" class="c-card">
+        <div class="c-card-thumb ${p.gradient || 'g1'}">
+          <span class="c-card-cat">${catIcon} ${p.cat}</span>
+          <div class="c-card-ai"><img src="${logo.file}" alt="${p.aiName || 'AI'}" /></div>
+          ${thumbHtml}
+        </div>
+        <div class="c-card-body">
+          <div class="c-card-title">${p.title}</div>
+          <div class="c-card-desc">${(p.desc || '').slice(0, 75)}...</div>
+          <div class="c-card-footer">
+            <div class="c-card-author">
+              <div class="c-card-av" style="background:${p.authorColor || '#5b4cff'}">${(p.author || 'C')[0]}</div>
+              <span>${p.author || 'Creator'}</span>
+            </div>
+            <div class="c-card-rating">⭐ ${p.rating || '5.0'}</div>
+          </div>
+        </div>
+      </a>
+    `;
+  }).join('');
+}
+
+function scrollCarousel(dir) {
+  const c = document.getElementById('prompts-carousel');
+  c.scrollBy({ left: dir * 320, behavior: 'smooth' });
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  if (msg) t.textContent = msg;
+  t.classList.add('on');
+  setTimeout(() => t.classList.remove('on'), 2500);
+}
+
+function openAI() {
+  const p = window.currentPrompt;
+  const urls = { chatgpt:'https://chat.openai.com', gemini:'https://gemini.google.com', claude:'https://claude.ai', deepseek:'https://chat.deepseek.com', grok:'https://x.ai/grok' };
+  window.open((p && urls[p.ai]) ? urls[p.ai] : 'https://chat.openai.com', '_blank');
+}
+
+function copyLink() {
+  navigator.clipboard.writeText(window.location.href).then(() => {
+    showToast('🔗 Link copied to clipboard!');
+    document.querySelector('.modal-overlay').classList.remove('show');
+  });
+}
+
+function shareWhatsApp() {
+  const p = window.currentPrompt;
+  const title = p ? p.title : 'AI Prompt';
+  const ai = p ? (p.aiName || 'AI') : 'AI';
+  const text = `🔥 Bro check out this insane free ${ai} prompt: "${title}"\nReady-to-copy template with variable customizer 👇\n${window.location.href}`;
+  window.open('https://wa.me/?text=' + encodeURIComponent(text));
+}
+
+function shareTwitter() {
+  const p = window.currentPrompt;
+  const title = p ? p.title : 'AI Prompt';
+  const ai = p ? (p.aiName || 'AI') : 'AI';
+  const text = `🔥 Check out this free ${ai} prompt template: "${title}" on @PromptVault! Free copy & customize 👇`;
+  window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(text) + '&url=' + encodeURIComponent(window.location.href));
+}
+
+function shareTelegram() {
+  const p = window.currentPrompt;
+  const title = p ? p.title : 'AI Prompt';
+  const text = `🔥 Free AI Prompt: "${title}"\n${window.location.href}`;
+  window.open('https://t.me/share/url?url=' + encodeURIComponent(window.location.href) + '&text=' + encodeURIComponent(text));
+}
+
+// ── DYNAMIC SEO, OPENGRAPH & SCHEMA.ORG RICH SNIPPETS ──
+function updateDynamicSEO(prompt) {
+  if (!prompt) return;
+
+  const pageTitle = `${prompt.title} – Free ${prompt.aiName || 'AI'} Prompt | PromptVault`;
+  const pageDesc = prompt.desc 
+    ? `${prompt.desc} Free template for ${prompt.aiName || 'AI'}.`
+    : `Free ${prompt.cat} prompt template for ${prompt.aiName || 'AI'}. Ready to copy and use.`;
+  const pageUrl = window.location.href;
+
+  // Primary title & meta
+  document.title = pageTitle;
+  const seoTitle = document.getElementById('seo-page-title');
+  if (seoTitle) seoTitle.textContent = pageTitle;
+
+  const descMeta = document.getElementById('seo-meta-desc');
+  if (descMeta) descMeta.setAttribute('content', pageDesc);
+
+  const canLink = document.getElementById('seo-canonical');
+  if (canLink) canLink.setAttribute('href', pageUrl);
+
+  // Primary image
+  let imgUrl = (prompt.images && prompt.images.length > 0)
+    ? (typeof prompt.images[0] === 'string' ? prompt.images[0] : prompt.images[0].url)
+    : prompt.customImage;
+
+  if (imgUrl && !imgUrl.startsWith('http')) {
+    imgUrl = window.location.origin + '/' + imgUrl.replace(/^\//, '');
+  }
+  if (!imgUrl) {
+    imgUrl = window.location.origin + '/images/urban_noir.jpg';
+  }
+
+  // OpenGraph (WhatsApp, Telegram, Facebook)
+  const ogTitle = document.getElementById('og-title');
+  const ogDesc = document.getElementById('og-desc');
+  const ogImg = document.getElementById('og-image');
+  const ogUrl = document.getElementById('og-url');
+  if (ogTitle) ogTitle.setAttribute('content', pageTitle);
+  if (ogDesc) ogDesc.setAttribute('content', pageDesc);
+  if (ogImg) ogImg.setAttribute('content', imgUrl);
+  if (ogUrl) ogUrl.setAttribute('content', pageUrl);
+
+  // Twitter Cards
+  const twTitle = document.getElementById('tw-title');
+  const twDesc = document.getElementById('tw-desc');
+  const twImg = document.getElementById('tw-image');
+  if (twTitle) twTitle.setAttribute('content', pageTitle);
+  if (twDesc) twDesc.setAttribute('content', pageDesc);
+  if (twImg) twImg.setAttribute('content', imgUrl);
+
+  // Schema.org Structured Data (Google Search Star Ratings & Rich Snippets)
+  const schemaScript = document.getElementById('schema-jsonld');
+  if (schemaScript) {
+    const jsonLd = {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "SoftwareApplication",
+          "@id": pageUrl + "#software",
+          "name": prompt.title,
+          "description": pageDesc,
+          "applicationCategory": "DesignApplication",
+          "operatingSystem": "All",
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": String(prompt.rating || '5.0'),
+            "reviewCount": String(prompt.ratingCount || '38'),
+            "bestRating": "5",
+            "worstRating": "1"
+          },
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+          }
+        },
+        {
+          "@type": "BreadcrumbList",
+          "@id": pageUrl + "#breadcrumb",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": window.location.origin + "/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": prompt.cat || "Prompts",
+              "item": window.location.origin + "/index.html?cat=" + encodeURIComponent(prompt.cat || 'All') + "#prompts"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": prompt.title,
+              "item": pageUrl
+            }
+          ]
+        }
+      ]
+    };
+    schemaScript.textContent = JSON.stringify(jsonLd, null, 2);
+  }
+}
+
+initPromptPage();
+</script>
+</body>
+</html>

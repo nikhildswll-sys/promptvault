@@ -1,0 +1,238 @@
+[
+  {
+    "id": "user_showcase_redbull",
+    "title": "Red Bull Kinetic Splash | Hyperrealistic Product Commercial",
+    "desc": "High-speed shutter commercial photography of ice cold Red Bull can splashing through crystal waves.",
+    "outcome": "• Hyperrealistic 8k commercial beverage photography with crystal water droplets\n• Dynamic high-speed shutter splash waves and ice cubes\n• Premium studio lighting with metallic blue and silver reflections",
+    "prompt": "Commercial product photography of a cold Red Bull energy drink can with water droplets and condensation, splashing through crystal clear ice water waves, high-speed shutter, dynamic cinematic lighting, photorealistic 8k, blue and silver reflections.",
+    "cat": "Photography",
+    "catIcon": "📸",
+    "ai": "chatgpt",
+    "aiName": "ChatGPT",
+    "promptType": "image",
+    "isTrending": true,
+    "trendingRank": 1,
+    "customImage": "images/redbull.jpg",
+    "images": [
+      {
+        "url": "images/redbull.jpg",
+        "posX": 50,
+        "posY": 50,
+        "zoom": 1
+      }
+    ],
+    "aspectRatio": "4/3",
+    "imgPosY": 50,
+    "imgPosX": 50,
+    "imgZoom": 1,
+    "cardHeight": 230,
+    "emoji": "📸",
+    "gradient": "g2",
+    "rating": 5,
+    "uses": "1.4k",
+    "author": "Admin",
+    "authorColor": "#ef4444",
+    "tags": [
+      "red bull",
+      "product",
+      "commercial",
+      "splash",
+      "photography"
+    ],
+    "howToUse": [
+      "Paste into ChatGPT (DALL-E 3) or Midjourney v6",
+      "Adjust water splash intensity or angle if desired",
+      "Generate commercial-grade beverage ad visuals"
+    ]
+  },
+  {
+    "id": "user_showcase_cocacola",
+    "title": "Coca-Cola Real Magic | Ice Splash Vintage Bottle Commercial",
+    "desc": "Cinematic commercial photography of a cold vintage Coca-Cola glass bottle splashing with ice and soda waves.",
+    "outcome": "• Photorealistic 8k vintage glass bottle with refreshing condensation\n• Exploding ice cubes and carbonated beverage splash waves\n• Warm amber and crimson studio rim lighting",
+    "prompt": "High-end commercial advertisement photograph of a cold vintage glass bottle of Coca-Cola with fresh condensation droplets, surrounded by splashing ice cubes and refreshing sparkling water waves, cinematic warm and crimson studio lighting, hyperrealistic 8k.",
+    "cat": "Photography",
+    "catIcon": "📸",
+    "ai": "gemini",
+    "aiName": "Gemini",
+    "promptType": "image",
+    "isTrending": true,
+    "trendingRank": 2,
+    "customImage": "images/cocacola.jpg",
+    "images": [
+      {
+        "url": "images/cocacola.jpg",
+        "posX": 50,
+        "posY": 50,
+        "zoom": 1
+      }
+    ],
+    "aspectRatio": "4/3",
+    "imgPosY": 50,
+    "imgPosX": 50,
+    "imgZoom": 1,
+    "cardHeight": 230,
+    "emoji": "📸",
+    "gradient": "g3",
+    "rating": 4.9,
+    "uses": "980+",
+    "author": "Admin",
+    "authorColor": "#e11d48",
+    "tags": [
+      "coca cola",
+      "commercial",
+      "beverage",
+      "ice",
+      "splash"
+    ],
+    "howToUse": [
+      "Paste prompt into Gemini Imagen 3 or Midjourney",
+      "Customize background ambiance or splash direction",
+      "Export ultra-sharp billboard commercial stills"
+    ]
+  },
+  {
+    "id": "user_1790339194052",
+    "title": "Urban Noir Male Portrait | Black Leather & Sunglasses",
+    "desc": "Young male in black sunglasses and a leather jacket, styled against a bold dark red background.",
+    "outcome": "• Photorealistic 8k editorial portrait of a young male with sharp rim lighting\n• Luxury black leather motorcycle jacket and sleek black sunglasses\n• Bold solid crimson red studio background with high fashion styling",
+    "prompt": "Urban noir editorial photography of a stylish young male wearing sleek black sunglasses and a fitted black leather motorcycle jacket. Posed against a solid rich dark red studio background. High contrast cinematic rim lighting, sharp focus, 85mm portrait lens, photorealistic 8k, modern high-fashion aesthetic.",
+    "cat": "Art & Design",
+    "catIcon": "🎨",
+    "ai": "chatgpt",
+    "aiName": "ChatGPT",
+    "promptType": "image",
+    "isTrending": true,
+    "trendingRank": 3,
+    "customImage": "images/urban_noir.jpg",
+    "images": [
+      {
+        "url": "images/urban_noir.jpg",
+        "posX": 50,
+        "posY": 50,
+        "zoom": 1
+      }
+    ],
+    "aspectRatio": "1/1",
+    "imgPosY": 50,
+    "imgPosX": 50,
+    "imgZoom": 1,
+    "cardHeight": 230,
+    "emoji": "🎨",
+    "gradient": "g3",
+    "rating": 5,
+    "uses": "750+",
+    "author": "Admin",
+    "authorColor": "#5b4cff",
+    "tags": [
+      "portrait",
+      "leather",
+      "noir",
+      "fashion",
+      "chatgpt"
+    ],
+    "howToUse": [
+      "Copy this prompt to ChatGPT or Midjourney",
+      "Customize [SUBJECT] or style if desired",
+      "Generate high-contrast editorial male portraits"
+    ]
+  },
+  {
+    "id": "user_1790337749006",
+    "title": "Swiss Alps Winter Escape | Luxury Alpine Travel",
+    "desc": "Cinematic swiss alps travel portrait with a luxury winter fashion look.",
+    "outcome": "• Cinematic 8k winter travel photograph in the snowy Swiss Alps\n• Natural golden hour alpine rim lighting and sharp mountain peaks\n• Sleek black insulated winter puffer fashion aesthetic",
+    "prompt": "A premium lifestyle travel photograph of [SUBJECT] standing amidst the snowy Swiss Alps mountain peaks in winter, wearing a sleek black insulated winter puffer jacket. Majestic snow-covered alpine background, natural golden hour sunlight, 35mm lens, sharp focus, cinematic atmosphere, 8k resolution.",
+    "cat": "Photography",
+    "catIcon": "📸",
+    "ai": "gemini",
+    "aiName": "Gemini",
+    "promptType": "image",
+    "isTrending": true,
+    "trendingRank": 4,
+    "customImage": "images/swiss_alps.jpg",
+    "images": [
+      {
+        "url": "images/swiss_alps.jpg",
+        "posX": 50,
+        "posY": 50,
+        "zoom": 1
+      },
+      {
+        "url": "images/swiss_girl.jpg",
+        "posX": 50,
+        "posY": 50,
+        "zoom": 1
+      }
+    ],
+    "aspectRatio": "4/5",
+    "imgPosY": 50,
+    "imgPosX": 50,
+    "imgZoom": 1,
+    "cardHeight": 230,
+    "emoji": "📸",
+    "gradient": "g4",
+    "rating": 4.8,
+    "uses": "620+",
+    "author": "Admin",
+    "authorColor": "#06d6a0",
+    "tags": [
+      "travel",
+      "photography",
+      "swiss alps",
+      "winter",
+      "gemini"
+    ],
+    "howToUse": [
+      "Copy the prompt into Gemini or ChatGPT",
+      "Specify your [SUBJECT] (male / female / solo traveler)",
+      "Generate stunning winter alpine travel photography"
+    ]
+  },
+  {
+    "id": "user_showcase_earbuds",
+    "title": "OnePlus Wireless Earbuds | Luxury Studio Floating Commercial",
+    "desc": "Studio commercial shot of luxury sleek matte black wireless earbuds floating above open charging case.",
+    "outcome": "• Photorealistic 8k floating audio hardware studio commercial\n• Delicate atmospheric mist and dramatic dark rim lighting\n• Matte black ergonomic design with glowing LED accents",
+    "prompt": "Studio product commercial shot of luxury sleek matte black wireless earbuds floating above their open charging case, delicate water mist, dramatic dark mood rim lighting, sharp focus, 8k resolution, premium tech aesthetics.",
+    "cat": "Art & Design",
+    "catIcon": "🎨",
+    "ai": "claude",
+    "aiName": "Claude",
+    "promptType": "image",
+    "isTrending": true,
+    "trendingRank": 5,
+    "customImage": "images/earbuds.jpg",
+    "images": [
+      {
+        "url": "images/earbuds.jpg",
+        "posX": 50,
+        "posY": 50,
+        "zoom": 1
+      }
+    ],
+    "aspectRatio": "4/3",
+    "imgPosY": 50,
+    "imgPosX": 50,
+    "imgZoom": 1,
+    "cardHeight": 230,
+    "emoji": "🎨",
+    "gradient": "g5",
+    "rating": 4.9,
+    "uses": "890+",
+    "author": "Admin",
+    "authorColor": "#f59e0b",
+    "tags": [
+      "oneplus",
+      "earbuds",
+      "tech",
+      "gadget",
+      "commercial"
+    ],
+    "howToUse": [
+      "Copy prompt into Claude Artifacts, Midjourney, or DALL-E 3",
+      "Set prompt weight on metallic reflection and misty lighting",
+      "Generate modern hardware tech commercial photography"
+    ]
+  }
+]

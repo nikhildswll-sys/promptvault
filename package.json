@@ -1,0 +1,15 @@
+{
+  "name": "promptvault",
+  "version": "1.0.0",
+  "description": "PromptVault - AI Prompt Store Database Server",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^18.0.4",
+    "express": "^4.19.2",
+    "mongoose": "^9.10.2"
+  }
+}

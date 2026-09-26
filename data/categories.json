@@ -1,0 +1,79 @@
+[
+  {
+    "id": "cat_art",
+    "name": "Art & Design",
+    "icon": "🎨",
+    "gradient": "g3",
+    "isDefault": true
+  },
+  {
+    "id": "cat_photo",
+    "name": "Photography",
+    "icon": "📸",
+    "gradient": "g4",
+    "isDefault": true
+  },
+  {
+    "id": "cat_prog",
+    "name": "Programming",
+    "icon": "💻",
+    "gradient": "g1",
+    "isDefault": true
+  },
+  {
+    "id": "cat_mkt",
+    "name": "Marketing",
+    "icon": "📢",
+    "gradient": "g2",
+    "isDefault": true
+  },
+  {
+    "id": "cat_biz",
+    "name": "Business",
+    "icon": "💼",
+    "gradient": "g5",
+    "isDefault": true
+  },
+  {
+    "id": "cat_write",
+    "name": "Writing",
+    "icon": "✍️",
+    "gradient": "g6",
+    "isDefault": true
+  },
+  {
+    "id": "cat_edu",
+    "name": "Education",
+    "icon": "🎓",
+    "gradient": "g7",
+    "isDefault": true
+  },
+  {
+    "id": "cat_car",
+    "name": "Career",
+    "icon": "🧳",
+    "gradient": "g8",
+    "isDefault": true
+  },
+  {
+    "id": "cat_soc",
+    "name": "Social Media",
+    "icon": "📱",
+    "gradient": "g2",
+    "isDefault": true
+  },
+  {
+    "id": "cat_vid",
+    "name": "Video & YouTube",
+    "icon": "🎬",
+    "gradient": "g5",
+    "isDefault": true
+  },
+  {
+    "id": "cat_prod",
+    "name": "Productivity",
+    "icon": "📈",
+    "gradient": "g1",
+    "isDefault": true
+  }
+]

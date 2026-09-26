@@ -1,0 +1,2037 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Admin Dashboard – PromptVault Studio</title>
+<link rel="icon" type="image/png" href="images/favicon.png" />
+<link rel="apple-touch-icon" href="images/favicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--p:#5b4cff;--p2:#7c6dff;--a:#06d6a0;--bg:#f8fafc;--w:#fff;--dk:#0f172a;--mu:#64748b;--bd:#e2e8f0;--danger:#ef4444}
+body{
+  font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  background:var(--bg);
+  color:var(--dk);
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+  letter-spacing:-0.015em;
+}
+
+/* ── NAV ── */
+nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 48px;height:70px;background:#ffffff;
+  border-bottom:1px solid var(--bd);position:sticky;top:0;z-index:999;
+}
+.logo{display:flex;align-items:center;text-decoration:none;transition:opacity 0.2s}
+.logo:hover{opacity:0.92}
+.site-nav-logo{height:40px;width:auto;max-width:210px;object-fit:contain;display:block;transition:transform 0.2s ease}
+.logo:hover .site-nav-logo{transform:scale(1.02)}
+.lbox{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--p),var(--a));display:flex;align-items:center;justify-content:center}
+.lbox svg{width:18px;height:18px;fill:#fff}
+.admin-badge{
+  background:#fee2e2;color:#dc2626;font-size:0.72rem;font-weight:800;
+  padding:3px 10px;border-radius:50px;display:inline-flex;align-items:center;gap:5px;
+}
+.nav-actions{display:flex;align-items:center;gap:14px}
+.btn-live-site{
+  display:inline-flex;align-items:center;gap:6px;padding:9px 18px;
+  background:#f1f5f9;color:#334155;border:1px solid #cbd5e1;
+  border-radius:10px;font-size:0.82rem;font-weight:700;text-decoration:none;transition:all 0.2s;
+}
+.btn-live-site:hover{background:#e2e8f0;color:#0f172a}
+
+/* ── CONTAINER ── */
+.container{max-width:1380px;margin:0 auto;padding:40px 48px 80px}
+
+/* ── HEADER ── */
+.dash-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:32px}
+.dash-head h1{font-size:2rem;font-weight:900;letter-spacing:-0.03em}
+.dash-head p{color:var(--mu);font-size:0.88rem;margin-top:4px}
+
+/* ── STATS CARDS ── */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:36px}
+.stat-card{
+  background:#fff;border:1.5px solid var(--bd);border-radius:18px;
+  padding:22px;display:flex;align-items:center;gap:16px;box-shadow:0 4px 14px rgba(0,0,0,0.03);
+}
+.stat-icon{
+  width:50px;height:50px;border-radius:14px;display:flex;align-items:center;justify-content:center;
+  font-size:1.5rem;flex-shrink:0;
+}
+.stat-info strong{display:block;font-size:1.5rem;font-weight:900;color:var(--dk)}
+.stat-info span{font-size:0.78rem;color:var(--mu);font-weight:600}
+
+/* ── TABS ── */
+.tab-bar{display:flex;gap:10px;margin-bottom:28px;border-bottom:1.5px solid var(--bd);padding-bottom:14px}
+.tab-btn{
+  padding:10px 22px;border-radius:10px;font-family:inherit;font-size:0.86rem;font-weight:700;
+  cursor:pointer;border:none;background:transparent;color:var(--mu);transition:all 0.2s;
+}
+.tab-btn.active{background:var(--p);color:#fff;box-shadow:0 4px 14px rgba(91,76,255,0.25)}
+
+/* ── CREATE FORM SECTION ── */
+.creator-grid{
+  display:grid;grid-template-columns:1.2fr 0.8fr;gap:36px;align-items:start;
+}
+.creator-form-card{
+  background:#fff;border:1.5px solid var(--bd);border-radius:22px;
+  padding:32px;box-shadow:0 6px 20px rgba(0,0,0,0.04);
+}
+.form-group{margin-bottom:18px}
+.form-group label{
+  display:block;font-weight:700;font-size:0.84rem;color:var(--dk);margin-bottom:7px;
+}
+.form-group label span{color:var(--mu);font-weight:500;font-size:0.75rem}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.form-input, .form-select, .form-textarea{
+  width:100%;padding:11px 14px;background:#f8fafc;border:1.5px solid var(--bd);
+  border-radius:10px;font-family:inherit;font-size:0.86rem;color:var(--dk);outline:none;transition:all 0.2s;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus{
+  border-color:var(--p);background:#fff;box-shadow:0 0 0 3px rgba(91,76,255,0.12);
+}
+.form-textarea{resize:vertical;min-height:115px;line-height:1.6}
+
+/* Aspect ratio chips */
+.ratio-options{display:flex;gap:8px;flex-wrap:wrap}
+.ratio-chip{
+  padding:7px 14px;border-radius:8px;border:1.5px solid var(--bd);background:#fff;
+  font-size:0.78rem;font-weight:700;color:var(--dk);cursor:pointer;transition:all 0.2s;
+  display:inline-flex;align-items:center;gap:6px;user-select:none;
+}
+.ratio-chip:hover{border-color:var(--p);color:var(--p)}
+.ratio-chip.active{background:var(--p);color:#fff;border-color:var(--p);box-shadow:0 4px 12px rgba(91,76,255,0.25)}
+
+/* Dropzone */
+.dropzone{
+  border:2px dashed #cbd5e1;border-radius:14px;padding:22px;text-align:center;
+  cursor:pointer;background:#f8fafc;transition:all 0.2s;
+}
+.dropzone:hover{border-color:var(--p);background:#f1f5f9}
+.dropzone-icon{font-size:1.8rem;margin-bottom:4px}
+.dropzone-text{font-weight:700;font-size:0.84rem}
+.dropzone-sub{font-size:0.72rem;color:var(--mu);margin-top:3px}
+
+.preview-img-strip{
+  display:none;align-items:center;justify-content:space-between;
+  background:#fff;border:1.5px solid var(--bd);padding:8px 14px;border-radius:10px;margin-top:10px;
+}
+.preview-mini-thumb{width:40px;height:40px;border-radius:6px;object-fit:cover}
+
+/* ── PHOTO ADJUSTER CONTROLS ── */
+.photo-adjust-box{
+  background:#f8fafc;border:1.5px solid #cbd5e1;border-radius:16px;padding:18px;margin-top:14px;
+}
+.preset-btn{
+  padding:6px 12px;border-radius:8px;border:1.5px solid #cbd5e1;background:#fff;
+  font-size:0.75rem;font-weight:700;color:var(--dk);cursor:pointer;transition:all 0.15s;
+}
+.preset-btn:hover{border-color:var(--p);color:var(--p);background:#f3f0ff}
+.h-chip{
+  flex:1;padding:8px 10px;border-radius:8px;border:1.5px solid #cbd5e1;background:#fff;
+  font-size:0.75rem;font-weight:700;color:var(--dk);cursor:pointer;transition:all 0.15s;text-align:center;
+}
+.h-chip:hover{border-color:var(--p);color:var(--p)}
+.h-chip.active{background:var(--p);color:#fff;border-color:var(--p);box-shadow:0 3px 10px rgba(91,76,255,0.25)}
+.drag-hint-badge{
+  position:absolute;top:10px;right:10px;background:rgba(15,23,42,0.8);backdrop-filter:blur(6px);
+  color:#fff;font-size:0.68rem;font-weight:700;padding:4px 10px;border-radius:50px;pointer-events:none;z-index:3;
+}
+.slider-val-tag{
+  background:#f1f5f9;color:var(--p);padding:2px 8px;border-radius:5px;font-size:0.74rem;font-weight:800;
+}
+
+.publish-btn{
+  width:100%;padding:14px;background:linear-gradient(135deg,var(--p),#06d6a0);
+  color:#fff;border:none;border-radius:12px;font-weight:800;font-size:0.95rem;cursor:pointer;
+  box-shadow:0 6px 20px rgba(91,76,255,0.3);transition:all 0.25s;display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.publish-btn:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(91,76,255,0.45)}
+
+/* Preview card */
+.creator-preview-wrap{
+  background:#fff;border:1.5px solid var(--bd);border-radius:22px;padding:26px;
+  position:sticky;top:90px;box-shadow:0 6px 20px rgba(0,0,0,0.04);
+}
+.pc{background:#fff;border-radius:18px;border:1.5px solid var(--bd);overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.06)}
+.pt{position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.g1{background:linear-gradient(135deg,#11998e,#38ef7d)}
+.ptg{position:absolute;top:10px;left:10px;background:rgba(0,0,0,.35);backdrop-filter:blur(6px);color:#fff;font-size:.67rem;font-weight:700;padding:3px 10px;border-radius:50px}
+.pai{position:absolute;bottom:10px;right:10px;width:30px;height:30px;background:#fff;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.pb{padding:16px}
+.ptl{font-weight:800;font-size:.9rem;margin-bottom:6px}
+.pd{font-size:.76rem;color:var(--mu);line-height:1.55;margin-bottom:12px}
+.pf{display:flex;align-items:center;justify-content:space-between}
+.pa{display:flex;align-items:center;gap:6px;font-size:.72rem;color:var(--mu)}
+.av{width:22px;height:22px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:800}
+
+/* ── TABLE / MANAGE PROMPTS ── */
+.manage-wrap{background:#fff;border:1.5px solid var(--bd);border-radius:22px;overflow:hidden;box-shadow:0 6px 20px rgba(0,0,0,0.04)}
+.table-head-bar{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1.5px solid var(--bd);gap:16px}
+.table-search{
+  display:flex;align-items:center;gap:8px;background:#f8fafc;border:1.5px solid var(--bd);
+  border-radius:10px;padding:8px 14px;width:300px;
+}
+.table-search input{border:none;background:transparent;outline:none;font-family:inherit;font-size:0.84rem;width:100%}
+
+table{width:100%;border-collapse:collapse;text-align:left}
+th{padding:14px 20px;font-size:0.75rem;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:0.5px;background:#f8fafc;border-bottom:1px solid var(--bd)}
+td{padding:16px 20px;font-size:0.84rem;border-bottom:1px solid #f1f5f9;vertical-align:middle}
+tr:hover{background:#fafbff}
+
+.table-prompt-cell{display:flex;align-items:center;gap:14px}
+.table-thumb{width:48px;height:48px;border-radius:10px;object-fit:cover;background:#e2e8f0;flex-shrink:0}
+.table-thumb-emoji{width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+
+.badge-tag{padding:3px 10px;border-radius:6px;font-size:0.72rem;font-weight:700}
+.tag-custom{background:#f3e8ff;color:#7e22ce}
+.tag-default{background:#f1f5f9;color:#475569}
+
+.btn-action{
+  padding:6px 12px;border-radius:8px;font-size:0.76rem;font-weight:700;cursor:pointer;
+  border:1px solid transparent;transition:all 0.2s;text-decoration:none;display:inline-flex;align-items:center;gap:4px;
+}
+.btn-act-view{background:#f1f5f9;color:#334155;border-color:#cbd5e1}
+.btn-act-view:hover{background:#e2e8f0}
+.btn-act-edit{background:#eef2ff;color:var(--p);border-color:#c7d2fe}
+.btn-act-edit:hover{background:#e0e7ff}
+.btn-act-del{background:#fee2e2;color:#dc2626;border-color:#fca5a5}
+.btn-act-del:hover{background:#fecaca}
+
+/* Toast */
+.toast{
+  position:fixed;bottom:24px;right:24px;background:#0f172a;color:#fff;
+  padding:14px 22px;border-radius:12px;font-weight:700;font-size:0.85rem;
+  border-left:4px solid var(--a);box-shadow:0 10px 30px rgba(0,0,0,0.25);
+  opacity:0;transform:translateY(12px);transition:all 0.3s;pointer-events:none;z-index:9999;
+}
+.toast.on{opacity:1;transform:translateY(0)}
+
+.multi-img-strip{
+  background:#fff;border:1.5px solid var(--bd);padding:14px;border-radius:14px;margin-top:12px;
+}
+.multi-thumb-card{
+  position:relative;width:72px;height:72px;border-radius:10px;border:2px solid var(--bd);
+  overflow:hidden;flex-shrink:0;cursor:pointer;transition:all 0.2s;background:#f8fafc;
+}
+.multi-thumb-card:hover{border-color:var(--p)}
+.multi-thumb-card.active{
+  border-color:var(--p);box-shadow:0 0 0 3px rgba(91,76,255,0.25);
+}
+.multi-thumb-card img{
+  width:100%;height:100%;object-fit:cover;display:block;
+}
+.multi-cover-tag{
+  position:absolute;bottom:2px;left:2px;background:var(--p);color:#fff;font-size:0.55rem;
+  font-weight:800;padding:1px 5px;border-radius:4px;z-index:2;
+}
+.multi-del-btn{
+  position:absolute;top:2px;right:2px;background:rgba(239,68,68,0.92);color:#fff;
+  border:none;border-radius:50%;width:18px;height:18px;font-size:0.65rem;font-weight:900;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:3;
+}
+.multi-del-btn:hover{background:#dc2626}
+
+.type-card-select{
+  display:block;padding:14px;border-radius:12px;border:2px solid var(--bd);background:#fff;
+  cursor:pointer;transition:all 0.2s;text-align:left;position:relative;
+}
+.type-card-select:hover{border-color:var(--p);background:#fcfaff}
+.type-card-select.active{border-color:var(--p);background:#f3f0ff;box-shadow:0 0 0 3px rgba(91,76,255,0.18)}
+
+/* ── UNIQUE TRENDING MANAGER STYLES ── */
+.trending-manager-wrap{
+  background:#fff;border:1.5px solid var(--bd);border-radius:22px;padding:28px;box-shadow:0 6px 20px rgba(0,0,0,0.04);
+}
+.trending-slot-grid{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin:20px 0 32px;
+}
+.trending-slot-card{
+  background:#f8fafc;border:2px dashed #cbd5e1;border-radius:16px;padding:16px;
+  display:flex;flex-direction:column;position:relative;transition:all 0.25s;min-height:190px;
+}
+.trending-slot-card.occupied{
+  background:#fff;border-style:solid;border-color:var(--bd);box-shadow:0 4px 14px rgba(0,0,0,0.04);
+}
+.trending-slot-card.slot-1{border-color:#f59e0b;border-width:2px;background:linear-gradient(180deg,#fffdf5,#ffffff);box-shadow:0 4px 16px rgba(245,158,11,0.12)}
+.trending-slot-card.slot-2{border-color:#94a3b8;border-width:2px;background:linear-gradient(180deg,#f8fafc,#ffffff)}
+.trending-slot-card.slot-3{border-color:#ea580c;border-width:2px;background:linear-gradient(180deg,#fffaf0,#ffffff)}
+.slot-rank-badge{
+  font-weight:900;font-size:0.75rem;padding:3px 10px;border-radius:50px;display:inline-flex;
+  align-items:center;gap:4px;width:fit-content;margin-bottom:8px;
+}
+.slot-rank-1{background:#fef3c7;color:#b45309;border:1px solid #fde68a}
+.slot-rank-2{background:#f1f5f9;color:#475569;border:1px solid #e2e8f0}
+.slot-rank-3{background:#ffedd5;color:#c2410c;border:1px solid #fed7aa}
+.slot-rank-n{background:#ede9fe;color:#6d28d9;border:1px solid #ddd6fe}
+
+/* ── CATEGORY TICK PILLS ── */
+.cat-tick-pill{
+  display:inline-flex;align-items:center;gap:7px;padding:7px 14px;border-radius:10px;
+  border:1.5px solid var(--bd);background:#fff;font-size:0.8rem;font-weight:700;
+  color:#334155;cursor:pointer;transition:all 0.15s;user-select:none;
+}
+.cat-tick-pill:hover{border-color:var(--p);color:var(--p);background:#faf8ff}
+.cat-tick-pill.active{
+  border-color:var(--p);background:var(--p);color:#fff;box-shadow:0 3px 10px rgba(91,76,255,0.22);
+}
+.cat-tick-pill .cat-check{
+  width:16px;height:16px;border-radius:4px;border:1.5px solid #cbd5e1;background:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:0.65rem;color:transparent;transition:all 0.15s;flex-shrink:0;
+}
+.cat-tick-pill.active .cat-check{
+  border-color:#fff;background:#fff;color:var(--p);font-weight:900;
+}
+
+@media(max-width:1150px){
+  .trending-slot-grid{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:1050px){
+  .creator-grid{grid-template-columns:1fr}
+  .creator-preview-wrap{position:static;margin-top:20px}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .container{padding:24px}
+  nav{padding:0 24px}
+}
+@media(max-width:768px){
+  nav{padding:0 12px;height:56px}
+  .logo{font-size:1.02rem;gap:6px}
+  .site-nav-logo{height:30px;max-width:150px}
+  .lbox{width:28px;height:28px;border-radius:8px}
+  .lbox svg{width:14px;height:14px}
+  .admin-badge{display:none} /* Clean compact mobile nav */
+  .btn-live-site{padding:6px 10px;font-size:0.72rem;border-radius:8px}
+
+  .container{padding:14px 10px 60px}
+  .dash-head{margin-bottom:18px}
+  .dash-head h1{font-size:1.35rem}
+  .dash-head p{font-size:0.78rem}
+
+  /* Compact Stats Grid */
+  .stats-grid{grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px}
+  .stat-card{padding:12px 10px;border-radius:14px;gap:8px}
+  .stat-icon{width:36px;height:36px;border-radius:10px;font-size:1.1rem}
+  .stat-info strong{font-size:1.15rem}
+  .stat-info span{font-size:0.67rem}
+
+  /* Swipeable Tab Bar (App-like touch scroll) */
+  .tab-bar{
+    display:flex;
+    overflow-x:auto;
+    white-space:nowrap;
+    flex-wrap:nowrap;
+    gap:6px;
+    padding-bottom:8px;
+    margin-bottom:18px;
+    border-bottom:1.5px solid var(--bd);
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  .tab-bar::-webkit-scrollbar{display:none}
+  .tab-btn{
+    flex-shrink:0;
+    padding:8px 14px;
+    font-size:0.78rem;
+    border-radius:8px;
+    white-space:nowrap;
+  }
+
+  /* Form & Manager Cards */
+  .creator-form-card{padding:18px 12px;border-radius:16px}
+  .creator-preview-wrap{padding:16px 12px;border-radius:16px}
+  .trending-manager-wrap{padding:16px 12px;border-radius:16px}
+  .manage-wrap{border-radius:16px}
+  .form-row{grid-template-columns:1fr;gap:10px}
+  .form-group{margin-bottom:14px}
+  .form-input, .form-select, .form-textarea{padding:10px 12px;font-size:0.82rem}
+
+  /* Trending Slots */
+  .trending-slot-grid{grid-template-columns:1fr;gap:10px;margin:14px 0 22px}
+  .trending-slot-card{padding:12px;min-height:auto}
+
+  /* Table Controls */
+  .table-head-bar{flex-direction:column;align-items:stretch;gap:10px;padding:14px 12px}
+  .table-search{width:100%}
+  table th{padding:10px 12px;font-size:0.7rem}
+  table td{padding:12px;font-size:0.78rem}
+}
+@media(max-width:480px){
+  .trending-slot-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div style="display:flex;align-items:center;gap:14px;">
+    <a href="index.html" class="logo" title="PromptVault">
+      <img src="images/logo_horizontal.png" alt="PromptVault Logo" class="site-nav-logo" />
+    </a>
+    <span class="admin-badge">🛡️ ADMIN STUDIO</span>
+  </div>
+  <div class="nav-actions">
+    <a href="index.html" class="btn-live-site">🌐 View Live Website →</a>
+  </div>
+</nav>
+
+<div class="container">
+  
+  <div class="dash-head">
+    <div>
+      <h1>Creator & Admin Control Panel</h1>
+      <p>Manage, publish, edit, and delete AI prompts across PromptVault.</p>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#eef2ff;color:var(--p)">⚡</div>
+      <div class="stat-info"><strong id="stat-total">16</strong><span>Total Prompts</span></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#f0fdf4;color:#16a34a">📁</div>
+      <div class="stat-info"><strong id="stat-cats">12</strong><span>Active Categories</span></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#fdf4ff;color:#c026d3">🤖</div>
+      <div class="stat-info"><strong>5</strong><span>AI Tools Tuned</span></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#fff7ed;color:#ea580c">🗄️</div>
+      <div class="stat-info"><strong>Active</strong><span>IndexedDB & REST API</span></div>
+    </div>
+  </div>
+
+  <!-- TAB BAR -->
+  <div class="tab-bar">
+    <button class="tab-btn active" id="tab-btn-manage" onclick="switchTab('manage')">📋 Manage & Delete Prompts (<span id="tab-count">16</span>)</button>
+    <button class="tab-btn" id="tab-btn-create" onclick="switchTab('create')">➕ Publish New Prompt</button>
+    <button class="tab-btn" id="tab-btn-trending" onclick="switchTab('trending')">🔥 Top 10 Trending Manager (<span id="tab-trending-count">2/10</span>)</button>
+    <button class="tab-btn" id="tab-btn-categories" onclick="switchTab('categories')">📁 Categories Manager (<span id="tab-cat-count">11</span>)</button>
+    <button class="tab-btn" id="tab-btn-showcase" onclick="switchTab('showcase')">✨ 1st-Time Welcome Popup (<span id="tab-showcase-count">5/5</span>)</button>
+  </div>
+
+  <!-- TAB 1: MANAGE PROMPTS TABLE -->
+  <div id="tab-manage" class="manage-wrap">
+    <div class="table-head-bar">
+      <div class="table-search">
+        <span>🔍</span>
+        <input type="text" id="admin-search-input" placeholder="Search prompts by title or category..." oninput="renderAdminTable()" />
+      </div>
+      <div>
+        <button onclick="switchTab('create')" style="padding:9px 18px;background:var(--p);color:#fff;border:none;border-radius:10px;font-weight:700;font-size:0.82rem;cursor:pointer;">
+          + Add New Prompt
+        </button>
+      </div>
+    </div>
+
+    <div style="overflow-x:auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>Prompt Details</th>
+            <th>Category</th>
+            <th>AI Tool</th>
+            <th>Trending</th>
+            <th>Rating</th>
+            <th style="text-align:right;">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="admin-prompts-tbody">
+          <!-- Populated by JS -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TAB 2: CREATE / EDIT PROMPT FORM -->
+  <div id="tab-create" style="display:none;">
+    <div class="creator-grid">
+      <!-- FORM -->
+      <div class="creator-form-card">
+        <form id="admin-prompt-form" onsubmit="handleAdminSubmit(event)">
+          <input type="hidden" id="admin-edit-id" value="" />
+          <input type="hidden" id="inp-prompt-type" value="image" />
+
+          <!-- TRENDING SECTION FEATURE TICK -->
+          <div class="form-group" style="background:linear-gradient(135deg,#fff8f5,#ffffff);border:1.5px solid #fed7aa;border-radius:14px;padding:16px;margin-bottom:18px;">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px;">
+              <div style="display:flex;align-items:flex-start;gap:10px;">
+                <input type="checkbox" id="inp-is-trending" style="width:20px;height:20px;accent-color:#ea580c;margin-top:2px;cursor:pointer;" onchange="toggleTrendingRankVisibility()" />
+                <div>
+                  <label for="inp-is-trending" style="font-size:0.88rem;font-weight:800;color:#9a3412;cursor:pointer;margin-bottom:2px;display:inline-block;">
+                    🔥 Feature in Top 10 Trending Section
+                  </label>
+                  <span style="display:block;font-size:0.74rem;color:#c2410c;">Tick this to showcase this prompt on the homepage Top 10 Leaderboard</span>
+                </div>
+              </div>
+              <div id="trending-rank-wrapper" style="display:none;align-items:center;gap:8px;">
+                <label for="inp-trending-rank" style="font-size:0.78rem;font-weight:800;color:#9a3412;margin:0;">Rank Slot:</label>
+                <select id="inp-trending-rank" class="form-select" style="width:90px;padding:6px 10px;border-color:#fdba74;font-weight:800;color:#9a3412;">
+                  <option value="1">#1 🥇</option>
+                  <option value="2">#2 🥈</option>
+                  <option value="3">#3 🥉</option>
+                  <option value="4">#4</option>
+                  <option value="5">#5</option>
+                  <option value="6">#6</option>
+                  <option value="7">#7</option>
+                  <option value="8">#8</option>
+                  <option value="9">#9</option>
+                  <option value="10">#10</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Prompt Title <span>*</span></label>
+              <input type="text" id="inp-title" class="form-input" placeholder="e.g. Hyper-Realistic Portrait Generator" required oninput="updateLivePreview()" />
+            </div>
+            <div class="form-group">
+              <label>AI Tool <span>*</span></label>
+              <select id="inp-ai" class="form-select" onchange="updateLivePreview()">
+                <option value="chatgpt">ChatGPT (OpenAI)</option>
+                <option value="gemini">Google Gemini</option>
+                <option value="claude">Anthropic Claude</option>
+                <option value="deepseek">DeepSeek</option>
+                <option value="grok">xAI Grok</option>
+                <option value="midjourney">Midjourney / AI Image</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- CATEGORY TICKABLE SELECTION -->
+          <div class="form-group" style="background:#f8fafc;border:1.5px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:18px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+              <label style="margin:0;font-weight:800;font-size:0.84rem;">
+                Select Category <span>* (Tick category to assign to this prompt)</span>
+              </label>
+              <button type="button" onclick="switchTab('categories')" style="background:#eef2ff;color:var(--p);border:1px solid #c7d2fe;border-radius:8px;padding:4px 12px;font-size:0.75rem;font-weight:800;cursor:pointer;">
+                ➕ Manage / Create Category
+              </button>
+            </div>
+            
+            <input type="hidden" id="inp-cat" value="Art & Design" />
+
+            <!-- Dynamic Tickable Category Pills Container -->
+            <div id="form-category-ticks-grid" style="display:flex;gap:8px;flex-wrap:wrap;max-height:160px;overflow-y:auto;padding:2px;">
+              <!-- Populated by renderFormCategoryTicks() -->
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Creator / Author Name</label>
+            <input type="text" id="inp-author" class="form-input" placeholder="e.g. Nikil (Admin)" oninput="updateLivePreview()" />
+          </div>
+
+          <!-- Aspect Ratio Selector -->
+          <div class="form-group">
+            <label>Image Aspect Ratio</label>
+            <div class="ratio-options" id="ratio-options-group">
+              <div class="ratio-chip active" onclick="selectRatio('1/1', this)">📐 1:1 Square</div>
+              <div class="ratio-chip" onclick="selectRatio('16/9', this)">🖥️ 16:9 Landscape</div>
+              <div class="ratio-chip" onclick="selectRatio('9/16', this)">📱 9:16 Vertical</div>
+              <div class="ratio-chip" onclick="selectRatio('4/5', this)">📸 4:5 Portrait</div>
+              <div class="ratio-chip" onclick="selectRatio('3/2', this)">🎞️ 3:2 Photo</div>
+            </div>
+          </div>
+
+          <!-- Image Upload Box -->
+          <div class="form-group">
+            <label>Attach Image Previews <span>(Upload 1, 2, 3 or more photos)</span></label>
+            <input type="file" id="inp-file" accept="image/*" multiple style="display:none;" onchange="handleImageUpload(event)" />
+            <div class="dropzone" id="dropzone-box" onclick="document.getElementById('inp-file').click()">
+              <div class="dropzone-icon">📸</div>
+              <div class="dropzone-text">Click to browse or drop prompt image(s) here</div>
+              <div class="dropzone-sub">Supports JPG, PNG, WebP • Select 2 or 3 photos together</div>
+            </div>
+
+            <!-- Multi-Image Thumbnails Strip -->
+            <div class="multi-img-strip" id="multi-img-strip" style="display:none;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+                <div>
+                  <strong style="font-size:0.84rem;color:var(--dk);" id="multi-img-count">Uploaded Photos (0)</strong>
+                  <span style="font-size:0.72rem;color:var(--mu);display:block;">Click any photo to adjust framing & zoom</span>
+                </div>
+                <button type="button" onclick="document.getElementById('inp-file').click()" style="padding:5px 12px;background:#eef2ff;color:var(--p);border:1px solid #c7d2fe;border-radius:8px;font-size:0.75rem;font-weight:800;cursor:pointer;">+ Add More Photos</button>
+              </div>
+              <div id="multi-img-list" style="display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;"></div>
+            </div>
+
+            <!-- PHOTO ADJUSTER CONTROLS -->
+            <div class="photo-adjust-box" id="photo-adjust-box" style="display:none;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                <strong style="font-size:0.86rem;color:var(--dk);display:flex;align-items:center;gap:6px;">
+                  🎨 Adjust Photo Position & Zoom
+                </strong>
+                <span style="font-size:0.72rem;color:var(--mu);font-weight:600;">Live card preview updates</span>
+              </div>
+
+              <!-- Quick Presets -->
+              <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;">
+                <button type="button" class="preset-btn" onclick="applyPhotoPreset('face')">👤 Focus Face/Top</button>
+                <button type="button" class="preset-btn" onclick="applyPhotoPreset('center')">🎯 Center</button>
+                <button type="button" class="preset-btn" onclick="applyPhotoPreset('bottom')">👟 Lower</button>
+                <button type="button" class="preset-btn" onclick="applyPhotoPreset('zoom')">🔍 1.25x Zoom</button>
+                <button type="button" class="preset-btn" onclick="applyPhotoPreset('reset')">🔄 Reset</button>
+              </div>
+
+              <!-- Vertical Position (Pan Y) -->
+              <div style="margin-bottom:12px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.76rem;font-weight:700;color:var(--dk);margin-bottom:5px;">
+                  <span>Vertical Position (Pan Up / Down):</span>
+                  <span class="slider-val-tag" id="label-pos-y">50% (Center)</span>
+                </div>
+                <input type="range" id="inp-pos-y" min="0" max="100" value="50" style="width:100%;accent-color:var(--p);cursor:pointer;" oninput="updatePhotoAdjustment()" />
+                <div style="display:flex;justify-content:space-between;font-size:0.68rem;color:var(--mu);margin-top:2px;">
+                  <span>Top / Head (0%)</span>
+                  <span>Center (50%)</span>
+                  <span>Bottom (100%)</span>
+                </div>
+              </div>
+
+              <!-- Horizontal Position (Pan X) -->
+              <div style="margin-bottom:12px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.76rem;font-weight:700;color:var(--dk);margin-bottom:5px;">
+                  <span>Horizontal Position (Pan Left / Right):</span>
+                  <span class="slider-val-tag" id="label-pos-x">50% (Center)</span>
+                </div>
+                <input type="range" id="inp-pos-x" min="0" max="100" value="50" style="width:100%;accent-color:var(--p);cursor:pointer;" oninput="updatePhotoAdjustment()" />
+              </div>
+
+              <!-- Zoom & Crop Scale -->
+              <div style="margin-bottom:14px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.76rem;font-weight:700;color:var(--dk);margin-bottom:5px;">
+                  <span>Zoom / Scale:</span>
+                  <span class="slider-val-tag" id="label-zoom">1.00x</span>
+                </div>
+                <input type="range" id="inp-zoom" min="100" max="220" value="100" step="5" style="width:100%;accent-color:var(--p);cursor:pointer;" oninput="updatePhotoAdjustment()" />
+              </div>
+
+              <!-- Card Thumbnail Height -->
+              <div>
+                <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.76rem;font-weight:700;color:var(--dk);margin-bottom:6px;">
+                  <span>Card Thumbnail Height:</span>
+                  <span class="slider-val-tag" id="label-card-h">230px (Standard)</span>
+                </div>
+                <div style="display:flex;gap:8px;">
+                  <button type="button" class="h-chip active" id="chip-h-230" onclick="setCardHeight(230, this)">Standard (230px)</button>
+                  <button type="button" class="h-chip" id="chip-h-270" onclick="setCardHeight(270, this)">Tall Portrait (270px)</button>
+                  <button type="button" class="h-chip" id="chip-h-180" onclick="setCardHeight(180, this)">Compact (180px)</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Prompt Template -->
+          <div class="form-group">
+            <label>Prompt Template <span>(Use [BRACKETS] for variables)</span> *</label>
+            <textarea id="inp-prompt" class="form-textarea" placeholder="e.g. Act as a world-class prompt engineer. Create a highly detailed cinematic visual of [SUBJECT] with [LIGHTING]..." required oninput="updateLivePreview()"></textarea>
+          </div>
+
+          <!-- Short Description -->
+          <div class="form-group">
+            <label>Short Description <span>(Shown on cards)</span></label>
+            <input type="text" id="inp-desc" class="form-input" placeholder="e.g. Generate ultra-detailed portraits with custom lighting." oninput="updateLivePreview()" />
+          </div>
+
+          <!-- EXPECTED OUTCOME SECTION -->
+          <div class="form-group" id="form-group-outcome" style="background:linear-gradient(135deg,#f0fdf4 0%,#ffffff 100%);border:1.5px solid #86efac;border-radius:14px;padding:16px;margin-bottom:18px;transition:all 0.25s;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+              <label for="inp-outcome" style="margin:0;font-weight:800;font-size:0.86rem;color:#166534;display:flex;align-items:center;gap:6px;">
+                🎯 Expected Outcome / What Will This Prompt Do?
+                <span id="outcome-badge-rec" style="background:#bbf7d0;color:#14532d;padding:2px 8px;border-radius:50px;font-size:0.7rem;font-weight:800;">
+                  ⭐ Recommended for Text Prompts
+                </span>
+              </label>
+              <span style="font-size:0.72rem;color:#15803d;font-weight:600;">(User ko pta chalega ki ye prompt run karne par kya result milega)</span>
+            </div>
+            <textarea id="inp-outcome" class="form-textarea" style="background:#fff;border-color:#bbf7d0;min-height:90px;line-height:1.55;" placeholder="e.g. Is prompt ko use karne par AI aapko:&#10;• 5 high-converting hook lines dega&#10;• Ready-to-post engaging caption with call-to-action&#10;• Viral hashtag strategy aur best time to post" oninput="updateLivePreview()"></textarea>
+            <span style="display:block;font-size:0.7rem;color:#166534;margin-top:6px;opacity:0.85;">
+              💡 <strong>Tip:</strong> Aap bullet points (• ya 1, 2, 3) me likh sakte ho — public prompt page par ye clean cards me dikhega!
+            </span>
+          </div>
+
+          <button type="submit" class="publish-btn" id="btn-admin-submit">
+            🚀 Publish Prompt to Live Website
+          </button>
+        </form>
+      </div>
+
+      <!-- LIVE PREVIEW CARD -->
+      <div class="creator-preview-wrap">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+          <h3 style="font-size:1.05rem;font-weight:900;">Live Card Preview</h3>
+          <span style="background:#fee2e2;color:#ef4444;font-size:0.72rem;font-weight:800;padding:3px 10px;border-radius:50px;">LIVE SYNC</span>
+        </div>
+
+        <div class="pc" id="live-card-preview">
+          <div class="pt g1" id="live-pt-container" style="height:230px;cursor:grab;position:relative;user-select:none;">
+            <span class="drag-hint-badge" id="drag-hint-badge" style="display:none;">🖐️ Drag to reposition</span>
+            <span class="ptg" id="live-card-cat">🎨 Art & Design</span>
+            <div class="pai"><img id="live-card-ai" src="logos/chatgpt.jpg" alt="" style="max-width:22px;max-height:22px;object-fit:contain;"/></div>
+            <div id="live-img-wrapper" style="width:100%;height:100%;display:none;overflow:hidden;">
+              <img id="live-card-img" src="" alt="Live Preview" style="width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block;transition:transform 0.15s ease;" />
+            </div>
+            <span id="live-card-emoji" style="font-size:3rem;padding:36px 0;">🎨</span>
+          </div>
+          <div class="pb">
+            <div class="ptl" id="live-card-title">Hyper-Realistic Portrait Generator</div>
+            <div class="pd" id="live-card-desc">Generate ultra-detailed portraits with custom lighting.</div>
+            <div id="live-card-outcome-pill" style="display:none;align-items:center;gap:5px;background:#f0fdf4;border:1px solid #bbf7d0;color:#166534;padding:4px 8px;border-radius:6px;font-size:0.7rem;font-weight:600;margin:6px 0 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+              <span style="flex-shrink:0;">🎯</span>
+              <strong style="color:#15803d;flex-shrink:0;">Outcome:</strong>
+              <span id="live-card-outcome-val" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
+            </div>
+            <div class="pf">
+              <div class="pa">
+                <div class="av" id="live-card-av" style="background:#5b4cff;">A</div>
+                <span id="live-card-author">Admin</span>
+              </div>
+              <div style="font-size:0.75rem;font-weight:700;color:#f59e0b;">⭐ 5.0</div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <!-- TAB 3: UNIQUE TOP 10 TRENDING MANAGER -->
+  <div id="tab-trending" style="display:none;">
+    <div class="trending-manager-wrap">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px;margin-bottom:24px;">
+        <div>
+          <div style="display:inline-flex;align-items:center;gap:6px;background:#fff1f2;border:1px solid #fecdd3;color:#e11d48;font-size:0.75rem;font-weight:800;padding:4px 14px;border-radius:50px;margin-bottom:8px;">
+            🔥 HOMEPAGE SPOTLIGHT
+          </div>
+          <h2 style="font-size:1.6rem;font-weight:900;letter-spacing:-0.02em;">Top 10 Trending Leaderboard Manager</h2>
+          <p style="color:var(--mu);font-size:0.86rem;margin-top:4px;">
+            Curate and spotlight your top 10 best AI prompts on the website's homepage. Change rank slots or toggle prompts with 1 click.
+          </p>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="background:#f8fafc;border:1.5px solid var(--bd);padding:10px 18px;border-radius:14px;text-align:right;">
+            <div style="font-size:0.68rem;color:var(--mu);font-weight:800;text-transform:uppercase;letter-spacing:0.5px;">Active Slots</div>
+            <strong style="font-size:1.4rem;color:var(--p);" id="trending-slots-count">0 / 10</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- 10 SLOTS GRID -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <h3 style="font-size:1.05rem;font-weight:900;display:flex;align-items:center;gap:8px;">
+          🏆 Visual Leaderboard (Slots #1 to #10)
+        </h3>
+        <span style="font-size:0.75rem;color:var(--mu);">Sorted automatically by position on the live site</span>
+      </div>
+      
+      <div class="trending-slot-grid" id="trending-slot-grid">
+        <!-- Rendered by renderTrendingManager() -->
+      </div>
+
+      <!-- QUICK TOGGLE TABLE -->
+      <div style="border-top:1.5px solid var(--bd);padding-top:28px;margin-top:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+          <div>
+            <h3 style="font-size:1.05rem;font-weight:900;">⚡ Quick Trending Switch (All Prompts)</h3>
+            <p style="font-size:0.78rem;color:var(--mu);margin-top:2px;">Turn Trending ON or OFF for any prompt with a single click.</p>
+          </div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>Prompt Details</th>
+                <th>Category</th>
+                <th>AI Tool</th>
+                <th>Current Status</th>
+                <th>Rank Slot</th>
+                <th style="text-align:right;">Quick Action</th>
+              </tr>
+            </thead>
+            <tbody id="trending-toggle-tbody">
+              <!-- Rendered by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 4: CATEGORIES MANAGER -->
+  <div id="tab-categories" style="display:none;">
+    <div class="creator-grid">
+      <!-- CREATE CATEGORY FORM -->
+      <div class="creator-form-card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
+          <div style="width:42px;height:42px;border-radius:12px;background:#f3e8ff;color:#7e22ce;display:flex;align-items:center;justify-content:center;font-size:1.4rem;">📁</div>
+          <div>
+            <h2 style="font-size:1.35rem;font-weight:900;">Create New Category</h2>
+            <p style="font-size:0.78rem;color:var(--mu);">Add custom categories to filter and organize prompts live.</p>
+          </div>
+        </div>
+
+        <form id="create-cat-form" onsubmit="handleCreateCategory(event)">
+          <div class="form-group">
+            <label>Category Name <span>* (e.g. Gaming, Anime & 3D, Cyberpunk, Finance)</span></label>
+            <input type="text" id="inp-new-cat-name" class="form-input" placeholder="Enter category name..." required />
+          </div>
+
+          <div class="form-group">
+            <label>Category Icon / Emoji <span>* (Pick or type any emoji)</span></label>
+            <input type="text" id="inp-new-cat-icon" class="form-input" placeholder="e.g. 🎮" value="✨" style="font-size:1.2rem;width:120px;" required />
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;">
+              <span style="font-size:0.72rem;color:var(--mu);display:block;width:100%;margin-bottom:2px;font-weight:700;">Popular Suggestions:</span>
+              <button type="button" class="preset-btn" onclick="selectCatIcon('🎮')">🎮 Gaming</button>
+              <button type="button" class="preset-btn" onclick="selectCatIcon('👾')">👾 Anime & 3D</button>
+              <button type="button" class="preset-btn" onclick="selectCatIcon('🤖')">🤖 Robotics</button>
+              <button type="button" class="preset-btn" onclick="selectCatIcon('🍔')">🍔 Food & Drink</button>
+              <button type="button" class="preset-btn" onclick="selectCatIcon('🏛️')">🏛️ Architecture</button>
+              <button type="button" class="preset-btn" onclick="selectCatIcon('💰')">💰 Finance</button>
+              <button type="button" class="preset-btn" onclick="selectCatIcon('👗')">👗 Fashion</button>
+              <button type="button" class="preset-btn" onclick="selectCatIcon('🚀')">🚀 Sci-Fi</button>
+              <button type="button" class="preset-btn" onclick="selectCatIcon('✨')">✨ Creative</button>
+            </div>
+          </div>
+
+          <button type="submit" class="publish-btn" id="btn-save-cat" style="margin-top:14px;">
+            ➕ Save & Add Category Live
+          </button>
+        </form>
+      </div>
+
+      <!-- ACTIVE CATEGORIES LIST -->
+      <div class="manage-wrap" style="padding:26px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+          <div>
+            <h3 style="font-size:1.15rem;font-weight:900;">Active Categories (<span id="cat-list-count">11</span>)</h3>
+            <p style="font-size:0.76rem;color:var(--mu);margin-top:2px;">Live across homepage, category grid, filters, and admin studio.</p>
+          </div>
+        </div>
+
+        <div id="admin-categories-list" style="display:flex;flex-direction:column;gap:10px;max-height:560px;overflow-y:auto;padding-right:4px;">
+          <!-- Populated by renderAdminCategoriesManager() -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 5: WELCOME POPUP SHOWCASE MANAGER -->
+  <div id="tab-showcase" style="display:none;">
+    <div class="trending-manager-wrap" style="background:#fff;">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:24px;padding-bottom:18px;border-bottom:1px solid var(--bd);">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#7c3aed,#ec4899);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.6rem;box-shadow:0 6px 16px rgba(124,58,237,0.3);">✨</div>
+          <div>
+            <h2 style="font-size:1.55rem;font-weight:900;letter-spacing:-0.02em;">1st-Time Visitor Welcome Popup Manager</h2>
+            <p style="font-size:0.82rem;color:var(--mu);margin-top:2px;">Select exactly 5 prompts to display to visitors when they first enter PromptVault. Slot #6 is the animated Free Limited Access celebration card.</p>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <a href="index.html?previewShowcase=true" target="_blank" class="publish-btn" style="padding:9px 18px;font-size:0.82rem;background:#4f46e5;color:#fff;text-decoration:none;display:inline-flex;align-items:center;gap:6px;width:auto;box-shadow:0 4px 12px rgba(79,70,229,0.3);">
+            👁️ Preview Welcome Popup Live ↗
+          </a>
+        </div>
+      </div>
+
+      <!-- 5 Slots Grid + Card 6 Preview -->
+      <div style="margin-bottom:28px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <strong style="font-size:0.95rem;color:var(--dk);">Curated 5 Showcase Slots (<span id="showcase-status-indicator">5 / 5 Configured</span>)</strong>
+          <span style="font-size:0.75rem;color:var(--mu);">Auto-saved instantly to database &amp; disk</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:14px;" id="showcase-slots-grid">
+          <!-- Populated by renderShowcaseManager() -->
+        </div>
+      </div>
+
+      <!-- Quick Selector Table -->
+      <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:20px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:14px;">
+          <div>
+            <h3 style="font-size:1.05rem;font-weight:900;">⚡ Quick Slot Assign (From All Prompts Library)</h3>
+            <p style="font-size:0.78rem;color:var(--mu);margin-top:2px;">Assign any prompt from your library to Slot 1, 2, 3, 4, or 5 with one click.</p>
+          </div>
+          <div class="table-search" style="width:260px;">
+            <span>🔍</span>
+            <input type="text" id="showcase-search-input" placeholder="Search prompts..." oninput="renderShowcaseTable()" />
+          </div>
+        </div>
+
+        <div style="overflow-x:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>Prompt Details</th>
+                <th>Category</th>
+                <th>AI Tool</th>
+                <th>Showcase Status</th>
+                <th style="text-align:right;">Assign To Slot</th>
+              </tr>
+            </thead>
+            <tbody id="showcase-toggle-tbody">
+              <!-- Rendered by renderShowcaseTable() -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast">✅ Saved to Database!</div>
+
+<script src="db.js"></script>
+<script src="prompts.js"></script>
+<script>
+let currentAspectRatio = '1/1';
+let currentUploadedImage = null;
+
+const CAT_ICONS = {
+  'Art & Design': '🎨',
+  'Photography': '📸',
+  'Programming': '💻',
+  'Marketing': '📢',
+  'Business': '💼',
+  'Writing': '✍️',
+  'Education': '🎓',
+  'Career': '🧳',
+  'Social Media': '📱',
+  'Video & YouTube': '🎬',
+  'Productivity': '📈'
+};
+
+const AI_NAMES = {
+  'chatgpt': 'ChatGPT',
+  'gemini': 'Gemini',
+  'claude': 'Claude',
+  'deepseek': 'DeepSeek',
+  'grok': 'Grok',
+  'midjourney': 'Midjourney'
+};
+
+function setPromptType(type) {
+  const hiddenInp = document.getElementById('inp-prompt-type');
+  if (hiddenInp) hiddenInp.value = 'image';
+  const outcomeGroup = document.getElementById('form-group-outcome');
+  const outcomeBadge = document.getElementById('outcome-badge-rec');
+  if (outcomeGroup) {
+    outcomeGroup.style.border = '1.5px solid #86efac';
+    outcomeGroup.style.boxShadow = 'none';
+  }
+  if (outcomeBadge) {
+    outcomeBadge.textContent = '⭐ Recommended for Prompts';
+    outcomeBadge.style.background = '#bbf7d0';
+    outcomeBadge.style.color = '#14532d';
+  }
+}
+
+function toggleTrendingRankVisibility() {
+  const isTrending = document.getElementById('inp-is-trending').checked;
+  const wrap = document.getElementById('trending-rank-wrapper');
+  if (wrap) {
+    wrap.style.display = isTrending ? 'flex' : 'none';
+  }
+}
+
+function switchTab(tab) {
+  const tabs = ['manage', 'create', 'trending', 'categories', 'showcase'];
+  tabs.forEach(t => {
+    const el = document.getElementById('tab-' + t);
+    const btn = document.getElementById('tab-btn-' + t);
+    if (el) el.style.display = (t === tab) ? 'block' : 'none';
+    if (btn) {
+      if (t === tab) btn.classList.add('active');
+      else btn.classList.remove('active');
+    }
+  });
+
+  if (tab === 'manage') {
+    renderAdminTable();
+  } else if (tab === 'trending') {
+    renderTrendingManager();
+  } else if (tab === 'create') {
+    renderFormCategoryTicks();
+  } else if (tab === 'categories') {
+    renderAdminCategoriesManager();
+  } else if (tab === 'showcase') {
+    renderShowcaseManager();
+  }
+}
+
+function renderAdminTable() {
+  const tbody = document.getElementById('admin-prompts-tbody');
+  const all = getAllPrompts();
+  const search = (document.getElementById('admin-search-input').value || '').toLowerCase();
+
+  document.getElementById('stat-total').textContent = all.length;
+  document.getElementById('tab-count').textContent = all.length;
+
+  const trendingCount = all.filter(p => p.isTrending).length;
+  const trBadge = document.getElementById('tab-trending-count');
+  if (trBadge) trBadge.textContent = `${trendingCount}/10`;
+
+  const scIds = (typeof getShowcaseIds === 'function') ? getShowcaseIds() : [];
+  const scBadge = document.getElementById('tab-showcase-count');
+  if (scBadge) scBadge.textContent = `${scIds.length}/5`;
+
+  const filtered = all.filter(p => {
+    return !search || 
+      (p.title && p.title.toLowerCase().includes(search)) || 
+      (p.cat && p.cat.toLowerCase().includes(search));
+  });
+
+  if (!filtered.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--mu)">No prompts found matching search.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(p => {
+    const isCustom = String(p.id).startsWith('user_') || String(p.id).startsWith('prompt_');
+    const thumbHtml = p.customImage 
+      ? `<img src="${p.customImage}" class="table-thumb" alt="" style="object-fit:cover;border-radius:8px;"/>` 
+      : `<div class="table-thumb-emoji ${p.gradient || 'g1'}">${p.emoji || '⚡'}</div>`;
+
+    const trendingBadge = p.isTrending
+      ? `<span style="background:#ffedd5;color:#c2410c;border:1px solid #fed7aa;font-size:0.72rem;font-weight:800;padding:3px 8px;border-radius:6px;display:inline-flex;align-items:center;gap:4px;">🔥 Slot #${p.trendingRank || 1}</span>`
+      : `<span style="color:var(--mu);font-size:0.75rem;">—</span>`;
+
+    return `
+      <tr>
+        <td>
+          <div class="table-prompt-cell">
+            ${thumbHtml}
+            <div>
+              <strong style="color:var(--dk);font-size:0.9rem;display:block;margin-bottom:3px;">${p.title}</strong>
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;flex-wrap:wrap;">
+                <span style="font-size:0.68rem;background:#f1f5f9;color:#475569;padding:2px 6px;border-radius:4px;font-weight:700;">📐 ${p.aspectRatio || 'Auto'}</span>
+                ${(p.images && p.images.length > 1) ? `<span style="font-size:0.68rem;background:#ede9fe;color:#7c3aed;padding:2px 6px;border-radius:4px;font-weight:800;">📸 ${p.images.length} Photos</span>` : ''}
+                ${p.outcome ? `<span style="font-size:0.68rem;background:#ecfdf5;color:#047857;border:1px solid #a7f3d0;padding:2px 6px;border-radius:4px;font-weight:700;" title="${p.outcome.replace(/"/g, '&quot;')}">🎯 Outcome</span>` : ''}
+                <span style="font-size:0.68rem;color:var(--mu);">ID: ${String(p.id).slice(0, 12)}</span>
+              </div>
+              <span style="font-size:0.75rem;color:var(--mu);">${(p.desc || '').slice(0, 65)}...</span>
+            </div>
+          </div>
+        </td>
+        <td>
+          <span style="font-weight:700;font-size:0.8rem;">${p.catIcon || '📁'} ${p.cat}</span>
+        </td>
+        <td>
+          <span style="font-weight:700;font-size:0.8rem;">${p.aiName || p.ai}</span>
+        </td>
+        <td>
+          ${trendingBadge}
+        </td>
+        <td>
+          <span style="font-weight:700;color:#f59e0b;font-size:0.82rem;">⭐ ${p.rating || '5.0'}</span>
+        </td>
+        <td style="text-align:right;">
+          <div style="display:inline-flex;gap:6px;">
+            <a href="prompt.html?id=${p.id}" target="_blank" class="btn-action btn-act-view" title="Open Public Page">👁️ View</a>
+            <button class="btn-action btn-act-edit" onclick="editPromptAdmin('${p.id}')" title="Edit this prompt">✏️ Edit</button>
+            <button class="btn-action btn-act-del" onclick="deletePromptAdmin('${p.id}')" title="Delete permanently">🗑️ Delete</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+// ── UNIQUE TOP 10 TRENDING MANAGER RENDERER ──
+function renderTrendingManager() {
+  const all = getAllPrompts();
+  const trendingList = all.filter(p => p.isTrending);
+  const slotsCountEl = document.getElementById('trending-slots-count');
+  const trBadge = document.getElementById('tab-trending-count');
+  
+  if (slotsCountEl) slotsCountEl.textContent = `${trendingList.length} / 10`;
+  if (trBadge) trBadge.textContent = `${trendingList.length}/10`;
+
+  // Render 10 slots grid
+  const slotGrid = document.getElementById('trending-slot-grid');
+  if (slotGrid) {
+    let slotsHtml = '';
+    for (let slot = 1; slot <= 10; slot++) {
+      const promptInSlot = trendingList.find(p => parseInt(p.trendingRank, 10) === slot);
+      
+      let rankBadgeClass = 'slot-rank-n';
+      let rankText = `#${slot}`;
+      let slotCardClass = '';
+
+      if (slot === 1) { rankBadgeClass = 'slot-rank-1'; rankText = '#1 🥇 Top Pick'; slotCardClass = 'slot-1'; }
+      else if (slot === 2) { rankBadgeClass = 'slot-rank-2'; rankText = '#2 🥈 Trending'; slotCardClass = 'slot-2'; }
+      else if (slot === 3) { rankBadgeClass = 'slot-rank-3'; rankText = '#3 🥉 Trending'; slotCardClass = 'slot-3'; }
+
+      if (promptInSlot) {
+        const thumb = promptInSlot.customImage 
+          ? `<img src="${promptInSlot.customImage}" style="width:100%;height:85px;object-fit:cover;border-radius:10px;margin-bottom:8px;" alt=""/>`
+          : `<div class="${promptInSlot.gradient || 'g1'}" style="width:100%;height:85px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:2rem;margin-bottom:8px;">${promptInSlot.emoji || '⚡'}</div>`;
+
+        slotsHtml += `
+          <div class="trending-slot-card occupied ${slotCardClass}">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+              <span class="slot-rank-badge ${rankBadgeClass}">${rankText}</span>
+              <button onclick="quickRemoveTrending('${promptInSlot.id}')" style="background:#fee2e2;color:#dc2626;border:none;border-radius:6px;font-size:0.68rem;font-weight:800;padding:2px 7px;cursor:pointer;" title="Remove from Trending">✕ Remove</button>
+            </div>
+            ${thumb}
+            <strong style="font-size:0.82rem;line-height:1.3;display:block;margin-bottom:4px;color:var(--dk);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${promptInSlot.title}</strong>
+            <div style="font-size:0.7rem;color:var(--mu);margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+              <span>${promptInSlot.catIcon || '📁'} ${promptInSlot.cat}</span>
+              <span>•</span>
+              <span>${promptInSlot.aiName || promptInSlot.ai}</span>
+            </div>
+            <div style="margin-top:auto;display:flex;align-items:center;gap:6px;">
+              <span style="font-size:0.7rem;font-weight:700;color:var(--mu);">Move to:</span>
+              <select onchange="changeTrendingSlot('${promptInSlot.id}', this.value)" class="form-select" style="padding:4px 6px;font-size:0.75rem;font-weight:800;border-radius:6px;">
+                ${[1,2,3,4,5,6,7,8,9,10].map(s => `<option value="${s}" ${s === slot ? 'selected' : ''}>Slot #${s}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+        `;
+      } else {
+        // Available / empty slot
+        const unassignedPrompts = all.filter(p => !p.isTrending);
+        slotsHtml += `
+          <div class="trending-slot-card ${slotCardClass}">
+            <span class="slot-rank-badge ${rankBadgeClass}">${rankText}</span>
+            <div style="flex:1;display:flex;flex-direction:column;justify-content:center;text-align:center;padding:10px 0;">
+              <span style="font-size:1.4rem;margin-bottom:4px;">✨</span>
+              <span style="font-size:0.76rem;font-weight:700;color:var(--mu);">Empty Slot</span>
+            </div>
+            <div style="margin-top:auto;">
+              <select onchange="if(this.value) assignPromptToSlot(this.value, ${slot})" class="form-select" style="padding:6px 8px;font-size:0.74rem;font-weight:700;width:100%;border-radius:8px;">
+                <option value="">+ Assign Prompt...</option>
+                ${unassignedPrompts.map(up => `<option value="${up.id}">${up.title.slice(0, 24)}...</option>`).join('')}
+              </select>
+            </div>
+          </div>
+        `;
+      }
+    }
+    slotGrid.innerHTML = slotsHtml;
+  }
+
+  // Render quick toggle table
+  const toggleTbody = document.getElementById('trending-toggle-tbody');
+  if (toggleTbody) {
+    toggleTbody.innerHTML = all.map(p => {
+      const thumb = p.customImage 
+        ? `<img src="${p.customImage}" class="table-thumb" alt="" style="object-fit:cover;border-radius:8px;"/>` 
+        : `<div class="table-thumb-emoji ${p.gradient || 'g1'}">${p.emoji || '⚡'}</div>`;
+
+      const statusTag = p.isTrending
+        ? `<span style="background:#ffedd5;color:#c2410c;border:1px solid #fed7aa;font-size:0.72rem;font-weight:800;padding:3px 10px;border-radius:20px;">🔥 Active in Trending (#${p.trendingRank || 1})</span>`
+        : `<span style="background:#f1f5f9;color:#64748b;font-size:0.72rem;font-weight:700;padding:3px 10px;border-radius:20px;">⚪ Standard Library</span>`;
+
+      const rankSelect = `
+        <select onchange="changeTrendingSlot('${p.id}', this.value)" ${!p.isTrending ? 'disabled' : ''} class="form-select" style="width:90px;padding:5px 8px;font-size:0.76rem;font-weight:800;">
+          ${[1,2,3,4,5,6,7,8,9,10].map(s => `<option value="${s}" ${(p.trendingRank || 1) === s ? 'selected' : ''}>Slot #${s}</option>`).join('')}
+        </select>
+      `;
+
+      const actionBtn = p.isTrending
+        ? `<button onclick="quickRemoveTrending('${p.id}')" style="background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;padding:6px 14px;border-radius:8px;font-size:0.76rem;font-weight:800;cursor:pointer;transition:all 0.2s;">✕ Remove</button>`
+        : `<button onclick="quickAddTrending('${p.id}')" style="background:linear-gradient(135deg,#ea580c,#f97316);color:#fff;border:none;padding:6px 14px;border-radius:8px;font-size:0.76rem;font-weight:800;cursor:pointer;box-shadow:0 3px 10px rgba(234,88,12,0.25);transition:all 0.2s;">🔥 Add to Trending</button>`;
+
+      return `
+        <tr>
+          <td>
+            <div class="table-prompt-cell">
+              ${thumb}
+              <div>
+                <strong style="color:var(--dk);font-size:0.88rem;display:block;margin-bottom:2px;">${p.title}</strong>
+                <span style="font-size:0.72rem;color:var(--mu);">ID: ${String(p.id).slice(0, 12)}</span>
+              </div>
+            </div>
+          </td>
+          <td>
+            <span style="font-weight:700;font-size:0.8rem;">${p.catIcon || '📁'} ${p.cat}</span>
+          </td>
+          <td>
+            <span style="font-weight:700;font-size:0.8rem;">${p.aiName || p.ai}</span>
+          </td>
+          <td>
+            ${statusTag}
+          </td>
+          <td>
+            ${rankSelect}
+          </td>
+          <td style="text-align:right;">
+            ${actionBtn}
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+}
+
+// Quick action helpers
+async function quickAddTrending(id, customRank) {
+  const all = getAllPrompts();
+  const trendingList = all.filter(p => p.isTrending);
+  
+  // Find first free rank from 1 to 10
+  let rank = customRank;
+  if (!rank) {
+    for (let r = 1; r <= 10; r++) {
+      if (!trendingList.some(p => parseInt(p.trendingRank, 10) === r)) {
+        rank = r;
+        break;
+      }
+    }
+  }
+  if (!rank) rank = 1;
+
+  await setPromptTrending(id, true, rank);
+  renderTrendingManager();
+  renderAdminTable();
+  showToast(`🔥 Added to Trending Slot #${rank}!`);
+}
+
+async function quickRemoveTrending(id) {
+  await setPromptTrending(id, false);
+  renderTrendingManager();
+  renderAdminTable();
+  showToast("Removed prompt from Trending.");
+}
+
+async function changeTrendingSlot(id, newRank) {
+  newRank = parseInt(newRank, 10);
+  const all = getAllPrompts();
+  // If another prompt occupies this slot, swap their slots
+  const occupant = all.find(p => p.isTrending && parseInt(p.trendingRank, 10) === newRank && String(p.id) !== String(id));
+  const currentPrompt = all.find(p => String(p.id) === String(id));
+  const oldRank = currentPrompt ? currentPrompt.trendingRank : null;
+
+  await setPromptTrending(id, true, newRank);
+  if (occupant && oldRank) {
+    await setPromptTrending(occupant.id, true, oldRank);
+  }
+
+  renderTrendingManager();
+  renderAdminTable();
+  showToast(`Slot updated to #${newRank}!`);
+}
+
+async function assignPromptToSlot(promptId, slotNumber) {
+  if (!promptId) return;
+  await setPromptTrending(promptId, true, slotNumber);
+  renderTrendingManager();
+  renderAdminTable();
+  showToast(`Assigned prompt to Slot #${slotNumber}!`);
+}
+
+// ── 1ST-TIME WELCOME POPUP SHOWCASE MANAGER ──
+function renderShowcaseManager() {
+  const all = getAllPrompts();
+  const showcaseIds = (typeof getShowcaseIds === 'function') ? getShowcaseIds() : [];
+  const grid = document.getElementById('showcase-slots-grid');
+  const countBadge = document.getElementById('tab-showcase-count');
+  const indicator = document.getElementById('showcase-status-indicator');
+
+  if (countBadge) countBadge.textContent = `${showcaseIds.length}/5`;
+  if (indicator) indicator.textContent = `${showcaseIds.length} / 5 Configured`;
+
+  if (!grid) return;
+
+  let html = '';
+
+  for (let slot = 1; slot <= 5; slot++) {
+    const slotIndex = slot - 1;
+    const promptId = showcaseIds[slotIndex];
+    const promptObj = promptId ? all.find(p => String(p.id) === String(promptId)) : null;
+
+    if (promptObj) {
+      const hasImagesArray = Array.isArray(promptObj.images) && promptObj.images.length > 0;
+      const primaryImgUrl = hasImagesArray ? (promptObj.images[0].url || promptObj.images[0]) : promptObj.customImage;
+      const catIcon = (typeof getCategoryIcon === 'function') ? getCategoryIcon(promptObj.cat) : (promptObj.catIcon || '📁');
+
+      html += `
+        <div class="showcase-slot-card occupied" style="background:#fff;border:1.5px solid #c7d2fe;border-radius:14px;padding:14px;display:flex;flex-direction:column;box-shadow:0 4px 14px rgba(99,102,241,0.08);">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <span class="slot-rank-badge" style="background:#ede9fe;color:#6d28d9;border:1px solid #ddd6fe;font-size:0.72rem;font-weight:900;padding:2px 8px;border-radius:20px;">⭐ Slot #${slot}</span>
+            <button type="button" onclick="removeShowcaseSlot(${slotIndex})" style="background:#fee2e2;color:#dc2626;border:none;border-radius:6px;font-size:0.68rem;font-weight:800;padding:2px 7px;cursor:pointer;" title="Clear this slot">✕ Clear</button>
+          </div>
+
+          <div style="height:90px;border-radius:8px;overflow:hidden;background:#0d0d1a;position:relative;margin-bottom:8px;">
+            ${primaryImgUrl ? `<img src="${primaryImgUrl}" style="width:100%;height:100%;object-fit:cover;" />` : `<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:1.8rem;">${catIcon}</div>`}
+            <span style="position:absolute;bottom:4px;right:4px;background:rgba(0,0,0,0.75);color:#fff;font-size:0.62rem;font-weight:800;padding:1px 6px;border-radius:4px;">${promptObj.aiName || 'AI'}</span>
+          </div>
+
+          <strong style="font-size:0.84rem;color:var(--dk);line-height:1.3;margin-bottom:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${promptObj.title}</strong>
+          <span style="font-size:0.7rem;color:var(--mu);margin-bottom:8px;">${catIcon} ${promptObj.cat}</span>
+
+          <div style="margin-top:auto;">
+            <label style="font-size:0.66rem;color:var(--mu);font-weight:700;display:block;margin-bottom:3px;">Swap prompt:</label>
+            <select onchange="assignShowcaseSlot(${slotIndex}, this.value)" class="form-select" style="padding:4px 6px;font-size:0.72rem;font-weight:700;border-radius:6px;">
+              <option value="${promptObj.id}">Selected: ${promptObj.title.slice(0, 20)}...</option>
+              ${all.filter(p => String(p.id) !== String(promptObj.id)).map(p => `
+                <option value="${p.id}">${p.title.slice(0, 28)} (${p.cat})</option>
+              `).join('')}
+            </select>
+          </div>
+        </div>
+      `;
+    } else {
+      html += `
+        <div class="showcase-slot-card" style="background:#f8fafc;border:2px dashed #cbd5e1;border-radius:14px;padding:14px;display:flex;flex-direction:column;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <span class="slot-rank-badge" style="background:#f1f5f9;color:#64748b;border:1px solid #cbd5e1;font-size:0.72rem;font-weight:900;padding:2px 8px;border-radius:20px;">⭐ Slot #${slot} (Empty)</span>
+          </div>
+          <div style="height:76px;border-radius:8px;border:1.5px dashed #cbd5e1;display:flex;align-items:center;justify-content:center;margin-bottom:8px;color:var(--mu);font-size:0.74rem;text-align:center;padding:6px;">
+            No prompt chosen for Slot #${slot}
+          </div>
+          <div style="margin-top:auto;">
+            <label style="font-size:0.66rem;color:var(--mu);font-weight:700;display:block;margin-bottom:3px;">Assign prompt:</label>
+            <select onchange="assignShowcaseSlot(${slotIndex}, this.value)" class="form-select" style="padding:4px 6px;font-size:0.72rem;font-weight:700;border-radius:6px;">
+              <option value="">+ Choose Prompt...</option>
+              ${all.map(p => `<option value="${p.id}">${p.title.slice(0, 28)} (${p.cat})</option>`).join('')}
+            </select>
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  // 6th Slot Preview (Celebration Card)
+  html += `
+    <div class="showcase-slot-card" style="border:2px solid #f97316;background:linear-gradient(145deg, #fff7ed, #fff1f2);box-shadow:0 4px 18px rgba(249,115,22,0.15);border-radius:14px;padding:14px;display:flex;flex-direction:column;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span class="slot-rank-badge" style="background:#ffedd5;color:#c2410c;border:1px solid #fed7aa;font-size:0.72rem;font-weight:900;padding:2px 8px;border-radius:20px;">🔥 Slot #6 (Special Card)</span>
+      </div>
+      <div style="text-align:center;padding:8px 4px;margin-bottom:6px;">
+        <div style="font-size:1.8rem;margin-bottom:3px;">🔥 🎁</div>
+        <strong style="font-size:0.82rem;color:#9a3412;display:block;">FREE FOR LIMITED TIME! ENJOY</strong>
+        <span style="font-size:0.68rem;color:#c2410c;display:block;margin-top:2px;">Electric rainbow animated pass for 1st-time visitors.</span>
+      </div>
+      <div style="margin-top:auto;">
+        <span style="display:block;font-size:0.68rem;color:#9a3412;background:rgba(255,255,255,0.85);border:1px solid #fed7aa;padding:3px 6px;border-radius:6px;text-align:center;font-weight:800;">
+          ✨ Auto-Active on Website
+        </span>
+      </div>
+    </div>
+  `;
+
+  grid.innerHTML = html;
+  renderShowcaseTable();
+}
+
+async function assignShowcaseSlot(slotIndex, promptId) {
+  if (!promptId) return;
+  const currentIds = [...((typeof getShowcaseIds === 'function') ? getShowcaseIds() : [])];
+  
+  while (currentIds.length <= slotIndex) {
+    currentIds.push('');
+  }
+  
+  const existingIdx = currentIds.findIndex(id => String(id) === String(promptId));
+  if (existingIdx >= 0 && existingIdx !== slotIndex) {
+    currentIds[existingIdx] = currentIds[slotIndex] || '';
+  }
+
+  currentIds[slotIndex] = promptId;
+  const clean = currentIds.filter(Boolean).slice(0, 5);
+  
+  await saveShowcaseIdsAsync(clean);
+  renderShowcaseManager();
+  renderAdminTable();
+  showToast(`✨ Slot #${slotIndex + 1} updated successfully!`);
+}
+
+async function removeShowcaseSlot(slotIndex) {
+  const currentIds = [...((typeof getShowcaseIds === 'function') ? getShowcaseIds() : [])];
+  if (slotIndex < currentIds.length) {
+    currentIds.splice(slotIndex, 1);
+  }
+  await saveShowcaseIdsAsync(currentIds);
+  renderShowcaseManager();
+  renderAdminTable();
+  showToast(`Removed prompt from Slot #${slotIndex + 1}.`);
+}
+
+function renderShowcaseTable() {
+  const tbody = document.getElementById('showcase-toggle-tbody');
+  if (!tbody) return;
+  const all = getAllPrompts();
+  const showcaseIds = (typeof getShowcaseIds === 'function') ? getShowcaseIds() : [];
+  const search = (document.getElementById('showcase-search-input')?.value || '').toLowerCase();
+
+  const filtered = all.filter(p => !search || (p.title && p.title.toLowerCase().includes(search)) || (p.cat && p.cat.toLowerCase().includes(search)));
+
+  if (!filtered.length) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:26px;color:var(--mu);">No prompts found matching search.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(p => {
+    const slotIdx = showcaseIds.findIndex(id => String(id) === String(p.id));
+    const isShowcase = slotIdx >= 0;
+    const catIcon = (typeof getCategoryIcon === 'function') ? getCategoryIcon(p.cat) : (p.catIcon || '📁');
+    const logo = AI_LOGOS[p.ai] || AI_LOGOS.chatgpt;
+
+    const statusTag = isShowcase
+      ? `<span style="background:#ede9fe;color:#6d28d9;border:1px solid #ddd6fe;font-size:0.72rem;font-weight:800;padding:3px 10px;border-radius:20px;">⭐ Slot #${slotIdx + 1}</span>`
+      : `<span style="color:var(--mu);font-size:0.74rem;">Not in showcase</span>`;
+
+    return `
+      <tr>
+        <td>
+          <strong style="color:var(--dk);font-size:0.86rem;display:block;">${p.title}</strong>
+          <span style="font-size:0.72rem;color:var(--mu);">${p.desc ? p.desc.slice(0, 48) + '...' : ''}</span>
+        </td>
+        <td>
+          <span style="font-size:0.78rem;font-weight:700;">${catIcon} ${p.cat}</span>
+        </td>
+        <td>
+          <span style="font-size:0.76rem;font-weight:700;display:inline-flex;align-items:center;gap:5px;">
+            <img src="${logo.file}" style="width:14px;height:14px;border-radius:3px;" />
+            ${p.aiName || 'AI'}
+          </span>
+        </td>
+        <td>
+          ${statusTag}
+        </td>
+        <td style="text-align:right;">
+          <div style="display:inline-flex;gap:4px;">
+            ${[1, 2, 3, 4, 5].map(s => {
+              const active = slotIdx === (s - 1);
+              return `
+                <button type="button" onclick="assignShowcaseSlot(${s - 1}, '${p.id}')" style="padding:4px 8px;font-size:0.7rem;font-weight:800;border-radius:6px;border:1px solid ${active ? '#6d28d9' : '#cbd5e1'};background:${active ? '#6d28d9' : '#fff'};color:${active ? '#fff' : '#475569'};cursor:pointer;" title="Assign to Slot #${s}">
+                  #${s}
+                </button>
+              `;
+            }).join('')}
+            ${isShowcase ? `
+              <button type="button" onclick="removeShowcaseSlot(${slotIdx})" style="padding:4px 8px;font-size:0.7rem;font-weight:800;border-radius:6px;border:1px solid #fca5a5;background:#fee2e2;color:#dc2626;cursor:pointer;" title="Remove from showcase">
+                ✕
+              </button>
+            ` : ''}
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+// ── CATEGORY MANAGEMENT FUNCTIONS ──
+function selectCatIcon(emoji) {
+  const iconInp = document.getElementById('inp-new-cat-icon');
+  if (iconInp) iconInp.value = emoji;
+}
+
+function selectFormCategory(catName) {
+  document.getElementById('inp-cat').value = catName;
+  renderFormCategoryTicks();
+  updateLivePreview();
+}
+
+function renderFormCategoryTicks() {
+  const container = document.getElementById('form-category-ticks-grid');
+  if (!container) return;
+  const cats = getAllCategories();
+  const currentCat = (document.getElementById('inp-cat').value || 'Art & Design').toLowerCase();
+
+  container.innerHTML = cats.map(c => {
+    const isSelected = c.name.toLowerCase() === currentCat;
+    return `
+      <div class="cat-tick-pill ${isSelected ? 'active' : ''}" onclick="selectFormCategory('${c.name}')">
+        <span class="cat-check">${isSelected ? '✓' : ''}</span>
+        <span>${c.icon || '📁'} ${c.name}</span>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderAdminCategoriesManager() {
+  const cats = getAllCategories();
+  const allPrompts = getAllPrompts();
+
+  const countBadge = document.getElementById('cat-list-count');
+  if (countBadge) countBadge.textContent = cats.length;
+  const tabBadge = document.getElementById('tab-cat-count');
+  if (tabBadge) tabBadge.textContent = cats.length;
+
+  const container = document.getElementById('admin-categories-list');
+  if (!container) return;
+
+  container.innerHTML = cats.map(c => {
+    const promptCount = allPrompts.filter(p => p.cat && p.cat.toLowerCase() === c.name.toLowerCase()).length;
+    const isCustom = !c.isDefault;
+    const badgeHtml = isCustom 
+      ? `<span style="background:#f3e8ff;color:#7e22ce;font-size:0.7rem;font-weight:800;padding:2px 8px;border-radius:6px;">Custom Created</span>`
+      : `<span style="background:#f1f5f9;color:#64748b;font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius:6px;">Default System</span>`;
+
+    const deleteBtn = isCustom
+      ? `<button type="button" onclick="handleDeleteCategory('${c.id}', '${c.name}')" style="background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;padding:5px 12px;border-radius:8px;font-size:0.74rem;font-weight:800;cursor:pointer;transition:all 0.15s;" title="Delete this custom category">🗑️ Delete</button>`
+      : `<span style="font-size:0.72rem;color:var(--mu);font-weight:600;">System Locked</span>`;
+
+    return `
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#f8fafc;border:1.5px solid var(--bd);border-radius:14px;transition:all 0.2s;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span style="font-size:1.5rem;width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:#fff;border-radius:10px;border:1.5px solid var(--bd);">${c.icon || '📁'}</span>
+          <div>
+            <strong style="font-size:0.9rem;color:var(--dk);display:block;">${c.name}</strong>
+            <div style="display:flex;align-items:center;gap:8px;margin-top:2px;">
+              ${badgeHtml}
+              <span style="font-size:0.72rem;color:var(--mu);">${promptCount} Prompt${promptCount !== 1 ? 's' : ''} assigned</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          ${deleteBtn}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+async function handleCreateCategory(e) {
+  e.preventDefault();
+  const nameInput = document.getElementById('inp-new-cat-name');
+  const iconInput = document.getElementById('inp-new-cat-icon');
+
+  const name = nameInput.value.trim();
+  const icon = iconInput.value.trim() || '📁';
+
+  if (!name) {
+    alert("Please enter a category name!");
+    return;
+  }
+
+  const btn = document.getElementById('btn-save-cat');
+  btn.disabled = true;
+  btn.textContent = '⏳ Saving Category...';
+
+  const res = await saveNewCategoryAsync({ name, icon });
+  btn.disabled = false;
+  btn.textContent = '➕ Save & Add Category Live';
+
+  if (res) {
+    nameInput.value = '';
+    iconInput.value = '✨';
+    renderAdminCategoriesManager();
+    renderFormCategoryTicks();
+    showToast(`🎉 Category "${name}" created live!`);
+  } else {
+    alert("Category already exists or failed to save.");
+  }
+}
+
+async function handleDeleteCategory(id, name) {
+  if (!confirm(`Are you sure you want to delete category "${name}"?`)) return;
+  await deleteCategoryAsync(id);
+  renderAdminCategoriesManager();
+  renderFormCategoryTicks();
+  showToast(`🗑️ Category "${name}" deleted.`);
+}
+
+// Aspect ratio selector
+function selectRatio(ratio, chipEl) {
+  currentAspectRatio = ratio;
+  document.querySelectorAll('.ratio-chip').forEach(c => c.classList.remove('active'));
+  chipEl.classList.add('active');
+
+  const ratioText = document.getElementById('strip-ratio-text');
+  if (ratioText) ratioText.textContent = 'Aspect Ratio: ' + ratio;
+}
+
+// ── MULTI-IMAGE & PHOTO ADJUSTMENT STATE ──
+let currentUploadedImages = []; // [ { url, posX: 50, posY: 50, zoom: 1 } ]
+let activeImgIndex = 0;
+let currentCardHeight = 230;
+
+function renderMultiImageList() {
+  const container = document.getElementById('multi-img-list');
+  const countEl = document.getElementById('multi-img-count');
+  const strip = document.getElementById('multi-img-strip');
+  const counterBadge = document.getElementById('preview-img-counter');
+
+  if (!currentUploadedImages || currentUploadedImages.length === 0) {
+    if (strip) strip.style.display = 'none';
+    if (counterBadge) counterBadge.style.display = 'none';
+    return;
+  }
+
+  if (strip) strip.style.display = 'block';
+  if (countEl) countEl.textContent = `Uploaded Photos (${currentUploadedImages.length})`;
+
+  if (counterBadge) {
+    counterBadge.style.display = currentUploadedImages.length > 1 ? 'block' : 'none';
+    counterBadge.textContent = `📸 ${activeImgIndex + 1} of ${currentUploadedImages.length} Photos`;
+  }
+
+  if (container) {
+    container.innerHTML = currentUploadedImages.map((img, idx) => {
+      const isCover = idx === 0;
+      const isActive = idx === activeImgIndex;
+      return `
+        <div class="multi-thumb-card ${isActive ? 'active' : ''}" onclick="selectActiveImage(${idx})" title="Click to adjust framing">
+          <img src="${img.url}" alt="Photo ${idx+1}" />
+          ${isCover ? '<span class="multi-cover-tag">Cover</span>' : ''}
+          <button type="button" class="multi-del-btn" onclick="event.stopPropagation();removeSingleImage(${idx})" title="Delete this image">✕</button>
+        </div>
+      `;
+    }).join('');
+  }
+}
+
+function selectActiveImage(idx) {
+  if (idx < 0 || idx >= currentUploadedImages.length) return;
+  activeImgIndex = idx;
+  const imgObj = currentUploadedImages[idx];
+
+  // Update adjuster sliders
+  const posY = imgObj.posY !== undefined ? imgObj.posY : 50;
+  const posX = imgObj.posX !== undefined ? imgObj.posX : 50;
+  const zoom = imgObj.zoom !== undefined ? imgObj.zoom : 1;
+
+  document.getElementById('inp-pos-y').value = posY;
+  document.getElementById('inp-pos-x').value = posX;
+  document.getElementById('inp-zoom').value = Math.round(zoom * 100);
+
+  // Update live preview card
+  const previewWrapper = document.getElementById('live-img-wrapper');
+  const previewImg = document.getElementById('live-card-img');
+  const previewEmoji = document.getElementById('live-card-emoji');
+
+  previewImg.src = imgObj.url;
+  previewWrapper.style.display = 'block';
+  previewEmoji.style.display = 'none';
+
+  updatePhotoAdjustment();
+  renderMultiImageList();
+}
+
+function removeSingleImage(idx) {
+  currentUploadedImages.splice(idx, 1);
+  if (activeImgIndex >= currentUploadedImages.length) {
+    activeImgIndex = Math.max(0, currentUploadedImages.length - 1);
+  }
+  if (currentUploadedImages.length === 0) {
+    removeUploadedImage();
+  } else {
+    selectActiveImage(activeImgIndex);
+  }
+}
+
+function updatePhotoAdjustment() {
+  const posY = parseInt(document.getElementById('inp-pos-y').value, 10);
+  const posX = parseInt(document.getElementById('inp-pos-x').value, 10);
+  const zoom = parseFloat(document.getElementById('inp-zoom').value) / 100;
+
+  if (currentUploadedImages[activeImgIndex]) {
+    currentUploadedImages[activeImgIndex].posY = posY;
+    currentUploadedImages[activeImgIndex].posX = posX;
+    currentUploadedImages[activeImgIndex].zoom = zoom;
+  }
+
+  document.getElementById('label-pos-y').textContent = posY === 0 ? '0% (Top)' : (posY === 50 ? '50% (Center)' : (posY === 100 ? '100% (Bottom)' : `${posY}%`));
+  document.getElementById('label-pos-x').textContent = `${posX}%`;
+  document.getElementById('label-zoom').textContent = zoom.toFixed(2) + 'x';
+
+  const previewImg = document.getElementById('live-card-img');
+  if (previewImg) {
+    previewImg.style.objectPosition = `${posX}% ${posY}%`;
+    previewImg.style.transform = `scale(${zoom})`;
+    previewImg.style.transformOrigin = `${posX}% ${posY}%`;
+  }
+}
+
+function applyPhotoPreset(preset) {
+  if (preset === 'face') {
+    document.getElementById('inp-pos-y').value = 15;
+    document.getElementById('inp-pos-x').value = 50;
+    document.getElementById('inp-zoom').value = 110;
+  } else if (preset === 'center') {
+    document.getElementById('inp-pos-y').value = 50;
+    document.getElementById('inp-pos-x').value = 50;
+    document.getElementById('inp-zoom').value = 100;
+  } else if (preset === 'bottom') {
+    document.getElementById('inp-pos-y').value = 85;
+    document.getElementById('inp-pos-x').value = 50;
+    document.getElementById('inp-zoom').value = 100;
+  } else if (preset === 'zoom') {
+    document.getElementById('inp-zoom').value = 125;
+  } else if (preset === 'reset') {
+    document.getElementById('inp-pos-y').value = 50;
+    document.getElementById('inp-pos-x').value = 50;
+    document.getElementById('inp-zoom').value = 100;
+    setCardHeight(230, document.getElementById('chip-h-230'));
+  }
+  updatePhotoAdjustment();
+}
+
+function setCardHeight(h, chipEl) {
+  currentCardHeight = h;
+  const label = document.getElementById('label-card-h');
+  if (label) label.textContent = h === 230 ? '230px (Standard)' : (h === 270 ? '270px (Tall Portrait)' : '180px (Compact)');
+  
+  document.querySelectorAll('.h-chip').forEach(c => c.classList.remove('active'));
+  if (chipEl) chipEl.classList.add('active');
+  else {
+    const el = document.getElementById('chip-h-' + h);
+    if (el) el.classList.add('active');
+  }
+
+  const ptContainer = document.getElementById('live-pt-container');
+  if (ptContainer) {
+    ptContainer.style.height = h + 'px';
+  }
+}
+
+// Drag to adjust vertical position on preview card
+let isDraggingPreview = false;
+let startDragY = 0;
+let startPosY = 50;
+
+function setupPreviewDrag() {
+  const container = document.getElementById('live-pt-container');
+  if (!container) return;
+
+  container.addEventListener('mousedown', (e) => {
+    if (!currentUploadedImages.length) return;
+    isDraggingPreview = true;
+    startDragY = e.clientY;
+    startPosY = currentUploadedImages[activeImgIndex] ? (currentUploadedImages[activeImgIndex].posY || 50) : 50;
+    container.style.cursor = 'grabbing';
+    e.preventDefault();
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    if (!isDraggingPreview) return;
+    const deltaY = e.clientY - startDragY;
+    let newPosY = Math.round(startPosY - (deltaY * 0.4));
+    newPosY = Math.max(0, Math.min(100, newPosY));
+    document.getElementById('inp-pos-y').value = newPosY;
+    updatePhotoAdjustment();
+  });
+
+  window.addEventListener('mouseup', () => {
+    if (isDraggingPreview) {
+      isDraggingPreview = false;
+      container.style.cursor = 'grab';
+    }
+  });
+}
+
+// Upload & optimize image (handles single or multiple images)
+async function handleImageUpload(e) {
+  const files = Array.from(e.target.files);
+  if (!files.length) return;
+
+  for (const file of files) {
+    try {
+      const compressed = await compressImageFile(file, 900, 0.85);
+      currentUploadedImages.push({
+        url: compressed,
+        posY: 50,
+        posX: 50,
+        zoom: 1
+      });
+    } catch(err) {
+      console.error("Upload error:", err);
+    }
+  }
+
+  document.getElementById('photo-adjust-box').style.display = 'block';
+  document.getElementById('drag-hint-badge').style.display = 'block';
+
+  selectActiveImage(currentUploadedImages.length - 1);
+}
+
+function removeUploadedImage() {
+  currentUploadedImages = [];
+  activeImgIndex = 0;
+  document.getElementById('inp-file').value = '';
+  document.getElementById('multi-img-strip').style.display = 'none';
+  document.getElementById('photo-adjust-box').style.display = 'none';
+  document.getElementById('drag-hint-badge').style.display = 'none';
+
+  const previewWrapper = document.getElementById('live-img-wrapper');
+  const previewImg = document.getElementById('live-card-img');
+  const previewEmoji = document.getElementById('live-card-emoji');
+
+  previewImg.src = '';
+  previewWrapper.style.display = 'none';
+  previewEmoji.style.display = 'block';
+}
+
+function updateLivePreview() {
+  const title = document.getElementById('inp-title').value.trim() || 'Your Prompt Title Here';
+  const desc = document.getElementById('inp-desc').value.trim() || 'Generate ultra-detailed portraits with custom lighting.';
+  const ai = document.getElementById('inp-ai').value;
+  const cat = document.getElementById('inp-cat').value;
+  const author = document.getElementById('inp-author').value.trim() || 'Admin';
+  const outcome = (document.getElementById('inp-outcome') ? document.getElementById('inp-outcome').value : '').trim();
+
+  const catIcon = (typeof getCategoryIcon === 'function') ? getCategoryIcon(cat) : (CAT_ICONS[cat] || '📁');
+  document.getElementById('live-card-title').textContent = title;
+  document.getElementById('live-card-desc').textContent = desc;
+  document.getElementById('live-card-cat').textContent = catIcon + ' ' + cat;
+  document.getElementById('live-card-author').textContent = author;
+  document.getElementById('live-card-av').textContent = author[0].toUpperCase();
+
+  const liveOutcomePill = document.getElementById('live-card-outcome-pill');
+  const liveOutcomeVal = document.getElementById('live-card-outcome-val');
+  if (liveOutcomePill && liveOutcomeVal) {
+    if (outcome) {
+      liveOutcomePill.style.display = 'flex';
+      liveOutcomeVal.textContent = outcome.length > 70 ? outcome.slice(0, 70) + '...' : outcome;
+    } else {
+      liveOutcomePill.style.display = 'none';
+    }
+  }
+
+  const logo = AI_LOGOS[ai] || AI_LOGOS.chatgpt;
+  const aiLogoEl = document.getElementById('live-card-ai');
+  if (aiLogoEl) {
+    aiLogoEl.src = logo.file;
+  }
+}
+
+// Edit prompt
+function editPromptAdmin(id) {
+  const p = getPromptById(id);
+  if (!p) return;
+
+  switchTab('create');
+
+  document.getElementById('admin-edit-id').value = p.id;
+  document.getElementById('inp-title').value = p.title || '';
+  document.getElementById('inp-prompt').value = p.prompt || '';
+  document.getElementById('inp-desc').value = p.desc || '';
+  if (document.getElementById('inp-outcome')) {
+    document.getElementById('inp-outcome').value = p.outcome || '';
+  }
+  document.getElementById('inp-ai').value = p.ai || 'chatgpt';
+  document.getElementById('inp-cat').value = p.cat || 'Art & Design';
+  selectFormCategory(p.cat || 'Art & Design');
+  document.getElementById('inp-author').value = p.author || 'Admin';
+
+  // Set promptType
+  const pType = p.promptType || ((p.images && p.images.length > 0) || p.customImage ? 'image' : 'text');
+  setPromptType(pType);
+
+  // Set Trending
+  document.getElementById('inp-is-trending').checked = !!p.isTrending;
+  document.getElementById('inp-trending-rank').value = p.trendingRank ? String(p.trendingRank) : '1';
+  toggleTrendingRankVisibility();
+
+  if (p.aspectRatio) {
+    const chips = document.querySelectorAll('.ratio-chip');
+    chips.forEach(chip => {
+      if (chip.getAttribute('onclick') && chip.getAttribute('onclick').includes(p.aspectRatio)) {
+        selectRatio(p.aspectRatio, chip);
+      }
+    });
+  }
+
+  // Handle multiple images or single customImage
+  let imgs = [];
+  if (Array.isArray(p.images) && p.images.length > 0) {
+    imgs = p.images.map(img => {
+      if (typeof img === 'string') {
+        return { url: img, posY: p.imgPosY || 50, posX: p.imgPosX || 50, zoom: p.imgZoom || 1 };
+      }
+      return {
+        url: img.url,
+        posY: img.posY !== undefined ? img.posY : (p.imgPosY || 50),
+        posX: img.posX !== undefined ? img.posX : (p.imgPosX || 50),
+        zoom: img.zoom !== undefined ? img.zoom : (p.imgZoom || 1)
+      };
+    });
+  } else if (p.customImage) {
+    imgs = [{
+      url: p.customImage,
+      posY: p.imgPosY || 50,
+      posX: p.imgPosX || 50,
+      zoom: p.imgZoom || 1
+    }];
+  }
+
+  if (imgs.length > 0) {
+    currentUploadedImages = imgs;
+    activeImgIndex = 0;
+    document.getElementById('photo-adjust-box').style.display = 'block';
+    document.getElementById('drag-hint-badge').style.display = 'block';
+    setCardHeight(p.cardHeight || 230);
+    selectActiveImage(0);
+  } else {
+    removeUploadedImage();
+  }
+
+  updateLivePreview();
+  document.getElementById('btn-admin-submit').textContent = '💾 Update Prompt in Database';
+}
+
+// Delete prompt
+async function deletePromptAdmin(id) {
+  const p = getPromptById(id);
+  const name = p ? p.title : id;
+  if (!confirm(`Are you sure you want to permanently delete "${name}"?`)) return;
+
+  await deleteUserPromptAsync(id);
+
+  // If on server, call API
+  try {
+    if (window.location.protocol.startsWith('http')) {
+      await fetch('/api/prompts/' + id, { method: 'DELETE' });
+    }
+  } catch(e){}
+
+  // If deleted prompt was being edited, clear form
+  if (document.getElementById('admin-edit-id').value === String(id)) {
+    document.getElementById('admin-prompt-form').reset();
+    document.getElementById('admin-edit-id').value = '';
+    if (document.getElementById('inp-outcome')) document.getElementById('inp-outcome').value = '';
+    selectFormCategory('Art & Design');
+    setPromptType('image');
+    document.getElementById('inp-is-trending').checked = false;
+    toggleTrendingRankVisibility();
+    removeUploadedImage();
+    updateLivePreview();
+  }
+
+  renderAdminTable();
+  if (typeof renderTrendingManager === 'function') renderTrendingManager();
+  showToast('🗑️ Prompt permanently deleted from database!');
+}
+
+// Submit Form (Save / Update)
+async function handleAdminSubmit(e) {
+  e.preventDefault();
+
+  const editId = document.getElementById('admin-edit-id').value;
+  const title = document.getElementById('inp-title').value.trim();
+  const promptText = document.getElementById('inp-prompt').value.trim();
+  const desc = document.getElementById('inp-desc').value.trim();
+  const outcome = (document.getElementById('inp-outcome') ? document.getElementById('inp-outcome').value : '').trim();
+  const ai = document.getElementById('inp-ai').value;
+  const cat = document.getElementById('inp-cat').value;
+  const author = document.getElementById('inp-author').value.trim() || 'Admin';
+
+  const promptType = document.getElementById('inp-prompt-type').value || 'image';
+  const isTrending = document.getElementById('inp-is-trending').checked;
+  const trendingRank = parseInt(document.getElementById('inp-trending-rank').value, 10) || 1;
+
+  if (!title || !promptText) {
+    alert("Please fill in Prompt Title and Prompt Template!");
+    return;
+  }
+
+  const primaryImg = currentUploadedImages[0] || null;
+  const catIcon = (typeof getCategoryIcon === 'function') ? getCategoryIcon(cat) : (CAT_ICONS[cat] || '📁');
+
+  const promptObj = {
+    id: editId || ('user_' + Date.now()),
+    title: title,
+    desc: desc || `Expert ${cat} prompt engineered for ${AI_NAMES[ai] || 'AI'}.`,
+    outcome: outcome,
+    prompt: promptText,
+    cat: cat,
+    catIcon: catIcon,
+    ai: ai,
+    aiName: AI_NAMES[ai] || 'AI',
+    promptType: promptType,
+    isTrending: isTrending,
+    trendingRank: trendingRank,
+    images: currentUploadedImages,
+    customImage: primaryImg ? primaryImg.url : null,
+    aspectRatio: currentAspectRatio,
+    imgPosY: primaryImg ? (primaryImg.posY || 50) : 50,
+    imgPosX: primaryImg ? (primaryImg.posX || 50) : 50,
+    imgZoom: primaryImg ? (primaryImg.zoom || 1) : 1,
+    cardHeight: currentCardHeight,
+    emoji: catIcon,
+    gradient: 'g' + (Math.floor(Math.random() * 8) + 1),
+    rating: 5.0,
+    uses: '1',
+    author: author,
+    authorColor: '#5b4cff',
+    tags: [cat.toLowerCase(), ai.toLowerCase(), promptType, 'custom'],
+    howToUse: [
+      "Copy the complete prompt",
+      "Replace any [BRACKETS] with your details",
+      `Open ${AI_NAMES[ai] || 'AI'} and paste`,
+      "Enjoy high-precision output!"
+    ]
+  };
+
+  const btn = document.getElementById('btn-admin-submit');
+  btn.disabled = true;
+  btn.textContent = '⏳ Saving to Database...';
+
+  await saveUserPromptAsync(promptObj);
+
+  // If on server, send POST/PUT
+  try {
+    if (window.location.protocol.startsWith('http')) {
+      const method = editId ? 'PUT' : 'POST';
+      const url = editId ? ('/api/prompts/' + editId) : '/api/prompts';
+      await fetch(url, {
+        method: method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(promptObj)
+      });
+    }
+  } catch(e){}
+
+  btn.disabled = false;
+  btn.textContent = '🚀 Publish Prompt to Live Website';
+
+  document.getElementById('admin-prompt-form').reset();
+  document.getElementById('admin-edit-id').value = '';
+  if (document.getElementById('inp-outcome')) document.getElementById('inp-outcome').value = '';
+  selectFormCategory('Art & Design');
+  setPromptType('image');
+  document.getElementById('inp-is-trending').checked = false;
+  toggleTrendingRankVisibility();
+  removeUploadedImage();
+  updateLivePreview();
+
+  switchTab('manage');
+  showToast(editId ? '✅ Prompt Updated Live in Database!' : '🎉 New Prompt Published Live!');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('on');
+  setTimeout(() => t.classList.remove('on'), 3000);
+}
+
+// Initial start
+async function startAdmin() {
+  await loadAllCategories();
+  await loadAllCustomPrompts();
+  if (typeof loadShowcaseIds === 'function') {
+    await loadShowcaseIds();
+  }
+  renderFormCategoryTicks();
+  renderAdminCategoriesManager();
+  renderAdminTable();
+  if (typeof renderShowcaseManager === 'function') {
+    renderShowcaseManager();
+  }
+  setupPreviewDrag();
+
+  // Check if opened with ?edit=ID
+  const urlParams = new URLSearchParams(window.location.search);
+  const editId = urlParams.get('edit');
+  if (editId) {
+    editPromptAdmin(editId);
+  }
+}
+startAdmin();
+</script>
+</body>
+</html>
