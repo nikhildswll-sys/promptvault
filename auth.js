@@ -46,7 +46,21 @@ async function loginWithGoogle() {
   }
 
   try {
-    const result = await firebaseAuth.signInWithPopup(googleAuthProvider);
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    // On mobile, signInWithPopup can be killed by popup blockers; on desktop popup works best
+    let result;
+    try {
+      result = await firebaseAuth.signInWithPopup(googleAuthProvider);
+    } catch(popupErr) {
+      if (popupErr.code === 'auth/popup-blocked' || popupErr.code === 'auth/cancelled-popup-request') {
+        console.log("Popup blocked, trying redirect sign-in...");
+        await firebaseAuth.signInWithRedirect(googleAuthProvider);
+        return null;
+      }
+      throw popupErr;
+    }
+
     const user = result.user;
     currentAuthUser = {
       uid: user.uid,
@@ -78,12 +92,29 @@ async function loginWithGoogle() {
       return null;
     }
     if (error.code === 'auth/unauthorized-domain') {
-      alert(`⚠️ Firebase Domain Authorization Required:\nPlease add "${window.location.hostname}" to Firebase Console -> Authentication -> Settings -> Authorized Domains.`);
+      alert(`⚠️ DOMAIN AUTHORIZATION REQUIRED:\n\nFirebase Console me jao:\n1. Authentication -> Settings -> Authorized Domains\n2. "Add domain" par click karke "${window.location.hostname}" add kar do!`);
     } else {
-      alert("Sign-in error: " + (error.message || "Please try again."));
+      alert("Sign-in error: " + (error.message || "Please check Firebase settings."));
     }
     return null;
   }
+}
+
+// Handle redirect result if redirected on mobile
+if (firebaseAuth) {
+  firebaseAuth.getRedirectResult().then((result) => {
+    if (result && result.user) {
+      const user = result.user;
+      currentAuthUser = {
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName || user.email.split('@')[0],
+        photoURL: user.photoURL || null
+      };
+      localStorage.setItem('promptvault_user', JSON.stringify(currentAuthUser));
+      updateAuthUI();
+    }
+  }).catch(err => console.error("Redirect auth error:", err));
 }
 
 // 2. Logout
