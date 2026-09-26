@@ -641,6 +641,12 @@ Sitemap: ${baseUrl}/sitemap.xml
 `);
 });
 
+// Google AdSense ads.txt endpoint
+app.get('/ads.txt', (req, res) => {
+  res.header('Content-Type', 'text/plain');
+  res.send('google.com, pub-1086281363527230, DIRECT, f08c47fec0942fa0\n');
+});
+
 app.listen(PORT, () => {
   const baseUrl = process.env.BASE_URL || `http://localhost:${PORT}`;
   writeSitemapOnDisk(baseUrl);
