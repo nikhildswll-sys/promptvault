@@ -1,30 +1,32 @@
-// ── PROMPTVAULT FIREBASE AUTHENTICATION ENGINE ───────────────────────
+// ── PROMPTVAULT OFFICIAL FIREBASE AUTHENTICATION ENGINE ──────────────
 const ADMIN_EMAIL = 'nikhildswll@gmail.com';
 
-// Default / Placeholder Firebase Config (Replace with your Firebase Console Config if you have one)
-const firebaseConfig = window.FIREBASE_CONFIG || {
-  apiKey: "AIzaSyDummyKeyForPromptVaultDemoAuth2026",
-  authDomain: "promptvault-auth.firebaseapp.com",
-  projectId: "promptvault-auth",
-  storageBucket: "promptvault-auth.appspot.com",
-  messagingSenderId: "1029384756",
-  appId: "1:1029384756:web:abcdef123456"
+// Official Firebase Project Configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyAinG-sg05VtUvxinWd54tph0RCUwhhbFA",
+  authDomain: "promptvaultlogin.firebaseapp.com",
+  projectId: "promptvaultlogin",
+  storageBucket: "promptvaultlogin.firebasestorage.app",
+  messagingSenderId: "562740431507",
+  appId: "1:562740431507:web:c131d61e674fc36cd6db66",
+  measurementId: "G-RW6QRSQSH6"
 };
 
-// Initialize Firebase if not already initialized
+// Initialize Firebase App & Auth
 let firebaseAuth = null;
 let googleAuthProvider = null;
 
 try {
   if (typeof firebase !== 'undefined') {
-    if (!firebase.apps.length) {
+    if (!firebase.apps || !firebase.apps.length) {
       firebase.initializeApp(firebaseConfig);
     }
     firebaseAuth = firebase.auth();
     googleAuthProvider = new firebase.auth.GoogleAuthProvider();
+    googleAuthProvider.setCustomParameters({ prompt: 'select_account' });
   }
-} catch(e) {
-  console.warn("Firebase initialization warning:", e.message);
+} catch (e) {
+  console.error("Firebase initialization error:", e);
 }
 
 // Global Auth State
@@ -38,82 +40,86 @@ function isCurrentUserAdmin() {
 
 // 1. Google 1-Click Popup Login
 async function loginWithGoogle() {
-  if (firebaseAuth && googleAuthProvider) {
-    try {
-      const result = await firebaseAuth.signInWithPopup(googleAuthProvider);
-      const user = result.user;
-      currentAuthUser = {
-        uid: user.uid,
-        email: user.email,
-        displayName: user.displayName || user.email.split('@')[0],
-        photoURL: user.photoURL || null
-      };
-      localStorage.setItem('promptvault_user', JSON.stringify(currentAuthUser));
-      updateAuthUI();
-      if (typeof showToast === 'function') {
-        showToast(isCurrentUserAdmin() ? `👑 Welcome Admin Nikhil!` : `👋 Welcome, ${currentAuthUser.displayName}!`);
+  if (!firebaseAuth || !googleAuthProvider) {
+    alert("Firebase Auth is initializing. Please check your internet connection.");
+    return null;
+  }
+
+  try {
+    const result = await firebaseAuth.signInWithPopup(googleAuthProvider);
+    const user = result.user;
+    currentAuthUser = {
+      uid: user.uid,
+      email: user.email,
+      displayName: user.displayName || user.email.split('@')[0],
+      photoURL: user.photoURL || null
+    };
+
+    localStorage.setItem('promptvault_user', JSON.stringify(currentAuthUser));
+    updateAuthUI();
+
+    if (isCurrentUserAdmin()) {
+      showAuthToast("👑 Welcome Admin Nikhil! Creator controls unlocked.");
+      if (window.location.pathname.includes('admin.html')) {
+        const overlay = document.getElementById('admin-auth-overlay');
+        const root = document.getElementById('admin-app-root');
+        if (overlay) overlay.style.display = 'none';
+        if (root) root.style.display = 'block';
+        if (typeof startAdmin === 'function') startAdmin();
       }
-      return currentAuthUser;
-    } catch (error) {
-      console.error("Firebase Google Login Error:", error);
-      // Fallback for simulation / direct Google mock if Firebase API key is pending
-      return simulateGoogleLoginFallback();
+    } else {
+      showAuthToast(`👋 Welcome, ${currentAuthUser.displayName}!`);
     }
-  } else {
-    return simulateGoogleLoginFallback();
+
+    return currentAuthUser;
+  } catch (error) {
+    console.error("Firebase Google Login Error:", error);
+    if (error.code === 'auth/popup-closed-by-user') {
+      return null;
+    }
+    if (error.code === 'auth/unauthorized-domain') {
+      alert(`⚠️ Firebase Domain Authorization Required:\nPlease add "${window.location.hostname}" to Firebase Console -> Authentication -> Settings -> Authorized Domains.`);
+    } else {
+      alert("Sign-in error: " + (error.message || "Please try again."));
+    }
+    return null;
   }
-}
-
-// Fallback login prompt if custom Firebase Project keys are being configured
-function simulateGoogleLoginFallback() {
-  const emailPrompt = prompt("Sign in with Google (Enter your Google Email):", "nikhildswll@gmail.com");
-  if (!emailPrompt || !emailPrompt.trim()) return null;
-
-  const email = emailPrompt.trim().toLowerCase();
-  const name = email === ADMIN_EMAIL.toLowerCase() ? "Nikhil (Admin)" : email.split('@')[0];
-  
-  currentAuthUser = {
-    uid: 'user_' + Date.now(),
-    email: email,
-    displayName: name,
-    photoURL: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name)}`
-  };
-
-  localStorage.setItem('promptvault_user', JSON.stringify(currentAuthUser));
-  updateAuthUI();
-  if (typeof showToast === 'function') {
-    showToast(isCurrentUserAdmin() ? `👑 Welcome Admin Nikhil!` : `👋 Welcome, ${name}!`);
-  }
-  return currentAuthUser;
 }
 
 // 2. Logout
 async function logoutUser() {
+  if (!confirm("Are you sure you want to sign out?")) return;
   if (firebaseAuth) {
-    try { await firebaseAuth.signOut(); } catch(e){}
+    try { await firebaseAuth.signOut(); } catch (e) {}
   }
   currentAuthUser = null;
   localStorage.removeItem('promptvault_user');
   localStorage.removeItem('promptvault_admin_token');
   localStorage.removeItem('promptvault_admin_user');
   updateAuthUI();
-  if (typeof showToast === 'function') {
-    showToast("👋 Logged out successfully");
-  }
-  // If on admin page and not admin, reload or redirect
+  showAuthToast("👋 Signed out successfully");
+
   if (window.location.pathname.includes('admin.html')) {
     window.location.reload();
   }
 }
 
+function showAuthToast(msg) {
+  const t = document.getElementById('toast');
+  if (t) {
+    t.textContent = msg;
+    t.classList.add('on');
+    setTimeout(() => t.classList.remove('on'), 3500);
+  }
+}
+
 // 3. Update Auth UI across Header Navigation
 function updateAuthUI() {
-  // Try loading cached user if memory is null
   if (!currentAuthUser) {
     try {
       const cached = localStorage.getItem('promptvault_user');
       if (cached) currentAuthUser = JSON.parse(cached);
-    } catch(e){}
+    } catch (e) {}
   }
 
   const isAdmin = isCurrentUserAdmin();
@@ -123,7 +129,7 @@ function updateAuthUI() {
     if (currentAuthUser) {
       const avatar = currentAuthUser.photoURL || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(currentAuthUser.displayName)}`;
       const adminBtnHtml = isAdmin ? `
-        <a href="admin.html" class="btn-nav-admin-unlocked" style="background:#4f46e5;color:#fff;padding:6px 12px;border-radius:8px;font-size:0.75rem;font-weight:800;text-decoration:none;display:inline-flex;align-items:center;gap:4px;box-shadow:0 2px 8px rgba(79,70,229,0.35);">
+        <a href="admin.html" class="btn-nav-admin-unlocked" style="background:linear-gradient(135deg,#5b4cff,#7c6dff);color:#fff;padding:6px 12px;border-radius:8px;font-size:0.75rem;font-weight:800;text-decoration:none;display:inline-flex;align-items:center;gap:4px;box-shadow:0 3px 10px rgba(91,76,255,0.35);">
           🛡️ Admin Studio
         </a>
       ` : '';
@@ -135,8 +141,8 @@ function updateAuthUI() {
             <img src="${avatar}" alt="${currentAuthUser.displayName}" style="width:20px;height:20px;border-radius:50%;object-fit:cover;" />
             <span>${currentAuthUser.displayName}</span>
           </div>
-          <button type="button" onclick="logoutUser()" style="background:#fee2e2;color:#dc2626;border:1px solid #fecdd3;border-radius:8px;padding:5px 10px;font-size:0.72rem;font-weight:800;cursor:pointer;" title="Sign out">
-            🚪
+          <button type="button" onclick="logoutUser()" style="background:#fee2e2;color:#dc2626;border:1px solid #fecdd3;border-radius:8px;padding:5px 9px;font-size:0.72rem;font-weight:800;cursor:pointer;" title="Sign out">
+            🚪 Logout
           </button>
         </div>
       `;
@@ -164,17 +170,21 @@ function updateAuthUI() {
     } else {
       if (adminLockOverlay) adminLockOverlay.style.display = 'flex';
       if (adminAppRoot) adminAppRoot.style.display = 'none';
-      
+
       const errBox = document.getElementById('auth-error-box');
-      if (errBox && currentAuthUser) {
-        errBox.textContent = `🚫 Signed in as ${currentAuthUser.email}. Admin panel is strictly reserved for ${ADMIN_EMAIL}.`;
-        errBox.style.display = 'block';
+      if (errBox) {
+        if (currentAuthUser) {
+          errBox.textContent = `🚫 Signed in as ${currentAuthUser.email}. Admin panel is strictly reserved for ${ADMIN_EMAIL}.`;
+          errBox.style.display = 'block';
+        } else {
+          errBox.style.display = 'none';
+        }
       }
     }
   }
 }
 
-// Firebase Auth State Listener
+// Listen to Firebase Auth State Changes
 if (firebaseAuth) {
   firebaseAuth.onAuthStateChanged((user) => {
     if (user) {
@@ -185,6 +195,9 @@ if (firebaseAuth) {
         photoURL: user.photoURL || null
       };
       localStorage.setItem('promptvault_user', JSON.stringify(currentAuthUser));
+    } else {
+      currentAuthUser = null;
+      localStorage.removeItem('promptvault_user');
     }
     updateAuthUI();
   });
