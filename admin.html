@@ -997,6 +997,8 @@ tr:hover{background:#fafbff}
 <!-- Firebase SDK & PromptVault Auth Engine -->
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
 <script src="auth.js"></script>
 <script src="db.js"></script>
 <script src="prompts.js"></script>
@@ -1838,15 +1840,16 @@ async function handleImageUpload(e) {
 
   for (const file of files) {
     try {
-      const compressed = await compressImageFile(file, 900, 0.85);
+      const compressed = await compressImageFile(file, 1200, 0.85);
       currentUploadedImages.push({
-        url: compressed,
+        url: compressed.dataUrl || compressed,
+        blob: compressed.blob || null,
         posY: 50,
         posX: 50,
         zoom: 1
       });
     } catch(err) {
-      console.error("Upload error:", err);
+      console.error("Upload compression error:", err);
     }
   }
 
@@ -1989,13 +1992,6 @@ async function deletePromptAdmin(id) {
 
   await deleteUserPromptAsync(id);
 
-  // If on server, call API
-  try {
-    if (window.location.protocol.startsWith('http')) {
-      await fetch('/api/prompts/' + id, { method: 'DELETE' });
-    }
-  } catch(e){}
-
   // If deleted prompt was being edited, clear form
   if (document.getElementById('admin-edit-id').value === String(id)) {
     document.getElementById('admin-prompt-form').reset();
@@ -2036,78 +2032,88 @@ async function handleAdminSubmit(e) {
     return;
   }
 
-  const primaryImg = currentUploadedImages[0] || null;
-  const catIcon = (typeof getCategoryIcon === 'function') ? getCategoryIcon(cat) : (CAT_ICONS[cat] || '📁');
-
-  const promptObj = {
-    id: editId || ('user_' + Date.now()),
-    title: title,
-    desc: desc || `Expert ${cat} prompt engineered for ${AI_NAMES[ai] || 'AI'}.`,
-    outcome: outcome,
-    prompt: promptText,
-    cat: cat,
-    catIcon: catIcon,
-    ai: ai,
-    aiName: AI_NAMES[ai] || 'AI',
-    promptType: promptType,
-    isTrending: isTrending,
-    trendingRank: trendingRank,
-    images: currentUploadedImages,
-    customImage: primaryImg ? primaryImg.url : null,
-    aspectRatio: currentAspectRatio,
-    imgPosY: primaryImg ? (primaryImg.posY || 50) : 50,
-    imgPosX: primaryImg ? (primaryImg.posX || 50) : 50,
-    imgZoom: primaryImg ? (primaryImg.zoom || 1) : 1,
-    cardHeight: currentCardHeight,
-    emoji: catIcon,
-    gradient: 'g' + (Math.floor(Math.random() * 8) + 1),
-    rating: 5.0,
-    uses: '1',
-    author: author,
-    authorColor: '#5b4cff',
-    tags: [cat.toLowerCase(), ai.toLowerCase(), promptType, 'custom'],
-    howToUse: [
-      "Copy the complete prompt",
-      "Replace any [BRACKETS] with your details",
-      `Open ${AI_NAMES[ai] || 'AI'} and paste`,
-      "Enjoy high-precision output!"
-    ]
-  };
-
+  const promptId = editId || ('user_' + Date.now());
   const btn = document.getElementById('btn-admin-submit');
   btn.disabled = true;
-  btn.textContent = '⏳ Saving to Database...';
 
-  await saveUserPromptAsync(promptObj);
-
-  // If on server, send POST/PUT
   try {
-    if (window.location.protocol.startsWith('http')) {
-      const method = editId ? 'PUT' : 'POST';
-      const url = editId ? ('/api/prompts/' + editId) : '/api/prompts';
-      await fetch(url, {
-        method: method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(promptObj)
-      });
+    // 1. Upload any new blob/dataUrl images to Firebase Cloud Storage
+    const finalImages = [];
+    for (let i = 0; i < currentUploadedImages.length; i++) {
+      const item = { ...currentUploadedImages[i] };
+      const imgSource = item.blob || item.url;
+
+      if (typeof item.url === 'string' && item.url.startsWith('data:')) {
+        btn.textContent = `⏳ Uploading photo ${i + 1}/${currentUploadedImages.length} to Firebase Storage...`;
+        const storageUrl = await uploadImageToFirebaseStorage(imgSource, promptId);
+        item.url = storageUrl;
+      }
+      delete item.blob;
+      finalImages.push(item);
     }
-  } catch(e){}
 
-  btn.disabled = false;
-  btn.textContent = '🚀 Publish Prompt to Live Website';
+    const primaryImg = finalImages[0] || null;
+    const catIcon = (typeof getCategoryIcon === 'function') ? getCategoryIcon(cat) : (CAT_ICONS[cat] || '📁');
 
-  document.getElementById('admin-prompt-form').reset();
-  document.getElementById('admin-edit-id').value = '';
-  if (document.getElementById('inp-outcome')) document.getElementById('inp-outcome').value = '';
-  selectFormCategory('Art & Design');
-  setPromptType('image');
-  document.getElementById('inp-is-trending').checked = false;
-  toggleTrendingRankVisibility();
-  removeUploadedImage();
-  updateLivePreview();
+    const promptObj = {
+      id: promptId,
+      title: title,
+      desc: desc || `Expert ${cat} prompt engineered for ${AI_NAMES[ai] || 'AI'}.`,
+      outcome: outcome,
+      prompt: promptText,
+      cat: cat,
+      catIcon: catIcon,
+      ai: ai,
+      aiName: AI_NAMES[ai] || 'AI',
+      promptType: promptType,
+      isTrending: isTrending,
+      trendingRank: trendingRank,
+      images: finalImages,
+      customImage: primaryImg ? primaryImg.url : null,
+      aspectRatio: currentAspectRatio,
+      imgPosY: primaryImg ? (primaryImg.posY || 50) : 50,
+      imgPosX: primaryImg ? (primaryImg.posX || 50) : 50,
+      imgZoom: primaryImg ? (primaryImg.zoom || 1) : 1,
+      cardHeight: currentCardHeight,
+      emoji: catIcon,
+      gradient: 'g' + (Math.floor(Math.random() * 8) + 1),
+      rating: 5.0,
+      uses: '1',
+      author: author,
+      authorColor: '#5b4cff',
+      tags: [cat.toLowerCase(), ai.toLowerCase(), promptType, 'custom'],
+      howToUse: [
+        "Copy the complete prompt",
+        "Replace any [BRACKETS] with your details",
+        `Open ${AI_NAMES[ai] || 'AI'} and paste`,
+        "Enjoy high-precision output!"
+      ]
+    };
 
-  switchTab('manage');
-  showToast(editId ? '✅ Prompt Updated Live in Database!' : '🎉 New Prompt Published Live!');
+    btn.textContent = '⏳ Saving prompt to Cloud Firestore...';
+    await saveUserPromptAsync(promptObj);
+
+    btn.disabled = false;
+    btn.textContent = '🚀 Publish Prompt to Live Website';
+
+    document.getElementById('admin-prompt-form').reset();
+    document.getElementById('admin-edit-id').value = '';
+    if (document.getElementById('inp-outcome')) document.getElementById('inp-outcome').value = '';
+    selectFormCategory('Art & Design');
+    setPromptType('image');
+    document.getElementById('inp-is-trending').checked = false;
+    toggleTrendingRankVisibility();
+    removeUploadedImage();
+    updateLivePreview();
+
+    switchTab('manage');
+    showToast(editId ? '✅ Prompt Updated Live in Firestore!' : '🎉 New Prompt Published & Saved to Firebase!');
+  } catch (err) {
+    console.error("Firebase Publish Error:", err);
+    btn.disabled = false;
+    btn.textContent = '🚀 Publish Prompt to Live Website';
+    alert("❌ Error saving prompt to Firebase:\n" + (err.message || "Please check your network and Firebase configuration."));
+  }
 }
 
 async function startAdmin() {

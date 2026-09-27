@@ -1,11 +1,12 @@
-// ── PROMPT VAULT DATABASE ENGINE (IndexedDB + API Sync) ────────────────────────
+// ── PROMPTVAULT CENTRALIZED DATABASE ENGINE (Cloud Firestore + Firebase Storage + IndexedDB Cache) ──
+
 const DB_NAME = 'PromptVaultDB';
 const DB_VERSION = 1;
 const STORE_NAME = 'prompts';
 
 let dbInstance = null;
 
-// Open or initialize IndexedDB
+// 1. IndexedDB Local Cache Initialization (For Ultra-Fast Instant Render)
 function initDB() {
   return new Promise((resolve, reject) => {
     if (dbInstance) return resolve(dbInstance);
@@ -28,100 +29,64 @@ function initDB() {
     };
 
     request.onerror = function(e) {
-      console.error("IndexedDB open error:", e);
-      reject(e);
+      console.warn("IndexedDB fallback mode:", e);
+      resolve(null);
     };
   });
 }
 
-// Get all custom prompts from DB
-async function dbGetAllCustomPrompts() {
+// 2. Cache Helpers
+async function cacheSavePromptsLocally(promptsList) {
+  if (!Array.isArray(promptsList) || promptsList.length === 0) return;
   try {
     const db = await initDB();
-    return new Promise((resolve) => {
-      const tx = db.transaction(STORE_NAME, 'readonly');
+    if (db) {
+      const tx = db.transaction(STORE_NAME, 'readwrite');
       const store = tx.objectStore(STORE_NAME);
-      const req = store.getAll();
-      req.onsuccess = () => resolve(req.result || []);
-      req.onerror = () => resolve([]);
-    });
-  } catch (err) {
-    console.error("dbGetAllCustomPrompts error:", err);
-    // Fallback to localStorage
-    try {
-      const raw = localStorage.getItem('promptvault_user_prompts');
-      return raw ? JSON.parse(raw) : [];
-    } catch(e) {
-      return [];
+      promptsList.forEach(p => store.put(p));
     }
-  }
+  } catch(e){}
+
+  try {
+    // Light localStorage mirror (without massive inline strings)
+    const clean = promptsList.map(p => {
+      const copy = { ...p };
+      if (copy.customImage && copy.customImage.startsWith('data:')) {
+        copy.customImage = copy.customImage.slice(0, 500) + '...';
+      }
+      return copy;
+    });
+    localStorage.setItem('promptvault_user_prompts', JSON.stringify(clean));
+  } catch(e){}
 }
 
-// Save or Update a prompt in DB
-async function dbSavePrompt(promptData) {
+async function cacheGetPromptsLocally() {
   try {
     const db = await initDB();
-    return new Promise((resolve, reject) => {
-      const tx = db.transaction(STORE_NAME, 'readwrite');
-      const store = tx.objectStore(STORE_NAME);
-      if (!promptData.created_at) promptData.created_at = Date.now();
-      promptData.updated_at = Date.now();
-      
-      const req = store.put(promptData);
-      req.onsuccess = () => {
-        // Also mirror to localStorage without huge images if possible as backup
-        try {
-          const minimal = { ...promptData };
-          if (minimal.customImage && minimal.customImage.length > 500000) {
-            // Keep localStorage light
-            delete minimal.customImage;
-          }
-          const raw = localStorage.getItem('promptvault_user_prompts');
-          const list = raw ? JSON.parse(raw) : [];
-          const idx = list.findIndex(p => String(p.id) === String(promptData.id));
-          if (idx >= 0) list[idx] = minimal;
-          else list.unshift(minimal);
-          localStorage.setItem('promptvault_user_prompts', JSON.stringify(list));
-        } catch(e){}
-        resolve(promptData);
-      };
-      req.onerror = (e) => reject(e);
-    });
-  } catch (err) {
-    console.error("dbSavePrompt error:", err);
-    return null;
-  }
-}
+    if (db) {
+      return new Promise((resolve) => {
+        const tx = db.transaction(STORE_NAME, 'readonly');
+        const store = tx.objectStore(STORE_NAME);
+        const req = store.getAll();
+        req.onsuccess = () => resolve(req.result || []);
+        req.onerror = () => resolve([]);
+      });
+    }
+  } catch(e){}
 
-// Delete a prompt from DB
-async function dbDeletePrompt(id) {
   try {
-    const db = await initDB();
-    return new Promise((resolve, reject) => {
-      const tx = db.transaction(STORE_NAME, 'readwrite');
-      const store = tx.objectStore(STORE_NAME);
-      const req = store.delete(id);
-      req.onsuccess = () => {
-        try {
-          const raw = localStorage.getItem('promptvault_user_prompts');
-          if (raw) {
-            const list = JSON.parse(raw).filter(p => String(p.id) !== String(id));
-            localStorage.setItem('promptvault_user_prompts', JSON.stringify(list));
-          }
-        } catch(e){}
-        resolve(true);
-      };
-      req.onerror = (e) => reject(e);
-    });
-  } catch (err) {
-    console.error("dbDeletePrompt error:", err);
-    return false;
+    const raw = localStorage.getItem('promptvault_user_prompts');
+    return raw ? JSON.parse(raw) : [];
+  } catch(e) {
+    return [];
   }
 }
 
-// Image compressor helper: compresses any file to max width 900px, 85% WebP/JPEG
-function compressImageFile(file, maxWidth = 900, quality = 0.85) {
+// 3. IMAGE COMPRESSION & WEBP CONVERTER
+function compressImageFile(file, maxWidth = 1200, quality = 0.85) {
   return new Promise((resolve, reject) => {
+    if (!file) return reject(new Error("No file provided"));
+    
     const reader = new FileReader();
     reader.onload = function(event) {
       const img = new Image();
@@ -141,14 +106,240 @@ function compressImageFile(file, maxWidth = 900, quality = 0.85) {
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, width, height);
 
-        // Convert to webp or jpeg
-        const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
-        resolve(compressedDataUrl);
+        // Try WebP compression first; fallback to JPEG
+        let dataUrl = canvas.toDataURL('image/webp', quality);
+        if (!dataUrl || !dataUrl.startsWith('data:image/webp')) {
+          dataUrl = canvas.toDataURL('image/jpeg', quality);
+        }
+
+        canvas.toBlob((blob) => {
+          resolve({
+            dataUrl: dataUrl,
+            blob: blob || dataURLToBlob(dataUrl),
+            width: width,
+            height: height
+          });
+        }, 'image/webp', quality);
       };
-      img.onerror = reject;
+      img.onerror = () => reject(new Error("Image decoding failed"));
       img.src = event.target.result;
     };
-    reader.onerror = reject;
+    reader.onerror = () => reject(new Error("File reading failed"));
     reader.readAsDataURL(file);
   });
 }
+
+function dataURLToBlob(dataUrl) {
+  const parts = dataUrl.split(';base64,');
+  const contentType = parts[0].split(':')[1];
+  const raw = window.atob(parts[1]);
+  const uInt8Array = new Uint8Array(raw.length);
+  for (let i = 0; i < raw.length; ++i) {
+    uInt8Array[i] = raw.charCodeAt(i);
+  }
+  return new Blob([uInt8Array], { type: contentType });
+}
+
+// 4. FIREBASE CLOUD STORAGE IMAGE UPLOADER
+async function uploadImageToFirebaseStorage(fileOrBlobOrDataUrl, promptId = 'prompt') {
+  if (!fileOrBlobOrDataUrl) return null;
+
+  // If it's already an external HTTPS url, no need to re-upload
+  if (typeof fileOrBlobOrDataUrl === 'string' && fileOrBlobOrDataUrl.startsWith('http')) {
+    return fileOrBlobOrDataUrl;
+  }
+
+  let blob = null;
+  let ext = 'webp';
+  let mime = 'image/webp';
+
+  if (typeof fileOrBlobOrDataUrl === 'string' && fileOrBlobOrDataUrl.startsWith('data:')) {
+    blob = dataURLToBlob(fileOrBlobOrDataUrl);
+    mime = blob.type || 'image/webp';
+    ext = mime.includes('png') ? 'png' : (mime.includes('jpeg') || mime.includes('jpg') ? 'jpg' : 'webp');
+  } else if (fileOrBlobOrDataUrl instanceof Blob) {
+    blob = fileOrBlobOrDataUrl;
+    mime = blob.type || 'image/webp';
+    ext = mime.includes('png') ? 'png' : (mime.includes('jpeg') || mime.includes('jpg') ? 'jpg' : 'webp');
+  }
+
+  if (!blob) {
+    throw new Error("Invalid image format for Firebase Storage upload.");
+  }
+
+  // Ensure Firebase Storage is initialized
+  const storage = firebaseStorage || (typeof firebase !== 'undefined' && firebase.storage ? firebase.storage() : null);
+  if (!storage) {
+    console.warn("Firebase Storage SDK not loaded. Preserving optimized data URL.");
+    return (typeof fileOrBlobOrDataUrl === 'string') ? fileOrBlobOrDataUrl : null;
+  }
+
+  const cleanPromptId = String(promptId || 'prompt').replace(/[^a-zA-Z0-9_-]/g, '_');
+  const filename = `prompts/${cleanPromptId}/${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${ext}`;
+  const storageRef = storage.ref(filename);
+
+  const metadata = {
+    contentType: mime,
+    cacheControl: 'public, max-age=31536000'
+  };
+
+  const uploadTask = await storageRef.put(blob, metadata);
+  const downloadUrl = await uploadTask.ref.getDownloadURL();
+  console.log(`✅ [Firebase Storage] Uploaded image successfully: ${downloadUrl}`);
+  return downloadUrl;
+}
+
+// 5. CLOUD FIRESTORE CRUD OPERATIONS
+
+// Fetch all prompts from Cloud Firestore
+async function firestoreGetAllPrompts() {
+  const db = firestoreDb || (typeof firebase !== 'undefined' && firebase.firestore ? firebase.firestore() : null);
+  
+  if (db) {
+    try {
+      const snapshot = await db.collection('prompts').orderBy('created_at', 'desc').get();
+      const prompts = [];
+      snapshot.forEach(doc => {
+        prompts.push({ id: doc.id, ...doc.data() });
+      });
+      console.log(`✅ [Cloud Firestore] Fetched ${prompts.length} prompts from cloud database.`);
+      
+      // Cache to IndexedDB for instant offline-first speeds
+      cacheSavePromptsLocally(prompts).catch(() => {});
+      return prompts;
+    } catch(err) {
+      console.warn("⚠️ [Cloud Firestore] Fetch error (fallback to local cache):", err.message);
+    }
+  }
+
+  // Fallback to local cache if Firestore is not reachable
+  return await cacheGetPromptsLocally();
+}
+
+// Save or Update a prompt in Cloud Firestore
+async function firestoreSavePrompt(promptData) {
+  if (!promptData.id) promptData.id = 'user_' + Date.now();
+  if (!promptData.created_at) promptData.created_at = Date.now();
+  promptData.updated_at = Date.now();
+
+  const db = firestoreDb || (typeof firebase !== 'undefined' && firebase.firestore ? firebase.firestore() : null);
+  
+  if (db) {
+    try {
+      const docRef = db.collection('prompts').doc(String(promptData.id));
+      await docRef.set(promptData, { merge: true });
+      console.log(`✅ [Cloud Firestore] Prompt ${promptData.id} saved permanently to cloud database!`);
+    } catch(err) {
+      console.error("❌ [Cloud Firestore] Save error:", err);
+      throw err;
+    }
+  }
+
+  // Also sync to local cache
+  await cacheSavePromptsLocally([promptData]);
+  return promptData;
+}
+
+// Delete a prompt from Cloud Firestore
+async function firestoreDeletePrompt(promptId) {
+  const strId = String(promptId);
+  const db = firestoreDb || (typeof firebase !== 'undefined' && firebase.firestore ? firebase.firestore() : null);
+
+  if (db) {
+    try {
+      await db.collection('prompts').doc(strId).delete();
+      console.log(`🗑️ [Cloud Firestore] Prompt ${strId} deleted permanently from cloud database.`);
+    } catch(err) {
+      console.error("❌ [Cloud Firestore] Delete error:", err);
+      throw err;
+    }
+  }
+
+  // Clean local cache
+  try {
+    const ldb = await initDB();
+    if (ldb) {
+      const tx = ldb.transaction(STORE_NAME, 'readwrite');
+      tx.objectStore(STORE_NAME).delete(strId);
+    }
+    const raw = localStorage.getItem('promptvault_user_prompts');
+    if (raw) {
+      const list = JSON.parse(raw).filter(p => String(p.id) !== strId);
+      localStorage.setItem('promptvault_user_prompts', JSON.stringify(list));
+    }
+  } catch(e){}
+
+  return true;
+}
+
+// Categories: Get from Firestore
+async function firestoreGetAllCategories() {
+  const db = firestoreDb || (typeof firebase !== 'undefined' && firebase.firestore ? firebase.firestore() : null);
+  if (db) {
+    try {
+      const snapshot = await db.collection('categories').get();
+      const cats = [];
+      snapshot.forEach(doc => cats.push({ id: doc.id, ...doc.data() }));
+      if (cats.length > 0) return cats;
+    } catch(e) {
+      console.warn("Categories fetch note:", e.message);
+    }
+  }
+  return null;
+}
+
+// Categories: Save to Firestore
+async function firestoreSaveCategory(catData) {
+  if (!catData || !catData.id) return false;
+  const db = firestoreDb || (typeof firebase !== 'undefined' && firebase.firestore ? firebase.firestore() : null);
+  if (db) {
+    try {
+      await db.collection('categories').doc(String(catData.id)).set(catData, { merge: true });
+    } catch(e){}
+  }
+  return catData;
+}
+
+// Categories: Delete from Firestore
+async function firestoreDeleteCategory(catId) {
+  const db = firestoreDb || (typeof firebase !== 'undefined' && firebase.firestore ? firebase.firestore() : null);
+  if (db) {
+    try {
+      await db.collection('categories').doc(String(catId)).delete();
+    } catch(e){}
+  }
+  return true;
+}
+
+// Showcase: Get 5 curated slot IDs from Firestore
+async function firestoreGetShowcase() {
+  const db = firestoreDb || (typeof firebase !== 'undefined' && firebase.firestore ? firebase.firestore() : null);
+  if (db) {
+    try {
+      const doc = await db.collection('showcase').doc('main_showcase').get();
+      if (doc.exists && doc.data() && Array.isArray(doc.data().ids)) {
+        return doc.data().ids;
+      }
+    } catch(e){}
+  }
+  return null;
+}
+
+// Showcase: Save 5 curated slot IDs to Firestore
+async function firestoreSaveShowcase(ids) {
+  const db = firestoreDb || (typeof firebase !== 'undefined' && firebase.firestore ? firebase.firestore() : null);
+  if (db) {
+    try {
+      await db.collection('showcase').doc('main_showcase').set({
+        ids: ids,
+        updated_at: Date.now()
+      }, { merge: true });
+    } catch(e){}
+  }
+  return ids;
+}
+
+// Backward Compatibility Aliases
+const dbGetAllCustomPrompts = firestoreGetAllPrompts;
+const dbSavePrompt = firestoreSavePrompt;
+const dbDeletePrompt = firestoreDeletePrompt;

@@ -1,4 +1,4 @@
-// ── PROMPTVAULT OFFICIAL FIREBASE AUTHENTICATION ENGINE ──────────────
+// ── PROMPTVAULT CENTRALIZED FIREBASE ENGINE (Auth + Firestore + Storage) ────────
 const ADMIN_EMAIL = 'nikhildswll@gmail.com';
 
 // Official Firebase Project Configuration
@@ -12,24 +12,44 @@ const firebaseConfig = {
   measurementId: "G-RW6QRSQSH6"
 };
 
-// Initialize Firebase App & Auth
+// Initialize Firebase App & Services
+let firebaseApp = null;
 let firebaseAuth = null;
 let googleAuthProvider = null;
+let firestoreDb = null;
+let firebaseStorage = null;
 
 try {
   if (typeof firebase !== 'undefined') {
     if (!firebase.apps || !firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
+      firebaseApp = firebase.initializeApp(firebaseConfig);
+    } else {
+      firebaseApp = firebase.app();
     }
-    firebaseAuth = firebase.auth();
-    googleAuthProvider = new firebase.auth.GoogleAuthProvider();
-    googleAuthProvider.setCustomParameters({ prompt: 'select_account' });
+
+    if (typeof firebase.auth === 'function') {
+      firebaseAuth = firebase.auth();
+      googleAuthProvider = new firebase.auth.GoogleAuthProvider();
+      googleAuthProvider.setCustomParameters({ prompt: 'select_account' });
+    }
+
+    if (typeof firebase.firestore === 'function') {
+      firestoreDb = firebase.firestore();
+      // Optional offline persistence in browser
+      firestoreDb.enablePersistence({ synchronizeTabs: true }).catch((err) => {
+        console.log("Firestore persistence mode: standard online/cache (" + (err.code || err.message) + ")");
+      });
+    }
+
+    if (typeof firebase.storage === 'function') {
+      firebaseStorage = firebase.storage();
+    }
   }
 } catch (e) {
-  console.error("Firebase initialization error:", e);
+  console.error("Firebase engine initialization error:", e);
 }
 
-// Global Auth State
+// Global Auth User State
 let currentAuthUser = null;
 
 // Helper: Check if currently logged in user is the Admin
@@ -46,9 +66,6 @@ async function loginWithGoogle() {
   }
 
   try {
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    
-    // On mobile, signInWithPopup can be killed by popup blockers; on desktop popup works best
     let result;
     try {
       result = await firebaseAuth.signInWithPopup(googleAuthProvider);

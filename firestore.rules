@@ -1,0 +1,23 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Prompts Collection: Publicly readable by everyone, writable only by Admin
+    match /prompts/{promptId} {
+      allow read: if true;
+      allow create, update, delete: if request.auth != null && request.auth.token.email == 'nikhildswll@gmail.com';
+    }
+    
+    // Categories Collection: Publicly readable, writable only by Admin
+    match /categories/{catId} {
+      allow read: if true;
+      allow create, update, delete: if request.auth != null && request.auth.token.email == 'nikhildswll@gmail.com';
+    }
+    
+    // Showcase Collection: Publicly readable, writable only by Admin
+    match /showcase/{docId} {
+      allow read: if true;
+      allow create, update, delete: if request.auth != null && request.auth.token.email == 'nikhildswll@gmail.com';
+    }
+  }
+}

@@ -642,21 +642,19 @@ function getUserPrompts() {
 async function loadAllCustomPrompts() {
   let loaded = null;
 
-  // 1. Try server API /api/prompts (PRIMARY CLOUD SOURCE OF TRUTH)
-  try {
-    if (typeof window !== 'undefined' && window.location.protocol.startsWith('http')) {
-      const res = await fetch('/api/prompts');
-      if (res.ok) {
-        const json = await res.json();
-        const sPrompts = Array.isArray(json) ? json : (json && Array.isArray(json.data) ? json.data : null);
-        if (sPrompts !== null) {
-          loaded = sPrompts;
-        }
+  // 1. Primary Source of Truth: Cloud Firestore
+  if (typeof firestoreGetAllPrompts === 'function') {
+    try {
+      const fsPrompts = await firestoreGetAllPrompts();
+      if (Array.isArray(fsPrompts) && fsPrompts.length >= 0) {
+        loaded = fsPrompts;
       }
+    } catch(e) {
+      console.warn("Firestore load note:", e);
     }
-  } catch(e) {}
+  }
 
-  // 2. Offline / Local fallback if server is unreachable
+  // 2. Offline / Local IndexedDB fallback
   if (loaded === null) {
     if (typeof dbGetAllCustomPrompts === 'function') {
       try {
@@ -680,14 +678,6 @@ async function loadAllCustomPrompts() {
   }
 
   cachedCustomPrompts = loaded || [];
-
-  // Sync to IndexedDB for offline cache
-  if (typeof dbSavePrompt === 'function' && cachedCustomPrompts.length > 0) {
-    for (const p of cachedCustomPrompts) {
-      dbSavePrompt(p).catch(() => {});
-    }
-  }
-
   return cachedCustomPrompts;
 }
 
@@ -746,22 +736,10 @@ async function setPromptTrending(id, isTrending, rank) {
   }
 
   await saveUserPromptAsync(target);
-
-  // If running on server, sync via PUT
-  try {
-    if (typeof window !== 'undefined' && window.location.protocol.startsWith('http')) {
-      await fetch('/api/prompts/' + id, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(target)
-      });
-    }
-  } catch(e){}
-
   return target;
 }
 
-// Save or Update prompt in DB and memory
+// Save or Update prompt in Cloud Firestore and memory
 async function saveUserPromptAsync(promptData) {
   if (!promptData.id) promptData.id = 'user_' + Date.now();
   
@@ -776,35 +754,25 @@ async function saveUserPromptAsync(promptData) {
     cachedCustomPrompts.unshift(promptData);
   }
 
-  // Save to IndexedDB
-  if (typeof dbSavePrompt === 'function') {
+  // 1. Primary Save to Cloud Firestore
+  if (typeof firestoreSavePrompt === 'function') {
+    await firestoreSavePrompt(promptData);
+  } else if (typeof dbSavePrompt === 'function') {
     await dbSavePrompt(promptData);
-  }
-
-  // Backup to localStorage
-  try {
-    const cleanList = cachedCustomPrompts.map(p => {
-      if (p.customImage && p.customImage.length > 300000) {
-        const copy = { ...p };
-        copy.customImage = copy.customImage.slice(0, 1000) + '...';
-        return copy;
-      }
-      return p;
-    });
-    localStorage.setItem('promptvault_user_prompts', JSON.stringify(cleanList));
-  } catch(e) {
-    console.warn("LocalStorage quota note: data stored safely in IndexedDB");
   }
 
   return promptData;
 }
 
-// Delete prompt (works for both custom and default prompts)
+// Delete prompt from Cloud Firestore and memory
 async function deleteUserPromptAsync(id) {
   const strId = String(id);
   cachedCustomPrompts = cachedCustomPrompts.filter(p => String(p.id) !== strId);
   
-  if (typeof dbDeletePrompt === 'function') {
+  // 1. Delete from Cloud Firestore
+  if (typeof firestoreDeletePrompt === 'function') {
+    await firestoreDeletePrompt(id);
+  } else if (typeof dbDeletePrompt === 'function') {
     await dbDeletePrompt(id);
   }
   
@@ -817,13 +785,6 @@ async function deleteUserPromptAsync(id) {
 
   try {
     localStorage.setItem('promptvault_user_prompts', JSON.stringify(cachedCustomPrompts));
-  } catch(e){}
-
-  // Call Server API to delete from MongoDB Atlas & JSON
-  try {
-    if (typeof window !== 'undefined' && window.location.protocol.startsWith('http')) {
-      await fetch('/api/prompts/' + encodeURIComponent(strId), { method: 'DELETE' });
-    }
   } catch(e){}
 
   return true;
@@ -937,19 +898,15 @@ let cachedCategories = [...DEFAULT_CATEGORIES];
 async function loadAllCategories() {
   let loaded = [];
 
-  // 1. Try server API /api/categories
-  try {
-    if (typeof window !== 'undefined' && window.location.protocol.startsWith('http')) {
-      const res = await fetch('/api/categories');
-      if (res.ok) {
-        const json = await res.json();
-        const sCats = Array.isArray(json) ? json : (json && Array.isArray(json.data) ? json.data : []);
-        if (sCats.length > 0) {
-          loaded = sCats;
-        }
+  // 1. Primary Source: Cloud Firestore
+  if (typeof firestoreGetAllCategories === 'function') {
+    try {
+      const fsCats = await firestoreGetAllCategories();
+      if (Array.isArray(fsCats) && fsCats.length > 0) {
+        loaded = fsCats;
       }
-    }
-  } catch(e) {}
+    } catch(e){}
+  }
 
   // 2. Try localStorage backup
   if (!loaded.length) {
@@ -1011,16 +968,10 @@ async function saveNewCategoryAsync(catObj) {
     localStorage.setItem('promptvault_custom_categories', JSON.stringify(cachedCategories));
   } catch(e) {}
 
-  // Send to server
-  try {
-    if (typeof window !== 'undefined' && window.location.protocol.startsWith('http')) {
-      await fetch('/api/categories', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newCat)
-      });
-    }
-  } catch(e) {}
+  // Save to Cloud Firestore
+  if (typeof firestoreSaveCategory === 'function') {
+    await firestoreSaveCategory(newCat);
+  }
 
   return newCat;
 }
@@ -1031,12 +982,10 @@ async function deleteCategoryAsync(catId) {
     localStorage.setItem('promptvault_custom_categories', JSON.stringify(cachedCategories));
   } catch(e) {}
 
-  // Send delete to server
-  try {
-    if (typeof window !== 'undefined' && window.location.protocol.startsWith('http')) {
-      await fetch('/api/categories/' + catId, { method: 'DELETE' });
-    }
-  } catch(e) {}
+  // Delete from Cloud Firestore
+  if (typeof firestoreDeleteCategory === 'function') {
+    await firestoreDeleteCategory(catId);
+  }
 
   return true;
 }
@@ -1056,17 +1005,16 @@ let cachedShowcaseIds = [];
 
 async function loadShowcaseIds() {
   let loaded = [];
-  try {
-    if (typeof window !== 'undefined' && window.location.protocol.startsWith('http')) {
-      const res = await fetch('/api/showcase');
-      if (res.ok) {
-        const json = await res.json();
-        if (json && Array.isArray(json.ids)) {
-          loaded = json.ids;
-        }
+
+  // 1. Primary Source: Cloud Firestore
+  if (typeof firestoreGetShowcase === 'function') {
+    try {
+      const fsIds = await firestoreGetShowcase();
+      if (Array.isArray(fsIds) && fsIds.length > 0) {
+        loaded = fsIds;
       }
-    }
-  } catch(e) {}
+    } catch(e){}
+  }
 
   if (!loaded.length) {
     try {
@@ -1127,15 +1075,10 @@ async function saveShowcaseIdsAsync(ids) {
     localStorage.setItem('promptvault_showcase_ids', JSON.stringify(cachedShowcaseIds));
   } catch(e) {}
 
-  try {
-    if (typeof window !== 'undefined' && window.location.protocol.startsWith('http')) {
-      await fetch('/api/showcase', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ids: cachedShowcaseIds })
-      });
-    }
-  } catch(e) {}
+  // Save to Cloud Firestore
+  if (typeof firestoreSaveShowcase === 'function') {
+    await firestoreSaveShowcase(cachedShowcaseIds);
+  }
 
   return cachedShowcaseIds;
 }
