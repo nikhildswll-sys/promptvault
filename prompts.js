@@ -1110,6 +1110,18 @@ async function saveShowcaseIdsAsync(ids) {
 // ── DYNAMIC CURATED HOMEPAGE SECTIONS (Swipeable Carousels) ───────────────────
 const DEFAULT_SECTIONS = [
   {
+    id: 'sec_chatgpt_trending_prompts',
+    title: '🔥 ChatGPT Trending Prompts',
+    subtitle: 'Discover the latest viral ChatGPT image trends, photo edits & creative prompts',
+    filterType: 'ai',
+    filterValue: 'chatgpt',
+    icon: '🔥',
+    badge: 'Trending Now',
+    seoKeyword: 'ChatGPT image prompts, ChatGPT trending prompts, viral ChatGPT prompts, ChatGPT photo editing prompts, AI image trends',
+    order: 1,
+    enabled: true
+  },
+  {
     id: 'sec_chatgpt_graphic_design',
     title: '🎨 ChatGPT Graphic Design',
     subtitle: 'Ultra-realistic food photography, commercial ads, bold typography & poster designs',
@@ -1118,7 +1130,7 @@ const DEFAULT_SECTIONS = [
     icon: '🎨',
     badge: 'Graphic Design',
     seoKeyword: 'chatgpt graphic design prompts',
-    order: 1,
+    order: 2,
     enabled: true
   }
 ];
@@ -1219,11 +1231,15 @@ function getPromptsForSection(sec) {
   const secId = String(sec.id || '').toLowerCase().trim();
   const val = String(sec.filterValue || '').toLowerCase().trim();
   const filterType = sec.filterType || 'ai';
+  const secTitle = String(sec.title || '').toLowerCase().trim();
 
   // 1. Prompts that have this section explicitly ticked in Admin Studio
   const explicitlyTicked = all.filter(p => {
     if (!p.sectionIds || !Array.isArray(p.sectionIds)) return false;
-    return p.sectionIds.some(sid => String(sid).toLowerCase() === secId || (sec.id && String(sid) === String(sec.id)));
+    return p.sectionIds.some(sid => {
+      const sLow = String(sid).toLowerCase();
+      return sLow === secId || (sec.id && sLow === String(sec.id).toLowerCase()) || (secTitle.includes('trending') && sLow.includes('trending'));
+    });
   });
 
   // If the admin has explicitly ticked/assigned prompts to this section, show ONLY those!
@@ -1231,36 +1247,28 @@ function getPromptsForSection(sec) {
     return explicitlyTicked;
   }
 
-  // 2. Strict Filter Criteria Matching (Do NOT include prompts explicitly assigned to other sections)
+  // 2. Filter Criteria Matching
   let filterMatched = [];
   if (filterType === 'ai' && val) {
     filterMatched = all.filter(p => {
       const pAi = (p.ai || '').toLowerCase();
       const pAiName = (p.aiName || '').toLowerCase();
-      const matches = (pAi === val || pAiName === val);
-      const assignedToOther = Array.isArray(p.sectionIds) && p.sectionIds.length > 0 && !p.sectionIds.some(sid => String(sid).toLowerCase() === secId);
-      return matches && !assignedToOther;
+      return pAi === val || pAiName === val;
     });
   } else if (filterType === 'category' && val) {
     filterMatched = all.filter(p => {
       const pCat = (p.cat || '').toLowerCase();
-      const matches = (pCat === val);
-      const assignedToOther = Array.isArray(p.sectionIds) && p.sectionIds.length > 0 && !p.sectionIds.some(sid => String(sid).toLowerCase() === secId);
-      return matches && !assignedToOther;
+      return pCat === val;
     });
   } else if (filterType === 'tag' && val) {
     filterMatched = all.filter(p => {
-      const matches = Array.isArray(p.tags) && p.tags.some(t => t.toLowerCase() === val);
-      const assignedToOther = Array.isArray(p.sectionIds) && p.sectionIds.length > 0 && !p.sectionIds.some(sid => String(sid).toLowerCase() === secId);
-      return matches && !assignedToOther;
+      return Array.isArray(p.tags) && p.tags.some(t => t.toLowerCase() === val);
     });
   } else if (filterType === 'promptType' && val) {
     filterMatched = all.filter(p => {
       const pType = (p.promptType || '').toLowerCase();
       const isImg = pType === 'image' || p.customImage || (Array.isArray(p.images) && p.images.length > 0);
-      const matches = val === 'image' ? isImg : !isImg;
-      const assignedToOther = Array.isArray(p.sectionIds) && p.sectionIds.length > 0 && !p.sectionIds.some(sid => String(sid).toLowerCase() === secId);
-      return matches && !assignedToOther;
+      return val === 'image' ? isImg : !isImg;
     });
   }
 

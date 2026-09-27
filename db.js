@@ -352,7 +352,7 @@ async function firestoreSaveShowcase(ids) {
   return ids;
 }
 
-// Sections: Get from Firestore (Dual-mode: settings doc + sections collection for 100% reliable sync)
+// Sections: Get from Firestore (Triple-mode: settings doc + prompts_meta doc + sections collection)
 async function firestoreGetAllSections() {
   const db = firestoreDb || (typeof firebase !== 'undefined' && firebase.firestore ? firebase.firestore() : null);
   if (db) {
@@ -366,7 +366,17 @@ async function firestoreGetAllSections() {
       }
     } catch(e){}
 
-    // 2. Fallback to individual docs in sections collection
+    // 2. Try prompts_meta collection document
+    try {
+      const doc2 = await db.collection('prompts_meta').doc('homepage_sections').get();
+      if (doc2.exists && doc2.data() && Array.isArray(doc2.data().list) && doc2.data().list.length > 0) {
+        const list2 = doc2.data().list;
+        list2.sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0));
+        return list2;
+      }
+    } catch(e){}
+
+    // 3. Fallback to individual docs in sections collection
     try {
       const snapshot = await db.collection('sections').get();
       const sections = [];
@@ -390,7 +400,9 @@ async function firestoreSaveSection(secData) {
   if (db) {
     try {
       await db.collection('sections').doc(String(secData.id)).set(secData, { merge: true });
-    } catch(e){}
+    } catch(e){
+      console.warn("firestoreSaveSection note:", e);
+    }
   }
   return secData;
 }
@@ -402,6 +414,12 @@ async function firestoreSaveAllSections(sectionsList) {
   if (db) {
     try {
       await db.collection('settings').doc('homepage_sections').set({
+        list: sectionsList,
+        updated_at: Date.now()
+      }, { merge: true });
+    } catch(e){}
+    try {
+      await db.collection('prompts_meta').doc('homepage_sections').set({
         list: sectionsList,
         updated_at: Date.now()
       }, { merge: true });
