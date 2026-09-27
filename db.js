@@ -349,10 +349,21 @@ async function firestoreSaveShowcase(ids) {
   return ids;
 }
 
-// Sections: Get from Firestore
+// Sections: Get from Firestore (Dual-mode: settings doc + sections collection for 100% reliable sync)
 async function firestoreGetAllSections() {
   const db = firestoreDb || (typeof firebase !== 'undefined' && firebase.firestore ? firebase.firestore() : null);
   if (db) {
+    // 1. Try unified settings document first
+    try {
+      const doc = await db.collection('settings').doc('homepage_sections').get();
+      if (doc.exists && doc.data() && Array.isArray(doc.data().list) && doc.data().list.length > 0) {
+        const list = doc.data().list;
+        list.sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0));
+        return list;
+      }
+    } catch(e){}
+
+    // 2. Fallback to individual docs in sections collection
     try {
       const snapshot = await db.collection('sections').get();
       const sections = [];
@@ -379,6 +390,21 @@ async function firestoreSaveSection(secData) {
     } catch(e){}
   }
   return secData;
+}
+
+// Sections: Save entire list to unified Firestore settings document
+async function firestoreSaveAllSections(sectionsList) {
+  if (!Array.isArray(sectionsList)) return false;
+  const db = firestoreDb || (typeof firebase !== 'undefined' && firebase.firestore ? firebase.firestore() : null);
+  if (db) {
+    try {
+      await db.collection('settings').doc('homepage_sections').set({
+        list: sectionsList,
+        updated_at: Date.now()
+      }, { merge: true });
+    } catch(e){}
+  }
+  return true;
 }
 
 // Sections: Delete from Firestore

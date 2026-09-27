@@ -1202,6 +1202,7 @@ function getPromptsForSection(sec) {
   const secId = String(sec.id || '').toLowerCase().trim();
   const val = String(sec.filterValue || '').toLowerCase().trim();
   const filterType = sec.filterType || 'ai';
+  const secTitle = String(sec.title || '').toLowerCase().trim();
 
   // 1. Prompts that have this section explicitly ticked in Admin Studio
   const explicitlyTicked = all.filter(p => {
@@ -1214,21 +1215,24 @@ function getPromptsForSection(sec) {
     return explicitlyTicked;
   }
 
-  // 2. If NO prompts have been explicitly ticked yet, match strictly on filter criteria without cross-adding
+  // 2. Match strictly on filter criteria
   let filterMatched = [];
   if (filterType === 'ai') {
     filterMatched = all.filter(p => {
       const pAi = (p.ai || '').toLowerCase();
       const pAiName = (p.aiName || '').toLowerCase();
-      return pAi === val || pAiName === val;
+      return pAi === val || pAiName === val || (val && (pAi.includes(val) || val.includes(pAi)));
     });
   } else if (filterType === 'category') {
     filterMatched = all.filter(p => {
       const pCat = (p.cat || '').toLowerCase();
-      return pCat === val;
+      return pCat === val || (val && (pCat.includes(val) || val.includes(pCat)));
     });
   } else if (filterType === 'tag') {
-    filterMatched = all.filter(p => Array.isArray(p.tags) && p.tags.some(t => t.toLowerCase() === val));
+    filterMatched = all.filter(p => Array.isArray(p.tags) && p.tags.some(t => {
+      const tLow = t.toLowerCase();
+      return tLow === val || tLow.includes(val) || (val && val.includes(tLow));
+    }));
   } else if (filterType === 'promptType') {
     filterMatched = all.filter(p => {
       const pType = (p.promptType || '').toLowerCase();
@@ -1236,6 +1240,17 @@ function getPromptsForSection(sec) {
       if (val === 'text') return pType === 'text' || (!p.customImage && (!p.images || p.images.length === 0));
       return pType === val;
     });
+  }
+
+  // 3. Fallback: Check if any prompt matches words from the section title (e.g. "gemini", "instagram", "story", "deepseek")
+  if (filterMatched.length === 0) {
+    const titleWords = `${secTitle} ${val}`.split(/[\s,&+—-]+/).map(w => w.trim()).filter(w => w.length >= 4);
+    if (titleWords.length > 0) {
+      filterMatched = all.filter(p => {
+        const text = `${p.title} ${p.desc || ''} ${p.cat} ${p.ai} ${p.aiName} ${(p.tags || []).join(' ')}`.toLowerCase();
+        return titleWords.some(w => text.includes(w));
+      });
+    }
   }
 
   return filterMatched;
@@ -1256,7 +1271,7 @@ async function saveSectionAsync(secData) {
     sections.push(secData);
   }
 
-  cachedSections = sections.sort((a, b) => (a.order || 0) - (b.order || 0));
+  cachedSections = sections.sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0));
   try {
     localStorage.setItem('promptvault_sections', JSON.stringify(cachedSections));
     localStorage.setItem('promptvault_sections_initialized', 'true');
@@ -1264,6 +1279,9 @@ async function saveSectionAsync(secData) {
 
   if (typeof firestoreSaveSection === 'function') {
     await firestoreSaveSection(secData);
+  }
+  if (typeof firestoreSaveAllSections === 'function') {
+    await firestoreSaveAllSections(cachedSections);
   }
 
   return cachedSections;
@@ -1285,6 +1303,11 @@ async function deleteSectionAsync(secId) {
     } catch(e){
       console.warn("Firestore delete section error:", e);
     }
+  }
+  if (typeof firestoreSaveAllSections === 'function') {
+    try {
+      await firestoreSaveAllSections(cachedSections);
+    } catch(e){}
   }
 
   return true;
