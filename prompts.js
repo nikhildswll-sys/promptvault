@@ -895,8 +895,26 @@ const DEFAULT_CATEGORIES = [
 
 let cachedCategories = [...DEFAULT_CATEGORIES];
 
+function getDeletedCategoryIds() {
+  try {
+    return JSON.parse(localStorage.getItem('promptvault_deleted_categories') || '[]');
+  } catch(e) {
+    return [];
+  }
+}
+
+function recordDeletedCategoryId(id) {
+  const deleted = getDeletedCategoryIds();
+  const strId = String(id);
+  if (!deleted.includes(strId)) {
+    deleted.push(strId);
+    try { localStorage.setItem('promptvault_deleted_categories', JSON.stringify(deleted)); } catch(e){}
+  }
+}
+
 async function loadAllCategories() {
   let loaded = [];
+  const deleted = getDeletedCategoryIds();
 
   // 1. Primary Source: Cloud Firestore
   if (typeof firestoreGetAllCategories === 'function') {
@@ -917,18 +935,14 @@ async function loadAllCategories() {
   }
 
   // 3. Fallback: Merge default categories
-  if (!loaded.length) {
+  if (!loaded.length && !localStorage.getItem('promptvault_categories_initialized')) {
     loaded = [...DEFAULT_CATEGORIES];
-  } else {
-    // Ensure all default categories are represented
-    for (const dc of DEFAULT_CATEGORIES) {
-      if (!loaded.some(c => c.name.toLowerCase() === dc.name.toLowerCase())) {
-        loaded.unshift(dc);
-      }
-    }
+    try { localStorage.setItem('promptvault_categories_initialized', 'true'); } catch(e){}
+  } else if (!loaded.length) {
+    loaded = [...DEFAULT_CATEGORIES];
   }
 
-  cachedCategories = loaded;
+  cachedCategories = loaded.filter(c => c && !deleted.includes(String(c.id)));
   try {
     localStorage.setItem('promptvault_custom_categories', JSON.stringify(cachedCategories));
   } catch(e) {}
@@ -937,12 +951,13 @@ async function loadAllCategories() {
 }
 
 function getAllCategories() {
-  return cachedCategories;
+  const deleted = getDeletedCategoryIds();
+  return (cachedCategories || []).filter(c => c && !deleted.includes(String(c.id)));
 }
 
 function getCategoryIcon(catName) {
   if (!catName) return '📁';
-  const found = cachedCategories.find(c => c.name.toLowerCase() === catName.toLowerCase());
+  const found = getAllCategories().find(c => c.name.toLowerCase() === catName.toLowerCase());
   return found ? found.icon : '📁';
 }
 
@@ -951,7 +966,7 @@ async function saveNewCategoryAsync(catObj) {
   const cleanName = catObj.name.trim();
 
   // Check duplicate
-  const existing = cachedCategories.find(c => c.name.toLowerCase() === cleanName.toLowerCase());
+  const existing = getAllCategories().find(c => c.name.toLowerCase() === cleanName.toLowerCase());
   if (existing) return existing;
 
   const newCat = {
@@ -977,14 +992,16 @@ async function saveNewCategoryAsync(catObj) {
 }
 
 async function deleteCategoryAsync(catId) {
-  cachedCategories = cachedCategories.filter(c => String(c.id) !== String(catId));
+  const strId = String(catId);
+  recordDeletedCategoryId(strId);
+  cachedCategories = (cachedCategories || []).filter(c => String(c.id) !== strId);
   try {
     localStorage.setItem('promptvault_custom_categories', JSON.stringify(cachedCategories));
   } catch(e) {}
 
   // Delete from Cloud Firestore
   if (typeof firestoreDeleteCategory === 'function') {
-    await firestoreDeleteCategory(catId);
+    await firestoreDeleteCategory(strId);
   }
 
   return true;
@@ -1125,26 +1142,60 @@ const DEFAULT_SECTIONS = [
 
 let cachedSections = [];
 
+function getDeletedSectionIds() {
+  try {
+    return JSON.parse(localStorage.getItem('promptvault_deleted_sections') || '[]');
+  } catch(e) {
+    return [];
+  }
+}
+
+function recordDeletedSectionId(id) {
+  const deleted = getDeletedSectionIds();
+  const strId = String(id);
+  if (!deleted.includes(strId)) {
+    deleted.push(strId);
+    try { localStorage.setItem('promptvault_deleted_sections', JSON.stringify(deleted)); } catch(e){}
+  }
+}
+
+function unrecordDeletedSectionId(id) {
+  const deleted = getDeletedSectionIds().filter(d => String(d) !== String(id));
+  try { localStorage.setItem('promptvault_deleted_sections', JSON.stringify(deleted)); } catch(e){}
+}
+
 async function loadAllSections() {
   let loaded = null;
+  const deleted = getDeletedSectionIds();
+
+  // 1. Fetch from Cloud Firestore
   if (typeof firestoreGetAllSections === 'function') {
     try {
-      loaded = await firestoreGetAllSections();
+      const fsSecs = await firestoreGetAllSections();
+      if (Array.isArray(fsSecs) && fsSecs.length > 0) {
+        loaded = fsSecs;
+      }
     } catch(e){}
   }
 
-  if (!loaded || !Array.isArray(loaded) || loaded.length === 0) {
+  // 2. Fetch from localStorage backup
+  if (loaded === null) {
     try {
       const raw = localStorage.getItem('promptvault_sections');
-      if (raw) loaded = JSON.parse(raw);
+      if (raw !== null) loaded = JSON.parse(raw);
     } catch(e){}
   }
 
-  if (!loaded || !Array.isArray(loaded) || loaded.length === 0) {
-    loaded = DEFAULT_SECTIONS;
+  // 3. First time fallback to default sections
+  const isInitialized = localStorage.getItem('promptvault_sections_initialized') === 'true';
+  if (loaded === null && !isInitialized) {
+    loaded = [...DEFAULT_SECTIONS];
+    try { localStorage.setItem('promptvault_sections_initialized', 'true'); } catch(e){}
+  } else if (!loaded) {
+    loaded = [];
   }
 
-  cachedSections = loaded.sort((a, b) => (a.order || 0) - (b.order || 0));
+  cachedSections = loaded.filter(s => s && !deleted.includes(String(s.id))).sort((a, b) => (a.order || 0) - (b.order || 0));
   try {
     localStorage.setItem('promptvault_sections', JSON.stringify(cachedSections));
   } catch(e){}
@@ -1153,7 +1204,11 @@ async function loadAllSections() {
 }
 
 function getAllSections() {
-  return (cachedSections && cachedSections.length > 0) ? cachedSections : DEFAULT_SECTIONS;
+  const deleted = getDeletedSectionIds();
+  if (Array.isArray(cachedSections)) {
+    return cachedSections.filter(s => s && !deleted.includes(String(s.id)));
+  }
+  return [];
 }
 
 function getPromptsForSection(sec) {
@@ -1190,7 +1245,9 @@ function getPromptsForSection(sec) {
 
 async function saveSectionAsync(secData) {
   if (!secData || !secData.id) return false;
-  const sections = getAllSections();
+  unrecordDeletedSectionId(secData.id);
+
+  const sections = [...getAllSections()];
   const idx = sections.findIndex(s => String(s.id) === String(secData.id));
 
   if (idx >= 0) {
@@ -1204,6 +1261,7 @@ async function saveSectionAsync(secData) {
   cachedSections = sections.sort((a, b) => (a.order || 0) - (b.order || 0));
   try {
     localStorage.setItem('promptvault_sections', JSON.stringify(cachedSections));
+    localStorage.setItem('promptvault_sections_initialized', 'true');
   } catch(e){}
 
   if (typeof firestoreSaveSection === 'function') {
@@ -1214,14 +1272,21 @@ async function saveSectionAsync(secData) {
 }
 
 async function deleteSectionAsync(secId) {
-  const sections = getAllSections().filter(s => String(s.id) !== String(secId));
-  cachedSections = sections;
+  const strId = String(secId);
+  recordDeletedSectionId(strId);
+
+  cachedSections = (cachedSections || []).filter(s => String(s.id) !== strId);
   try {
     localStorage.setItem('promptvault_sections', JSON.stringify(cachedSections));
+    localStorage.setItem('promptvault_sections_initialized', 'true');
   } catch(e){}
 
   if (typeof firestoreDeleteSection === 'function') {
-    await firestoreDeleteSection(secId);
+    try {
+      await firestoreDeleteSection(strId);
+    } catch(e){
+      console.warn("Firestore delete section error:", e);
+    }
   }
 
   return true;
