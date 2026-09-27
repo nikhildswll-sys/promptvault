@@ -47,6 +47,12 @@
   --mu:#64748b;
   --bd:#e2e8f0;
 }
+html,body{
+  width:100%;
+  max-width:100vw;
+  overflow-x:hidden;
+  position:relative;
+}
 body{
   font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
   background:var(--bg);
@@ -446,16 +452,68 @@ nav{
   box-shadow:0 4px 14px rgba(91,76,255,0.4);
 }
 
+/* ── FULLSCREEN IMAGE LIGHTBOX ── */
+.lightbox-overlay{
+  position:fixed;inset:0;background:rgba(10,10,18,0.95);
+  backdrop-filter:blur(14px);z-index:99999;
+  display:none;align-items:center;justify-content:center;
+  flex-direction:column;padding:16px;touch-action:manipulation;
+}
+.lightbox-overlay.active{display:flex}
+.lightbox-topbar{
+  position:absolute;top:16px;left:20px;right:20px;
+  display:flex;align-items:center;justify-content:space-between;
+  z-index:100000;color:#fff;
+}
+.lightbox-title{
+  font-size:0.92rem;font-weight:800;color:#fff;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60%;
+}
+.lightbox-actions{display:flex;align-items:center;gap:10px;}
+.lightbox-btn{
+  background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.25);
+  color:#fff;border-radius:50px;padding:8px 16px;font-size:0.82rem;font-weight:800;
+  cursor:pointer;display:inline-flex;align-items:center;gap:6px;backdrop-filter:blur(10px);
+  transition:all 0.2s;text-decoration:none;
+}
+.lightbox-btn:hover{background:rgba(255,255,255,0.3);transform:scale(1.05)}
+.lightbox-close-btn{
+  background:rgba(239,68,68,0.25);border:1px solid rgba(239,68,68,0.45);
+  color:#fff;border-radius:50%;width:38px;height:38px;display:flex;
+  align-items:center;justify-content:center;font-size:1.2rem;font-weight:900;
+  cursor:pointer;transition:all 0.2s;
+}
+.lightbox-close-btn:hover{background:#ef4444;transform:scale(1.1)}
+.lightbox-content{
+  max-width:95vw;max-height:86vh;display:flex;align-items:center;justify-content:center;
+}
+.lightbox-img{
+  max-width:100%;max-height:86vh;object-fit:contain;
+  border-radius:14px;box-shadow:0 24px 70px rgba(0,0,0,0.7);
+  user-select:none;cursor:zoom-out;
+}
+.gallery-viewport{cursor:zoom-in;position:relative;}
+.gallery-zoom-hint{
+  position:absolute;bottom:14px;left:14px;
+  background:rgba(0,0,0,0.72);backdrop-filter:blur(8px);
+  color:#fff;font-size:0.72rem;font-weight:800;padding:5px 12px;
+  border-radius:30px;display:inline-flex;align-items:center;gap:5px;
+  border:1px solid rgba(255,255,255,0.2);pointer-events:none;z-index:9;
+}
+
 /* ── MODAL ── */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(5px);z-index:1000;display:none;align-items:center;justify-content:center}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(5px);z-index:10000;display:none;align-items:center;justify-content:center;padding:16px;}
 .modal-overlay.show{display:flex}
-.modal{background:#fff;border-radius:20px;padding:28px;width:90%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
-.modal h3{font-weight:900;font-size:1.15rem;margin-bottom:6px}
-.modal p{color:var(--mu);font-size:.85rem;margin-bottom:20px}
+.modal{background:#fff;border-radius:20px;padding:28px;width:92%;max-width:560px;max-height:88vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.25);position:relative;}
+.modal h3{font-weight:900;font-size:1.2rem;margin-bottom:8px;color:var(--dk)}
+.modal p{color:var(--mu);font-size:.86rem;margin-bottom:16px;line-height:1.6}
+.legal-modal-content{font-size:0.84rem;color:#334155;line-height:1.68}
+.legal-modal-content h4{font-size:0.95rem;font-weight:800;color:#0f172a;margin:16px 0 6px}
+.legal-modal-content p{margin-bottom:12px;color:#475569}
 .share-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .share-btn{padding:12px;border-radius:11px;font-weight:700;font-size:.84rem;cursor:pointer;border:1.5px solid var(--bd);background:#fff;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:7px}
 .share-btn:hover{border-color:var(--p);color:var(--p)}
-.modal-close{float:right;background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--mu)}
+.modal-close{position:absolute;top:18px;right:18px;background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--mu)}
 
 /* ── TOAST ── */
 .toast{
@@ -467,14 +525,14 @@ nav{
 .toast.on{opacity:1;transform:translateY(0)}
 
 /* ── FOOTER ── */
-footer{background:#0d0d1a;color:#fff;padding:46px 80px 24px;margin-top:20px}
-.ft{display:flex;justify-content:space-between;gap:36px;margin-bottom:34px}
+footer{background:#0d0d1a;color:#fff;padding:46px 80px 24px;margin-top:20px;width:100%;box-sizing:border-box;}
+.ft{display:flex;justify-content:space-between;gap:36px;margin-bottom:34px;width:100%;}
 .fb .logo{color:#fff}
 .fb p{color:#64748b;font-size:.82rem;margin-top:10px;max-width:240px;line-height:1.65}
 .fl h4{font-weight:800;margin-bottom:12px;font-size:.88rem}
 .fl ul{list-style:none}
 .fl li{margin-bottom:8px}
-.fl a{color:#64748b;text-decoration:none;font-size:.8rem;transition:color .2s}
+.fl a{color:#64748b;text-decoration:none;font-size:.8rem;transition:color .2s;cursor:pointer;}
 .fl a:hover{color:#fff}
 .fbot{border-top:1px solid #1e293b;padding-top:20px;display:flex;justify-content:space-between;color:#64748b;font-size:.78rem}
 
@@ -490,84 +548,126 @@ footer{background:#0d0d1a;color:#fff;padding:46px 80px 24px;margin-top:20px}
 
 /* ── RESPONSIVE MOBILE CSS ── */
 @media(max-width:960px){
-  .main{grid-template-columns:1fr;padding:24px 20px}
-  .bc{padding:12px 20px}
-  nav{padding:0 20px}
-  .carousel-section{padding:0 20px}
-  footer{padding:40px 20px 20px}
-  .ft{flex-direction:column;gap:24px}
+  .main{
+    display:flex;
+    flex-direction:column;
+    width:100%;
+    max-width:100%;
+    padding:16px 14px 70px;
+    box-sizing:border-box;
+    gap:20px;
+  }
+  .left, .right{
+    width:100%;
+    max-width:100%;
+    box-sizing:border-box;
+  }
+  .bc{
+    padding:10px 14px;
+    width:100%;
+    box-sizing:border-box;
+  }
+  nav{
+    padding:0 14px;
+    width:100%;
+    box-sizing:border-box;
+  }
+  .carousel-section{
+    padding:0 14px;
+    width:100%;
+    box-sizing:border-box;
+  }
+  footer{
+    padding:36px 14px 20px;
+    width:100%;
+    box-sizing:border-box;
+  }
+  .ft{
+    flex-direction:column;
+    gap:24px;
+  }
 }
 @media(max-width:768px){
   nav{
-    padding: 0 12px;
-    height: 54px;
-    gap: 8px;
+    padding: 0 10px;
+    height: 52px;
+    gap: 6px;
+    width: 100%;
+    box-sizing: border-box;
   }
   .logo{
-    font-size: 1.05rem;
-    gap: 6px;
+    font-size: 1rem;
+    gap: 5px;
     flex-shrink: 0;
   }
-  .site-nav-logo{height:30px;max-width:150px}
+  .site-nav-logo{height:28px;max-width:140px}
   .lbox{
-    width: 28px;
-    height: 28px;
-    border-radius: 8px;
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
   }
   .lbox svg{
-    width: 14px;
-    height: 14px;
+    width: 13px;
+    height: 13px;
   }
   .nl{display:none}
   .nr{
-    gap: 6px;
+    gap: 5px;
     flex-shrink: 0;
   }
+  .nav-btn-text{display:none;}
   .bsi{
-    padding: 5px 10px;
-    font-size: 0.72rem;
-    border-radius: 7px;
+    padding: 4px 8px;
+    font-size: 0.7rem;
+    border-radius: 6px;
   }
   .bgs{
-    padding: 5px 10px;
-    font-size: 0.72rem;
-    border-radius: 7px;
+    padding: 4px 8px;
+    font-size: 0.7rem;
+    border-radius: 6px;
   }
   .bc{
-    padding: 8px 12px;
+    padding: 8px 10px;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
     overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
   }
   .bc-left{
-    max-width: 65%;
-    font-size: 0.75rem;
+    max-width: 60%;
+    font-size: 0.72rem;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
   .p-nav-btn{
-    padding: 4px 8px;
-    font-size: 0.7rem;
+    padding: 3px 6px;
+    font-size: 0.68rem;
   }
   .main{
-    padding: 12px 12px 80px;
+    padding: 10px 10px 80px;
+    width: 100%;
+    box-sizing: border-box;
   }
   .pheader{
     border-radius: 16px;
     margin-bottom: 16px;
+    width: 100%;
+    box-sizing: border-box;
   }
   .gallery-viewport{
     min-height: auto;
-    height: 310px;
-    max-height: 340px;
+    height: 300px;
+    max-height: 330px;
     background: #090a14;
+    width: 100%;
   }
   .gallery-main-img{
     width: 100%;
     height: 100%;
-    max-height: 340px;
+    max-height: 330px;
     object-fit: contain;
   }
   .gallery-ai-badge{
@@ -711,13 +811,14 @@ footer{background:#0d0d1a;color:#fff;padding:46px 80px 24px;margin-top:20px}
       
       <!-- Multi-Image Gallery Showcase -->
       <div class="gallery-container" id="gallery-container">
-        <div class="gallery-viewport" id="gallery-viewport">
+        <div class="gallery-viewport" id="gallery-viewport" onclick="triggerLightboxFromMain()">
           <!-- Populated by JS -->
           <span id="pthumb-emoji" style="font-size:4.5rem;display:none;">⚡</span>
           <img id="gallery-main-img" class="gallery-main-img" src="" alt="Prompt Visual" style="display:none;" />
-          <button id="gallery-prev-btn" class="gallery-nav-arrow gallery-nav-prev" onclick="slidePhoto(-1)" style="display:none;" title="Previous Photo">‹</button>
-          <button id="gallery-next-btn" class="gallery-nav-arrow gallery-nav-next" onclick="slidePhoto(1)" style="display:none;" title="Next Photo">›</button>
+          <button id="gallery-prev-btn" class="gallery-nav-arrow gallery-nav-prev" onclick="event.stopPropagation();slidePhoto(-1)" style="display:none;" title="Previous Photo">‹</button>
+          <button id="gallery-next-btn" class="gallery-nav-arrow gallery-nav-next" onclick="event.stopPropagation();slidePhoto(1)" style="display:none;" title="Next Photo">›</button>
           <div id="gallery-count-badge" class="gallery-count-badge" style="display:none;">📸 1 / 3</div>
+          <div class="gallery-zoom-hint" id="gallery-zoom-hint" style="display:none;">🔍 Tap to Enlarge</div>
           <div class="gallery-ai-badge" id="ai-badge-large"></div>
         </div>
         <!-- Thumbnails row if multiple images -->
@@ -954,6 +1055,28 @@ footer{background:#0d0d1a;color:#fff;padding:46px 80px 24px;margin-top:20px}
   </div>
 </div>
 
+<!-- FULLSCREEN IMAGE LIGHTBOX MODAL -->
+<div class="lightbox-overlay" id="image-lightbox-modal" onclick="closeImageLightbox(event)">
+  <div class="lightbox-topbar">
+    <div class="lightbox-title" id="lightbox-img-title">Prompt Visual</div>
+    <div class="lightbox-actions">
+      <a id="lightbox-download-btn" href="#" download="promptvault_image.webp" class="lightbox-btn" onclick="event.stopPropagation()">⬇️ Download HD</a>
+      <button type="button" class="lightbox-close-btn" onclick="closeImageLightbox(event)">✕</button>
+    </div>
+  </div>
+  <div class="lightbox-content">
+    <img id="lightbox-active-img" class="lightbox-img" src="" alt="Fullscreen Visual" onclick="event.stopPropagation()" />
+  </div>
+</div>
+
+<!-- LEGAL & INFO MODAL -->
+<div class="modal-overlay" id="legal-modal-overlay" onclick="if(event.target===this)closeLegalModal()">
+  <div class="modal">
+    <button class="modal-close" onclick="closeLegalModal()">✕</button>
+    <div id="legal-modal-body"></div>
+  </div>
+</div>
+
 <!-- FOOTER -->
 <footer>
   <div class="ft">
@@ -961,14 +1084,14 @@ footer{background:#0d0d1a;color:#fff;padding:46px 80px 24px;margin-top:20px}
       <a href="index.html" class="logo" style="margin-bottom:12px;display:inline-block;" title="PromptVault">
         <img src="images/logo_horizontal_dark.png" alt="PromptVault Logo" style="height:38px;width:auto;display:block;" />
       </a>
-      <p>Free AI prompt library for ChatGPT, Gemini, Claude, DeepSeek and Grok.</p>
+      <p>Free AI prompt library for ChatGPT, Gemini, Claude, DeepSeek and Grok. 100% free forever.</p>
     </div>
-    <div class="fl"><h4>Explore</h4><ul><li><a href="index.html">Home</a></li><li><a href="index.html#prompts">All Prompts</a></li><li><a href="index.html#ai-tools">AI Tools</a></li></ul></div>
-    <div class="fl"><h4>Studio</h4><ul><li><a href="admin.html">🔐 Admin Studio</a></li><li><a href="index.html#categories">Categories</a></li></ul></div>
-    <div class="fl"><h4>Company</h4><ul><li><a href="#">About</a></li><li><a href="#">Privacy Policy</a></li></ul></div>
+    <div class="fl"><h4>Explore</h4><ul><li><a href="index.html">Home</a></li><li><a href="index.html#prompts">All Prompts</a></li><li><a href="index.html#categories">Categories</a></li><li><a href="index.html#ai-tools">AI Tools</a></li></ul></div>
+    <div class="fl"><h4>Resources</h4><ul><li><a href="index.html#popular-searches">Trending Searches</a></li><li><a onclick="openLegalModal('about')">About Us</a></li><li><a onclick="openLegalModal('contact')">Contact Support</a></li></ul></div>
+    <div class="fl"><h4>Legal &amp; Privacy</h4><ul><li><a onclick="openLegalModal('privacy')">Privacy Policy</a></li><li><a onclick="openLegalModal('terms')">Terms of Service</a></li><li><a onclick="openLegalModal('disclaimer')">AI Disclaimer</a></li></ul></div>
   </div>
   <div class="fbot">
-    <span>© 2025 PromptVault. Free for everyone. 🇮🇳</span>
+    <span>© 2025 PromptVault. Free for everyone, always. 🇮🇳</span>
     <span>Made with ❤️ in India</span>
   </div>
 </footer>
@@ -1273,11 +1396,135 @@ function renderActivePhoto() {
     countBadge.textContent = `📸 Sample ${currentActivePhotoIdx + 1} of ${promptImagesList.length}`;
   }
 
+  const zoomHint = document.getElementById('gallery-zoom-hint');
+  if (zoomHint) zoomHint.style.display = 'inline-flex';
+
   // Update thumbnail active ring
   const thumbs = document.querySelectorAll('.g-thumb');
   thumbs.forEach((t, i) => {
     t.classList.toggle('active', i === currentActivePhotoIdx);
   });
+}
+
+// ── FULLSCREEN IMAGE LIGHTBOX VIEWER ──
+function triggerLightboxFromMain() {
+  if (!promptImagesList || !promptImagesList.length) return;
+  const imgData = promptImagesList[currentActivePhotoIdx];
+  if (imgData && imgData.url) {
+    const title = (window.currentPrompt ? window.currentPrompt.title : 'Prompt Visual') + (promptImagesList.length > 1 ? ` (${currentActivePhotoIdx + 1}/${promptImagesList.length})` : '');
+    openImageLightbox(imgData.url, title);
+  }
+}
+
+function openImageLightbox(imgUrl, title = 'Prompt Visual') {
+  if (!imgUrl) return;
+  const overlay = document.getElementById('image-lightbox-modal');
+  const activeImg = document.getElementById('lightbox-active-img');
+  const titleEl = document.getElementById('lightbox-img-title');
+  const downloadBtn = document.getElementById('lightbox-download-btn');
+
+  if (activeImg) activeImg.src = imgUrl;
+  if (titleEl) titleEl.textContent = title;
+  if (downloadBtn) downloadBtn.href = imgUrl;
+
+  if (overlay) {
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closeImageLightbox(e) {
+  if (e) e.stopPropagation();
+  const overlay = document.getElementById('image-lightbox-modal');
+  if (overlay) {
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+}
+
+// ── LEGAL & COMPANY INFO MODALS (Privacy, Terms, About, Contact) ──
+function openLegalModal(type) {
+  const overlay = document.getElementById('legal-modal-overlay');
+  const body = document.getElementById('legal-modal-body');
+  if (!overlay || !body) return;
+
+  if (type === 'privacy') {
+    body.innerHTML = `
+      <h3>🔒 Privacy Policy</h3>
+      <p style="font-size:0.75rem;color:var(--mu);margin-bottom:14px;">Effective Date: March 2025 • PromptVault.site</p>
+      <div class="legal-modal-content">
+        <h4>1. Information We Collect</h4>
+        <p>PromptVault is designed as a free, privacy-first AI prompt library. We collect minimal information necessary to deliver prompt services, including basic anonymous usage analytics, Google Sign-In profile info (name, email) if you choose to authenticate, and local browser caching.</p>
+        
+        <h4>2. Google AdSense &amp; Advertising Cookies</h4>
+        <p>We use Google AdSense and third-party advertising vendors to serve ads when you visit our website. Google uses cookies (including the DoubleClick DART cookie) to serve ads based on your prior visits to PromptVault or other websites across the Internet. You may opt out of personalized advertising by visiting <a href="https://www.google.com/settings/ads" target="_blank" style="color:var(--p);font-weight:700;">Google Ads Settings</a>.</p>
+
+        <h4>3. Data Security &amp; Storage</h4>
+        <p>All database transactions and prompt interactions are securely processed through Google Cloud Firestore. We never sell, rent, or trade your personal information with third parties.</p>
+
+        <h4>4. Contact</h4>
+        <p>If you have any questions regarding this Privacy Policy, please contact us at: <strong>nikhildswll@gmail.com</strong></p>
+      </div>
+    `;
+  } else if (type === 'terms') {
+    body.innerHTML = `
+      <h3>📜 Terms of Service</h3>
+      <p style="font-size:0.75rem;color:var(--mu);margin-bottom:14px;">Effective Date: March 2025 • PromptVault.site</p>
+      <div class="legal-modal-content">
+        <h4>1. Free License &amp; Permitted Use</h4>
+        <p>All prompt templates, variable structures, and workflow guides on PromptVault are 100% free for both personal and commercial use across ChatGPT, Gemini, Midjourney, Claude, and DeepSeek.</p>
+
+        <h4>2. AI Output Disclaimer</h4>
+        <p>PromptVault provides prompt structures and engineering formulas. AI model responses are generated independently by the respective third-party AI platforms (OpenAI, Google, Anthropic, DeepSeek). PromptVault is not responsible for the accuracy or output generated by external AI models.</p>
+
+        <h4>3. Intellectual Property</h4>
+        <p>The PromptVault website design, branding, and curation engine are copyrighted. Prompt texts and templates are open for community utilization.</p>
+      </div>
+    `;
+  } else if (type === 'about') {
+    body.innerHTML = `
+      <h3>🚀 About PromptVault</h3>
+      <div class="legal-modal-content">
+        <p><strong>PromptVault</strong> is a 100% free, curated AI prompt library and engineering studio crafted for creators, developers, designers, and marketers in India and worldwide.</p>
+        <p>Our mission is simple: eliminate AI paywalls and help users extract maximum performance from Gemini, ChatGPT, Claude, Midjourney, and DeepSeek through structured, copy-paste prompts with smart interactive variable customizers.</p>
+        <div style="background:#f8fafc;padding:14px;border-radius:12px;border:1px solid #e2e8f0;margin-top:14px;">
+          <strong>Founder &amp; Creator:</strong> Nikhil Deswal<br/>
+          <strong>Platform:</strong> PromptVault.site 🇮🇳
+        </div>
+      </div>
+    `;
+  } else if (type === 'contact') {
+    body.innerHTML = `
+      <h3>📬 Contact Support &amp; Community</h3>
+      <div class="legal-modal-content">
+        <p>Have a question, feedback, or want to submit your prompt designs to PromptVault? We'd love to hear from you!</p>
+        <div style="background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:14px;padding:16px;margin:16px 0;">
+          <div style="font-size:0.8rem;color:#166534;font-weight:800;text-transform:uppercase;margin-bottom:4px;">Official Support Email:</div>
+          <a href="mailto:nikhildswll@gmail.com" style="font-size:1.05rem;font-weight:800;color:#15803d;text-decoration:none;">nikhildswll@gmail.com</a>
+        </div>
+        <p>We typically respond to community inquiries within 24 hours.</p>
+      </div>
+    `;
+  } else if (type === 'disclaimer') {
+    body.innerHTML = `
+      <h3>⚠️ AI Generation Disclaimer</h3>
+      <div class="legal-modal-content">
+        <p>PromptVault is an independent prompt directory and educational tool. We are not officially affiliated with, endorsed by, or sponsored by Google, OpenAI, Anthropic, Midjourney, or DeepSeek.</p>
+        <p>All brand names and logos (ChatGPT, Gemini, Claude, Midjourney, DeepSeek, Grok) belong to their respective trademark owners and are used purely for educational compatibility indexing.</p>
+      </div>
+    `;
+  }
+
+  overlay.classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLegalModal() {
+  const overlay = document.getElementById('legal-modal-overlay');
+  if (overlay) {
+    overlay.classList.remove('show');
+    document.body.style.overflow = '';
+  }
 }
 
 // ── PROMPT STUDIO & VARIABLE FILLER ──

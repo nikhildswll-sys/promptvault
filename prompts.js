@@ -1083,10 +1083,155 @@ async function saveShowcaseIdsAsync(ids) {
   return cachedShowcaseIds;
 }
 
-// Initial load of custom prompts, categories & showcase
+// ── DYNAMIC CURATED HOMEPAGE SECTIONS (Swipeable Carousels) ───────────────────
+const DEFAULT_SECTIONS = [
+  {
+    id: 'sec_gemini',
+    title: '✨ Gemini AI & Image Prompts',
+    subtitle: 'Explore cinematic lighting, photorealistic portraits, and 3D avatar prompts for Gemini',
+    filterType: 'ai',
+    filterValue: 'gemini',
+    icon: '✨',
+    badge: 'Trending AI',
+    seoKeyword: 'gemini image prompt',
+    order: 1,
+    enabled: true
+  },
+  {
+    id: 'sec_chatgpt',
+    title: '⚡ ChatGPT Super Prompts',
+    subtitle: 'High-converting marketing hooks, ATS resumes, Python automation & business strategies',
+    filterType: 'ai',
+    filterValue: 'chatgpt',
+    icon: '⚡',
+    badge: 'Popular',
+    seoKeyword: 'chatgpt prompts',
+    order: 2,
+    enabled: true
+  },
+  {
+    id: 'sec_art_design',
+    title: '🎨 Art, Photography & Midjourney',
+    subtitle: 'Ultra-realistic photography, 8K wallpapers, and commercial advertising compositions',
+    filterType: 'category',
+    filterValue: 'Art & Design',
+    icon: '🎨',
+    badge: 'Visual Masterclass',
+    seoKeyword: 'midjourney realistic photography',
+    order: 3,
+    enabled: true
+  }
+];
+
+let cachedSections = [];
+
+async function loadAllSections() {
+  let loaded = null;
+  if (typeof firestoreGetAllSections === 'function') {
+    try {
+      loaded = await firestoreGetAllSections();
+    } catch(e){}
+  }
+
+  if (!loaded || !Array.isArray(loaded) || loaded.length === 0) {
+    try {
+      const raw = localStorage.getItem('promptvault_sections');
+      if (raw) loaded = JSON.parse(raw);
+    } catch(e){}
+  }
+
+  if (!loaded || !Array.isArray(loaded) || loaded.length === 0) {
+    loaded = DEFAULT_SECTIONS;
+  }
+
+  cachedSections = loaded.sort((a, b) => (a.order || 0) - (b.order || 0));
+  try {
+    localStorage.setItem('promptvault_sections', JSON.stringify(cachedSections));
+  } catch(e){}
+
+  return cachedSections;
+}
+
+function getAllSections() {
+  return (cachedSections && cachedSections.length > 0) ? cachedSections : DEFAULT_SECTIONS;
+}
+
+function getPromptsForSection(sec) {
+  const all = getAllPrompts();
+  if (!sec) return all.slice(0, 8);
+
+  let filtered = [];
+  const val = (sec.filterValue || '').toLowerCase().trim();
+
+  if (sec.filterType === 'ai') {
+    filtered = all.filter(p => (p.ai || '').toLowerCase() === val || (p.aiName || '').toLowerCase() === val);
+  } else if (sec.filterType === 'category') {
+    filtered = all.filter(p => (p.cat || '').toLowerCase() === val);
+  } else if (sec.filterType === 'tag') {
+    filtered = all.filter(p => Array.isArray(p.tags) && p.tags.some(t => t.toLowerCase().includes(val)));
+  } else if (sec.filterType === 'promptType') {
+    filtered = all.filter(p => (p.promptType || '').toLowerCase() === val || (val === 'image' && (p.customImage || (p.images && p.images.length > 0))));
+  } else {
+    filtered = all;
+  }
+
+  // If specific filter doesn't have enough, backfill from related prompts
+  if (filtered.length < 3) {
+    for (const p of all) {
+      if (!filtered.some(fp => String(fp.id) === String(p.id))) {
+        filtered.push(p);
+        if (filtered.length >= 6) break;
+      }
+    }
+  }
+
+  return filtered;
+}
+
+async function saveSectionAsync(secData) {
+  if (!secData || !secData.id) return false;
+  const sections = getAllSections();
+  const idx = sections.findIndex(s => String(s.id) === String(secData.id));
+
+  if (idx >= 0) {
+    sections[idx] = { ...sections[idx], ...secData };
+  } else {
+    secData.order = secData.order || (sections.length + 1);
+    secData.enabled = secData.enabled !== false;
+    sections.push(secData);
+  }
+
+  cachedSections = sections.sort((a, b) => (a.order || 0) - (b.order || 0));
+  try {
+    localStorage.setItem('promptvault_sections', JSON.stringify(cachedSections));
+  } catch(e){}
+
+  if (typeof firestoreSaveSection === 'function') {
+    await firestoreSaveSection(secData);
+  }
+
+  return cachedSections;
+}
+
+async function deleteSectionAsync(secId) {
+  const sections = getAllSections().filter(s => String(s.id) !== String(secId));
+  cachedSections = sections;
+  try {
+    localStorage.setItem('promptvault_sections', JSON.stringify(cachedSections));
+  } catch(e){}
+
+  if (typeof firestoreDeleteSection === 'function') {
+    await firestoreDeleteSection(secId);
+  }
+
+  return true;
+}
+
+// Initial load of custom prompts, categories, showcase & sections
 loadAllCustomPrompts();
 loadAllCategories();
 loadShowcaseIds();
+loadAllSections();
 
 
 

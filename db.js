@@ -324,6 +324,45 @@ async function firestoreSaveShowcase(ids) {
   return ids;
 }
 
+// Sections: Get from Firestore
+async function firestoreGetAllSections() {
+  const db = firestoreDb || (typeof firebase !== 'undefined' && firebase.firestore ? firebase.firestore() : null);
+  if (db) {
+    try {
+      const snapshot = await db.collection('sections').orderBy('order', 'asc').get();
+      const sections = [];
+      snapshot.forEach(doc => sections.push({ id: doc.id, ...doc.data() }));
+      if (sections.length > 0) return sections;
+    } catch(e) {
+      console.warn("Sections fetch note:", e.message);
+    }
+  }
+  return null;
+}
+
+// Sections: Save to Firestore
+async function firestoreSaveSection(secData) {
+  if (!secData || !secData.id) return false;
+  const db = firestoreDb || (typeof firebase !== 'undefined' && firebase.firestore ? firebase.firestore() : null);
+  if (db) {
+    try {
+      await db.collection('sections').doc(String(secData.id)).set(secData, { merge: true });
+    } catch(e){}
+  }
+  return secData;
+}
+
+// Sections: Delete from Firestore
+async function firestoreDeleteSection(secId) {
+  const db = firestoreDb || (typeof firebase !== 'undefined' && firebase.firestore ? firebase.firestore() : null);
+  if (db) {
+    try {
+      await db.collection('sections').doc(String(secId)).delete();
+    } catch(e){}
+  }
+  return true;
+}
+
 // Backward Compatibility Aliases
 const dbGetAllCustomPrompts = firestoreGetAllPrompts;
 const dbSavePrompt = firestoreSavePrompt;

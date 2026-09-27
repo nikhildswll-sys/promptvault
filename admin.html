@@ -517,6 +517,7 @@ tr:hover{background:#fafbff}
     <button class="tab-btn active" id="tab-btn-manage" onclick="switchTab('manage')">📋 Manage & Delete Prompts (<span id="tab-count">16</span>)</button>
     <button class="tab-btn" id="tab-btn-create" onclick="switchTab('create')">➕ Publish New Prompt</button>
     <button class="tab-btn" id="tab-btn-trending" onclick="switchTab('trending')">🔥 Top 10 Trending Manager (<span id="tab-trending-count">2/10</span>)</button>
+    <button class="tab-btn" id="tab-btn-sections" onclick="switchTab('sections')">📑 Swipe Sections &amp; SEO (<span id="tab-sec-count">3</span>)</button>
     <button class="tab-btn" id="tab-btn-categories" onclick="switchTab('categories')">📁 Categories Manager (<span id="tab-cat-count">11</span>)</button>
     <button class="tab-btn" id="tab-btn-showcase" onclick="switchTab('showcase')">✨ 1st-Time Welcome Popup (<span id="tab-showcase-count">5/5</span>)</button>
   </div>
@@ -987,6 +988,85 @@ tr:hover{background:#fafbff}
         </div>
       </div>
     </div>
+  <!-- TAB 6: HOMEPAGE SWIPE SECTIONS & SEO MANAGER -->
+  <div id="tab-sections" style="display:none;">
+    <div class="creator-grid">
+      <!-- CREATE / EDIT SECTION FORM -->
+      <div class="creator-form-card">
+        <h3 style="font-size:1.15rem;font-weight:900;color:var(--dk);margin-bottom:6px;">📑 Create / Edit Homepage Swipe Section</h3>
+        <p style="font-size:0.8rem;color:var(--mu);margin-bottom:18px;">Build dynamic horizontal swipe carousels (e.g. Gemini Prompts, ChatGPT Masterclass) with custom filters and SEO meta keywords that appear live on your website.</p>
+
+        <form id="admin-section-form" onsubmit="handleCreateSection(event)">
+          <input type="hidden" id="admin-edit-sec-id" value="" />
+
+          <div class="form-group">
+            <label for="inp-sec-title">Section Heading Title *</label>
+            <input type="text" id="inp-sec-title" class="form-input" placeholder="e.g. ✨ Gemini AI & Image Generation Prompts" required />
+          </div>
+
+          <div class="form-group">
+            <label for="inp-sec-subtitle">Subtitle / Tagline</label>
+            <input type="text" id="inp-sec-subtitle" class="form-input" placeholder="e.g. Explore cinematic photography, 3D avatars & lighting formulas" />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="inp-sec-filter-type">Filter By *</label>
+              <select id="inp-sec-filter-type" class="form-select" onchange="updateSectionFilterOptions()">
+                <option value="ai">AI Tool (Gemini, ChatGPT, etc.)</option>
+                <option value="category">Category (Art, Marketing, etc.)</option>
+                <option value="tag">Custom Tag / Keyword</option>
+                <option value="promptType">Prompt Type (Image Prompts)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="inp-sec-filter-val" id="lbl-sec-filter-val">Filter Value *</label>
+              <div id="sec-filter-input-wrap">
+                <input type="text" id="inp-sec-filter-val" class="form-input" placeholder="e.g. gemini" required />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="inp-sec-seo">SEO Keyword Meta Tag</label>
+              <input type="text" id="inp-sec-seo" class="form-input" placeholder="e.g. gemini image prompt, free ai prompts" />
+            </div>
+            <div class="form-group">
+              <label for="inp-sec-badge">Badge Label</label>
+              <input type="text" id="inp-sec-badge" class="form-input" placeholder="e.g. Trending AI, Popular" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="inp-sec-icon">Icon Emoji</label>
+              <input type="text" id="inp-sec-icon" class="form-input" placeholder="✨" value="✨" style="text-align:center;font-size:1.2rem;" />
+            </div>
+            <div class="form-group">
+              <label for="inp-sec-order">Display Order (1 = Top)</label>
+              <input type="number" id="inp-sec-order" class="form-input" value="1" min="1" max="20" />
+            </div>
+          </div>
+
+          <button type="submit" id="btn-save-sec" style="width:100%;padding:13px;background:linear-gradient(135deg,#5b4cff,#7c6dff);color:#fff;border:none;border-radius:12px;font-weight:800;font-size:0.92rem;cursor:pointer;margin-top:10px;box-shadow:0 4px 14px rgba(91,76,255,0.35);">
+            ➕ Save &amp; Publish Section Live
+          </button>
+        </form>
+      </div>
+
+      <!-- ACTIVE SECTIONS LIST -->
+      <div class="creator-preview-wrap">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <h3 style="font-size:1.05rem;font-weight:900;color:var(--dk);">🌐 Active Homepage Sections</h3>
+          <span style="font-size:0.75rem;background:#ede9fe;color:#6d28d9;padding:3px 10px;border-radius:20px;font-weight:800;" id="sec-active-count">3 Live</span>
+        </div>
+
+        <div id="admin-sections-list" style="display:flex;flex-direction:column;gap:12px;">
+          <!-- Injected by renderAdminSectionsManager() -->
+        </div>
+      </div>
+    </div>
   </div>
 
 </div>
@@ -1054,7 +1134,7 @@ function toggleTrendingRankVisibility() {
 }
 
 function switchTab(tab) {
-  const tabs = ['manage', 'create', 'trending', 'categories', 'showcase'];
+  const tabs = ['manage', 'create', 'trending', 'sections', 'categories', 'showcase'];
   tabs.forEach(t => {
     const el = document.getElementById('tab-' + t);
     const btn = document.getElementById('tab-btn-' + t);
@@ -1069,6 +1149,8 @@ function switchTab(tab) {
     renderAdminTable();
   } else if (tab === 'trending') {
     renderTrendingManager();
+  } else if (tab === 'sections') {
+    renderAdminSectionsManager();
   } else if (tab === 'create') {
     renderFormCategoryTicks();
   } else if (tab === 'categories') {
@@ -2120,15 +2202,202 @@ async function handleAdminSubmit(e) {
   }
 }
 
+// ── SECTIONS & SEO MANAGER (Admin Studio) ──
+function updateSectionFilterOptions() {
+  const type = document.getElementById('inp-sec-filter-type').value;
+  const wrap = document.getElementById('sec-filter-input-wrap');
+  const lbl = document.getElementById('lbl-sec-filter-val');
+
+  if (type === 'ai') {
+    lbl.textContent = 'Choose AI Tool *';
+    wrap.innerHTML = `
+      <select id="inp-sec-filter-val" class="form-select">
+        <option value="gemini">Gemini</option>
+        <option value="chatgpt">ChatGPT</option>
+        <option value="claude">Claude</option>
+        <option value="deepseek">DeepSeek</option>
+        <option value="grok">Grok</option>
+        <option value="midjourney">Midjourney</option>
+      </select>
+    `;
+  } else if (type === 'category') {
+    lbl.textContent = 'Choose Category *';
+    const cats = (typeof getAllCategories === 'function') ? getAllCategories() : [];
+    wrap.innerHTML = `
+      <select id="inp-sec-filter-val" class="form-select">
+        ${cats.map(c => `<option value="${c.name}">${c.icon || '📁'} ${c.name}</option>`).join('')}
+      </select>
+    `;
+  } else if (type === 'promptType') {
+    lbl.textContent = 'Prompt Type *';
+    wrap.innerHTML = `
+      <select id="inp-sec-filter-val" class="form-select">
+        <option value="image">📸 Image Generation Prompts</option>
+        <option value="text">📝 Text & Coding Prompts</option>
+      </select>
+    `;
+  } else {
+    lbl.textContent = 'Tag / Keyword *';
+    wrap.innerHTML = `
+      <input type="text" id="inp-sec-filter-val" class="form-input" placeholder="e.g. portrait, wallpaper, coding" required />
+    `;
+  }
+}
+
+function renderAdminSectionsManager() {
+  const sections = (typeof getAllSections === 'function') ? getAllSections() : [];
+  const listEl = document.getElementById('admin-sections-list');
+  const countBadge = document.getElementById('sec-active-count');
+  const tabBadge = document.getElementById('tab-sec-count');
+
+  if (countBadge) countBadge.textContent = `${sections.filter(s => s.enabled !== false).length} Live`;
+  if (tabBadge) tabBadge.textContent = sections.length;
+  if (!listEl) return;
+
+  if (!sections.length) {
+    listEl.innerHTML = `<div style="text-align:center;padding:30px;color:var(--mu);">No sections configured yet. Add your first section above!</div>`;
+    return;
+  }
+
+  listEl.innerHTML = sections.map((sec, idx) => {
+    const prompts = (typeof getPromptsForSection === 'function') ? getPromptsForSection(sec) : [];
+    const isEnabled = sec.enabled !== false;
+    const statusTag = isEnabled 
+      ? `<span style="background:#dcfce7;color:#15803d;font-size:0.7rem;font-weight:800;padding:2px 8px;border-radius:6px;">Active Live</span>`
+      : `<span style="background:#fee2e2;color:#b91c1c;font-size:0.7rem;font-weight:800;padding:2px 8px;border-radius:6px;">Disabled</span>`;
+
+    return `
+      <div style="background:#fff;border:1.5px solid var(--bd);border-radius:14px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 2px 10px rgba(0,0,0,0.02);">
+        <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;">
+          <span style="font-size:1.6rem;width:40px;height:40px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${sec.icon || '✨'}</span>
+          <div style="min-width:0;flex:1;">
+            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:2px;">
+              <strong style="font-size:0.88rem;color:var(--dk);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${sec.title}</strong>
+              ${statusTag}
+              <span style="font-size:0.68rem;background:#ede9fe;color:#6d28d9;padding:1px 6px;border-radius:4px;font-weight:700;">Order: #${sec.order || (idx + 1)}</span>
+            </div>
+            <p style="font-size:0.74rem;color:var(--mu);margin:0 0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${sec.subtitle || 'No description'}</p>
+            <div style="display:flex;align-items:center;gap:8px;font-size:0.7rem;color:#64748b;">
+              <span>🎯 Filter: <strong>${sec.filterType} = ${sec.filterValue}</strong></span>
+              <span>•</span>
+              <span>📸 <strong>${prompts.length} Prompts</strong> found</span>
+              ${sec.seoKeyword ? `<span>•</span><span>🔍 SEO: <em>${sec.seoKeyword}</em></span>` : ''}
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+          <button type="button" onclick="editSectionAdmin('${sec.id}')" style="background:#f1f5f9;border:1px solid #cbd5e1;color:#1e293b;padding:5px 9px;border-radius:7px;font-size:0.72rem;font-weight:700;cursor:pointer;" title="Edit Section">✏️ Edit</button>
+          <button type="button" onclick="handleToggleSection('${sec.id}', ${isEnabled})" style="background:${isEnabled ? '#fef3c7' : '#dcfce7'};border:1px solid ${isEnabled ? '#fde68a' : '#bbf7d0'};color:${isEnabled ? '#b45309' : '#15803d'};padding:5px 9px;border-radius:7px;font-size:0.72rem;font-weight:700;cursor:pointer;" title="Toggle visibility">${isEnabled ? '👁️ Hide' : '✨ Show'}</button>
+          <button type="button" onclick="handleDeleteSection('${sec.id}', '${(sec.title || '').replace(/'/g, "\\'")}')" style="background:#fee2e2;border:1px solid #fecdd3;color:#dc2626;padding:5px 9px;border-radius:7px;font-size:0.72rem;font-weight:700;cursor:pointer;" title="Delete Section">🗑️</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function editSectionAdmin(id) {
+  const sections = (typeof getAllSections === 'function') ? getAllSections() : [];
+  const sec = sections.find(s => String(s.id) === String(id));
+  if (!sec) return;
+
+  document.getElementById('admin-edit-sec-id').value = sec.id;
+  document.getElementById('inp-sec-title').value = sec.title || '';
+  document.getElementById('inp-sec-subtitle').value = sec.subtitle || '';
+  document.getElementById('inp-sec-filter-type').value = sec.filterType || 'ai';
+  updateSectionFilterOptions();
+  
+  const valInp = document.getElementById('inp-sec-filter-val');
+  if (valInp) valInp.value = sec.filterValue || '';
+
+  document.getElementById('inp-sec-seo').value = sec.seoKeyword || '';
+  document.getElementById('inp-sec-badge').value = sec.badge || '';
+  document.getElementById('inp-sec-icon').value = sec.icon || '✨';
+  document.getElementById('inp-sec-order').value = sec.order || 1;
+
+  document.getElementById('btn-save-sec').textContent = '💾 Update Section in Database';
+  showToast(`Editing section "${sec.title}"`);
+}
+
+async function handleCreateSection(e) {
+  e.preventDefault();
+  const editId = document.getElementById('admin-edit-sec-id').value;
+  const title = document.getElementById('inp-sec-title').value.trim();
+  const subtitle = document.getElementById('inp-sec-subtitle').value.trim();
+  const filterType = document.getElementById('inp-sec-filter-type').value;
+  const filterVal = (document.getElementById('inp-sec-filter-val').value || '').trim();
+  const seoKeyword = (document.getElementById('inp-sec-seo').value || '').trim();
+  const badge = (document.getElementById('inp-sec-badge').value || '').trim();
+  const icon = (document.getElementById('inp-sec-icon').value || '✨').trim();
+  const order = parseInt(document.getElementById('inp-sec-order').value, 10) || 1;
+
+  if (!title || !filterVal) {
+    alert("Please enter Section Heading Title and Filter Value!");
+    return;
+  }
+
+  const secId = editId || ('sec_' + Date.now());
+  const btn = document.getElementById('btn-save-sec');
+  btn.disabled = true;
+  btn.textContent = '⏳ Saving Section to Firestore...';
+
+  const secObj = {
+    id: secId,
+    title: title,
+    subtitle: subtitle,
+    filterType: filterType,
+    filterValue: filterVal,
+    seoKeyword: seoKeyword,
+    badge: badge || 'Curated Collection',
+    icon: icon,
+    order: order,
+    enabled: true
+  };
+
+  await saveSectionAsync(secObj);
+  btn.disabled = false;
+  btn.textContent = '➕ Save & Publish Section Live';
+
+  document.getElementById('admin-section-form').reset();
+  document.getElementById('admin-edit-sec-id').value = '';
+  document.getElementById('inp-sec-icon').value = '✨';
+  document.getElementById('inp-sec-order').value = '1';
+  updateSectionFilterOptions();
+
+  renderAdminSectionsManager();
+  showToast(`🎉 Section "${title}" published live to homepage!`);
+}
+
+async function handleToggleSection(id, currentEnabled) {
+  const sections = (typeof getAllSections === 'function') ? getAllSections() : [];
+  const sec = sections.find(s => String(s.id) === String(id));
+  if (!sec) return;
+  sec.enabled = !currentEnabled;
+  await saveSectionAsync(sec);
+  renderAdminSectionsManager();
+  showToast(`Visibility updated for "${sec.title}"`);
+}
+
+async function handleDeleteSection(id, title) {
+  if (!confirm(`Are you sure you want to delete section "${title}"?`)) return;
+  await deleteSectionAsync(id);
+  renderAdminSectionsManager();
+  showToast(`🗑️ Section "${title}" deleted.`);
+}
+
 async function startAdmin() {
   await loadAllCategories();
   await loadAllCustomPrompts();
   if (typeof loadShowcaseIds === 'function') {
     await loadShowcaseIds();
   }
+  if (typeof loadAllSections === 'function') {
+    await loadAllSections();
+  }
   setupPreviewDrag();
   renderAdminTable();
   renderTrendingManager();
+  renderAdminSectionsManager();
   renderFormCategoryTicks();
   renderAdminCategoriesManager();
   renderShowcaseManager();

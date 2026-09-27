@@ -1587,6 +1587,280 @@ footer{background:#0d0d1a;color:#fff;padding:50px 80px 26px}
   transform: translateY(-1px);
 }
 
+/* ── DYNAMIC CURATED HOMEPAGE SWIPEABLE SECTIONS ── */
+.sec-curated-section{
+  padding:36px 0 20px;
+  width:100%;
+  max-width:1440px;
+  margin:0 auto;
+  box-sizing:border-box;
+}
+.curated-sec-head{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  padding:0 40px 14px;
+  margin-bottom:4px;
+  flex-wrap:wrap;
+  gap:12px;
+}
+.curated-sec-title-wrap h2{
+  font-size:1.5rem;
+  font-weight:900;
+  letter-spacing:-0.02em;
+  color:var(--dk);
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.curated-sec-title-wrap p{
+  color:var(--mu);
+  font-size:0.85rem;
+  margin-top:3px;
+}
+.curated-badge-pill{
+  background:#ede9fe;
+  color:#6d28d9;
+  border:1px solid #ddd6fe;
+  font-size:0.72rem;
+  font-weight:800;
+  padding:3px 10px;
+  border-radius:50px;
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  margin-bottom:6px;
+}
+.curated-nav-controls{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.btn-curated-arrow{
+  width:36px;
+  height:36px;
+  border-radius:10px;
+  border:1.5px solid var(--bd);
+  background:#fff;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1.1rem;
+  color:var(--dk);
+  font-weight:800;
+  transition:all 0.2s;
+  box-shadow:0 2px 8px rgba(0,0,0,0.04);
+}
+.btn-curated-arrow:hover{
+  border-color:var(--p);
+  color:var(--p);
+  background:#f8f8ff;
+  transform:scale(1.05);
+}
+.curated-swipe-track{
+  display:flex;
+  gap:18px;
+  overflow-x:auto;
+  scroll-behavior:smooth;
+  scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+  padding:10px 40px 24px;
+  width:100%;
+  box-sizing:border-box;
+}
+.curated-swipe-track::-webkit-scrollbar{display:none;}
+.curated-card{
+  flex:0 0 290px;
+  min-width:290px;
+  scroll-snap-align:start;
+  background:#fff;
+  border-radius:18px;
+  border:1.5px solid var(--bd);
+  overflow:hidden;
+  text-decoration:none;
+  color:var(--dk);
+  transition:all 0.25s cubic-bezier(0.16,1,0.3,1);
+  display:flex;
+  flex-direction:column;
+  box-shadow:0 4px 18px rgba(0,0,0,0.03);
+}
+.curated-card:hover{
+  transform:translateY(-6px);
+  border-color:var(--p);
+  box-shadow:0 14px 34px rgba(91,76,255,0.12);
+}
+.curated-card-thumb{
+  height:190px;
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  background:#090a14;
+}
+.curated-card-thumb img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  transition:transform 0.3s ease;
+}
+.curated-card:hover .curated-card-thumb img{
+  transform:scale(1.04);
+}
+.curated-zoom-btn{
+  position:absolute;
+  top:10px;
+  right:10px;
+  background:rgba(0,0,0,0.65);
+  backdrop-filter:blur(6px);
+  color:#fff;
+  border:1px solid rgba(255,255,255,0.25);
+  border-radius:50%;
+  width:32px;
+  height:32px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:0.85rem;
+  cursor:pointer;
+  transition:all 0.2s;
+  z-index:4;
+}
+.curated-zoom-btn:hover{
+  background:var(--p);
+  transform:scale(1.12);
+}
+.curated-cat-badge{
+  position:absolute;
+  top:10px;
+  left:10px;
+  background:rgba(0,0,0,0.6);
+  backdrop-filter:blur(6px);
+  color:#fff;
+  font-size:0.68rem;
+  font-weight:800;
+  padding:3px 10px;
+  border-radius:50px;
+  border:1px solid rgba(255,255,255,0.15);
+}
+.curated-ai-badge{
+  position:absolute;
+  bottom:10px;
+  right:10px;
+  background:#fff;
+  border-radius:8px;
+  padding:3px 8px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.18);
+  display:flex;
+  align-items:center;
+  gap:4px;
+  font-size:0.68rem;
+  font-weight:800;
+}
+.curated-ai-badge img{
+  width:14px;
+  height:14px;
+  object-fit:contain;
+}
+.curated-card-body{
+  padding:15px;
+  flex:1;
+  display:flex;
+  flex-direction:column;
+}
+.curated-card-title{
+  font-size:0.92rem;
+  font-weight:800;
+  margin-bottom:6px;
+  line-height:1.35;
+  color:var(--dk);
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+.curated-card-desc{
+  font-size:0.77rem;
+  color:var(--mu);
+  line-height:1.5;
+  margin-bottom:12px;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+  flex:1;
+}
+.curated-card-footer{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-top:auto;
+  padding-top:10px;
+  border-top:1px solid #f1f5f9;
+}
+.curated-open-link{
+  font-size:0.76rem;
+  font-weight:800;
+  color:var(--p);
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+}
+
+/* Lightbox & Legal Modals for Homepage */
+.lightbox-overlay{
+  position:fixed;inset:0;background:rgba(10,10,18,0.95);
+  backdrop-filter:blur(14px);z-index:99999;
+  display:none;align-items:center;justify-content:center;
+  flex-direction:column;padding:16px;touch-action:manipulation;
+}
+.lightbox-overlay.active{display:flex}
+.lightbox-topbar{
+  position:absolute;top:16px;left:20px;right:20px;
+  display:flex;align-items:center;justify-content:space-between;
+  z-index:100000;color:#fff;
+}
+.lightbox-title{
+  font-size:0.92rem;font-weight:800;color:#fff;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60%;
+}
+.lightbox-actions{display:flex;align-items:center;gap:10px;}
+.lightbox-btn{
+  background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.25);
+  color:#fff;border-radius:50px;padding:8px 16px;font-size:0.82rem;font-weight:800;
+  cursor:pointer;display:inline-flex;align-items:center;gap:6px;backdrop-filter:blur(10px);
+  transition:all 0.2s;text-decoration:none;
+}
+.lightbox-btn:hover{background:rgba(255,255,255,0.3);transform:scale(1.05)}
+.lightbox-close-btn{
+  background:rgba(239,68,68,0.25);border:1px solid rgba(239,68,68,0.45);
+  color:#fff;border-radius:50%;width:38px;height:38px;display:flex;
+  align-items:center;justify-content:center;font-size:1.2rem;font-weight:900;
+  cursor:pointer;transition:all 0.2s;
+}
+.lightbox-close-btn:hover{background:#ef4444;transform:scale(1.1)}
+.lightbox-content{
+  max-width:95vw;max-height:86vh;display:flex;align-items:center;justify-content:center;
+}
+.lightbox-img{
+  max-width:100%;max-height:86vh;object-fit:contain;
+  border-radius:14px;box-shadow:0 24px 70px rgba(0,0,0,0.7);
+  user-select:none;cursor:zoom-out;
+}
+
+/* Legal Modals */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(5px);z-index:10000;display:none;align-items:center;justify-content:center;padding:16px;}
+.modal-overlay.show{display:flex}
+.modal{background:#fff;border-radius:20px;padding:28px;width:92%;max-width:560px;max-height:88vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.25);position:relative;}
+.modal h3{font-weight:900;font-size:1.2rem;margin-bottom:8px;color:var(--dk)}
+.legal-modal-content{font-size:0.84rem;color:#334155;line-height:1.68}
+.legal-modal-content h4{font-size:0.95rem;font-weight:800;color:#0f172a;margin:16px 0 6px}
+.legal-modal-content p{margin-bottom:12px;color:#475569}
+.modal-close{position:absolute;top:18px;right:18px;background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--mu)}
+
 @media(max-width: 860px) {
   .showcase-body {
     display: flex;
@@ -1629,6 +1903,26 @@ footer{background:#0d0d1a;color:#fff;padding:50px 80px 26px}
   }
   .btn-nav-showcase {
     display: none;
+  }
+  .curated-sec-head{
+    padding:0 14px 8px;
+  }
+  .curated-sec-title-wrap h2{
+    font-size:1.22rem;
+  }
+  .curated-swipe-track{
+    padding:6px 14px 18px;
+    gap:12px;
+  }
+  .curated-card{
+    flex:0 0 240px;
+    min-width:240px;
+  }
+  .curated-card-thumb{
+    height:160px;
+  }
+  .nav-btn-text{
+    display:none;
   }
 }
 </style>
@@ -1744,12 +2038,17 @@ footer{background:#0d0d1a;color:#fff;padding:50px 80px 26px}
       <h2>Top 10 Trending Prompts</h2>
       <p>Ranked #1 to #10 by creator ratings and community usage</p>
     </div>
-    <a href="admin.html" class="va" style="display:inline-flex;align-items:center;gap:4px;">Manage Ranks in Admin →</a>
+    <a href="#prompts" class="va">Explore All Prompts →</a>
   </div>
   <div class="trending-scroll-container" id="trending-container">
     <!-- Rendered by renderTrendingSection() -->
   </div>
 </section>
+
+<!-- 🔥 DYNAMIC CURATED SWIPEABLE SECTIONS (Gemini, ChatGPT, Midjourney, etc.) -->
+<div id="homepage-curated-sections">
+  <!-- Dynamically injected by renderCuratedSections() -->
+</div>
 
 <!-- AI TOOLS -->
 <section class="sec-ai" id="ai-tools">
@@ -2055,6 +2354,28 @@ footer{background:#0d0d1a;color:#fff;padding:50px 80px 26px}
   </div>
 </section>
 
+<!-- FULLSCREEN IMAGE LIGHTBOX MODAL -->
+<div class="lightbox-overlay" id="image-lightbox-modal" onclick="closeImageLightbox(event)">
+  <div class="lightbox-topbar">
+    <div class="lightbox-title" id="lightbox-img-title">Prompt Visual</div>
+    <div class="lightbox-actions">
+      <a id="lightbox-download-btn" href="#" download="promptvault_image.webp" class="lightbox-btn" onclick="event.stopPropagation()">⬇️ Download HD</a>
+      <button type="button" class="lightbox-close-btn" onclick="closeImageLightbox(event)">✕</button>
+    </div>
+  </div>
+  <div class="lightbox-content">
+    <img id="lightbox-active-img" class="lightbox-img" src="" alt="Fullscreen Visual" onclick="event.stopPropagation()" />
+  </div>
+</div>
+
+<!-- LEGAL & INFO MODAL -->
+<div class="modal-overlay" id="legal-modal-overlay" onclick="if(event.target===this)closeLegalModal()">
+  <div class="modal">
+    <button class="modal-close" onclick="closeLegalModal()">✕</button>
+    <div id="legal-modal-body"></div>
+  </div>
+</div>
+
 <!-- FOOTER -->
 <footer>
   <div class="ft">
@@ -2062,11 +2383,11 @@ footer{background:#0d0d1a;color:#fff;padding:50px 80px 26px}
       <a href="index.html" class="logo" style="margin-bottom:12px;display:inline-block;" title="PromptVault">
         <img src="images/logo_horizontal_dark.png" alt="PromptVault Logo" style="height:42px;width:auto;display:block;" />
       </a>
-      <p>Free AI prompt library for ChatGPT, Gemini, Claude, DeepSeek and Grok. Made for everyone.</p>
+      <p>Free AI prompt library for ChatGPT, Gemini, Claude, DeepSeek and Grok. 100% free forever.</p>
     </div>
-    <div class="fl"><h4>Explore</h4><ul><li><a href="#">All Prompts</a></li><li><a href="#categories">Categories</a></li><li><a href="#ai-tools">AI Tools</a></li><li><a href="#prompts">Featured</a></li></ul></div>
-    <div class="fl"><h4>Studio</h4><ul><li><a href="admin.html">🔐 Admin Studio</a></li><li><a href="#categories">Categories</a></li><li><a href="#prompts">Browse All</a></li></ul></div>
-    <div class="fl"><h4>Company</h4><ul><li><a href="#">About Us</a></li><li><a href="#">Contact</a></li><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms</a></li></ul></div>
+    <div class="fl"><h4>Explore</h4><ul><li><a href="#prompts">All Prompts</a></li><li><a href="#categories">Categories</a></li><li><a href="#ai-tools">AI Tools</a></li><li><a href="#trending">Top 10 Trending</a></li></ul></div>
+    <div class="fl"><h4>Resources</h4><ul><li><a href="#popular-searches">Trending Searches</a></li><li><a href="#faq">FAQ &amp; Guides</a></li><li><a onclick="openLegalModal('about')">About Us</a></li><li><a onclick="openLegalModal('contact')">Contact Support</a></li></ul></div>
+    <div class="fl"><h4>Legal &amp; Privacy</h4><ul><li><a onclick="openLegalModal('privacy')">Privacy Policy</a></li><li><a onclick="openLegalModal('terms')">Terms of Service</a></li><li><a onclick="openLegalModal('disclaimer')">AI Disclaimer</a></li></ul></div>
   </div>
   <div class="fbot">
     <span>© 2025 PromptVault. Free for everyone, always. 🇮🇳</span>
@@ -2929,6 +3250,216 @@ function renderWelcomeShowcaseCards() {
   grid.innerHTML = html;
 }
 
+// ── DYNAMIC CURATED HOMEPAGE SWIPEABLE SECTIONS RENDERER ──
+function renderCuratedSections() {
+  const container = document.getElementById('homepage-curated-sections');
+  if (!container) return;
+
+  const sections = (typeof getAllSections === 'function') ? getAllSections() : [];
+  const activeSections = sections.filter(s => s.enabled !== false);
+
+  if (!activeSections.length) {
+    container.innerHTML = '';
+    return;
+  }
+
+  let html = '';
+  activeSections.forEach((sec, sIdx) => {
+    const prompts = (typeof getPromptsForSection === 'function') ? getPromptsForSection(sec) : [];
+    if (!prompts || !prompts.length) return;
+
+    const trackId = `curated-track-${sec.id || sIdx}`;
+    const badgeText = sec.badge || 'Curated Collection';
+    const seoMeta = sec.seoKeyword ? `<span style="font-size:0.7rem;color:var(--mu);background:#f1f5f9;padding:2px 8px;border-radius:4px;font-weight:700;">🔍 ${sec.seoKeyword}</span>` : '';
+
+    html += `
+      <section class="sec-curated-section" id="section-${sec.id || sIdx}">
+        <div class="curated-sec-head">
+          <div class="curated-sec-title-wrap">
+            <span class="curated-badge-pill">${sec.icon || '✨'} ${badgeText}</span>
+            <h2>${sec.title} ${seoMeta}</h2>
+            <p>${sec.subtitle || 'Swipe horizontally to discover top prompt formulas'}</p>
+          </div>
+          <div class="curated-nav-controls">
+            <button type="button" class="btn-curated-arrow" onclick="scrollSectionTrack('${trackId}', -1)" title="Swipe Left" aria-label="Previous prompts">‹</button>
+            <button type="button" class="btn-curated-arrow" onclick="scrollSectionTrack('${trackId}', 1)" title="Swipe Right" aria-label="Next prompts">›</button>
+          </div>
+        </div>
+
+        <div class="curated-swipe-track" id="${trackId}">
+          ${prompts.map(p => {
+            const logo = AI_LOGOS[p.ai] || AI_LOGOS.chatgpt;
+            const hasImagesArray = Array.isArray(p.images) && p.images.length > 0;
+            const primaryImgUrl = hasImagesArray ? (p.images[0].url || p.images[0]) : p.customImage;
+            const isImageFormat = !!primaryImgUrl;
+            const catIcon = (typeof getCategoryIcon === 'function') ? getCategoryIcon(p.cat) : (p.catIcon || '📁');
+
+            let thumbHtml = '';
+            if (isImageFormat) {
+              const firstImgObj = hasImagesArray && typeof p.images[0] === 'object' ? p.images[0] : null;
+              const posY = (firstImgObj && firstImgObj.posY !== undefined) ? firstImgObj.posY : (p.imgPosY !== undefined ? p.imgPosY : 50);
+              const posX = (firstImgObj && firstImgObj.posX !== undefined) ? firstImgObj.posX : (p.imgPosX !== undefined ? p.imgPosX : 50);
+              const zoom = (firstImgObj && firstImgObj.zoom !== undefined) ? firstImgObj.zoom : (p.imgZoom !== undefined ? p.imgZoom : 1);
+
+              thumbHtml = `
+                <div class="curated-card-thumb">
+                  <img src="${primaryImgUrl}" alt="${p.title}" style="object-position:${posX}% ${posY}%;transform:scale(${zoom});transform-origin:${posX}% ${posY}%;" loading="lazy" />
+                  <span class="curated-cat-badge">${catIcon} ${p.cat}</span>
+                  <button type="button" class="curated-zoom-btn" onclick="event.preventDefault();event.stopPropagation();openImageLightbox('${primaryImgUrl}', '${(p.title || '').replace(/'/g, "\\'")}')" title="Tap to Enlarge">🔍</button>
+                  <div class="curated-ai-badge"><img src="${logo.file}" alt="${p.aiName || 'AI'}" style="${logo.style}"/><span>${p.aiName || 'AI'}</span></div>
+                </div>
+              `;
+            } else {
+              thumbHtml = `
+                <div class="curated-card-thumb ${p.gradient || 'g1'}" style="font-size:3rem;background:linear-gradient(135deg,#5b4cff,#06d6a0);">
+                  <span>${p.emoji || catIcon || '⚡'}</span>
+                  <span class="curated-cat-badge">${catIcon} ${p.cat}</span>
+                  <div class="curated-ai-badge"><img src="${logo.file}" alt="${p.aiName || 'AI'}" style="${logo.style}"/><span>${p.aiName || 'AI'}</span></div>
+                </div>
+              `;
+            }
+
+            return `
+              <a href="prompt.html?id=${p.id}" class="curated-card">
+                ${thumbHtml}
+                <div class="curated-card-body">
+                  <strong class="curated-card-title">${p.title}</strong>
+                  <p class="curated-card-desc">${p.desc || ''}</p>
+                  <div class="curated-card-footer">
+                    <span style="font-size:0.72rem;color:var(--mu);font-weight:700;">⭐ ${p.rating || '5.0'}</span>
+                    <span class="curated-open-link">Use Prompt →</span>
+                  </div>
+                </div>
+              </a>
+            `;
+          }).join('')}
+        </div>
+      </section>
+    `;
+  });
+
+  container.innerHTML = html;
+}
+
+function scrollSectionTrack(trackId, dir) {
+  const el = document.getElementById(trackId);
+  if (el) {
+    el.scrollBy({ left: dir * 310, behavior: 'smooth' });
+  }
+}
+
+// ── FULLSCREEN IMAGE LIGHTBOX VIEWER ──
+function openImageLightbox(imgUrl, title = 'Prompt Visual') {
+  if (!imgUrl) return;
+  const overlay = document.getElementById('image-lightbox-modal');
+  const activeImg = document.getElementById('lightbox-active-img');
+  const titleEl = document.getElementById('lightbox-img-title');
+  const downloadBtn = document.getElementById('lightbox-download-btn');
+
+  if (activeImg) activeImg.src = imgUrl;
+  if (titleEl) titleEl.textContent = title;
+  if (downloadBtn) downloadBtn.href = imgUrl;
+
+  if (overlay) {
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closeImageLightbox(e) {
+  if (e) e.stopPropagation();
+  const overlay = document.getElementById('image-lightbox-modal');
+  if (overlay) {
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+}
+
+// ── LEGAL & COMPANY INFO MODALS ──
+function openLegalModal(type) {
+  const overlay = document.getElementById('legal-modal-overlay');
+  const body = document.getElementById('legal-modal-body');
+  if (!overlay || !body) return;
+
+  if (type === 'privacy') {
+    body.innerHTML = `
+      <h3>🔒 Privacy Policy</h3>
+      <p style="font-size:0.75rem;color:var(--mu);margin-bottom:14px;">Effective Date: March 2025 • PromptVault.site</p>
+      <div class="legal-modal-content">
+        <h4>1. Information We Collect</h4>
+        <p>PromptVault is a free, privacy-first AI prompt library. We collect minimal information necessary to deliver prompt services, including basic anonymous usage analytics and Google Sign-In profile info (name, email) if you authenticate.</p>
+        
+        <h4>2. Google AdSense &amp; Advertising Cookies</h4>
+        <p>We use Google AdSense and third-party advertising vendors to serve ads when you visit our website. Google uses cookies (including DoubleClick DART cookies) to serve ads based on your prior visits to PromptVault or other websites across the Internet. You may opt out of personalized advertising by visiting <a href="https://www.google.com/settings/ads" target="_blank" style="color:var(--p);font-weight:700;">Google Ads Settings</a>.</p>
+
+        <h4>3. Data Security &amp; Storage</h4>
+        <p>All database transactions and prompt interactions are securely processed through Google Cloud Firestore. We never sell or trade personal information with third parties.</p>
+
+        <h4>4. Contact</h4>
+        <p>For any privacy inquiries, reach out to us at: <strong>nikhildswll@gmail.com</strong></p>
+      </div>
+    `;
+  } else if (type === 'terms') {
+    body.innerHTML = `
+      <h3>📜 Terms of Service</h3>
+      <p style="font-size:0.75rem;color:var(--mu);margin-bottom:14px;">Effective Date: March 2025 • PromptVault.site</p>
+      <div class="legal-modal-content">
+        <h4>1. Free License &amp; Permitted Use</h4>
+        <p>All prompt templates and formulas on PromptVault are 100% free for both personal and commercial use across ChatGPT, Gemini, Midjourney, Claude, and DeepSeek.</p>
+
+        <h4>2. AI Output Disclaimer</h4>
+        <p>PromptVault provides prompt structures and engineering formulas. AI model responses are generated independently by the respective third-party AI platforms (OpenAI, Google, Anthropic, DeepSeek). PromptVault is not responsible for the accuracy or output generated by external AI models.</p>
+
+        <h4>3. Intellectual Property</h4>
+        <p>The PromptVault website design, branding, and curation engine are copyrighted. Prompt texts and templates are open for community utilization.</p>
+      </div>
+    `;
+  } else if (type === 'about') {
+    body.innerHTML = `
+      <h3>🚀 About PromptVault</h3>
+      <div class="legal-modal-content">
+        <p><strong>PromptVault</strong> is a 100% free, curated AI prompt library and engineering studio crafted for creators, developers, designers, and marketers in India and worldwide.</p>
+        <p>Our mission is simple: eliminate AI paywalls and help users extract maximum performance from Gemini, ChatGPT, Claude, Midjourney, and DeepSeek through structured, copy-paste prompts with smart interactive variable customizers.</p>
+        <div style="background:#f8fafc;padding:14px;border-radius:12px;border:1px solid #e2e8f0;margin-top:14px;">
+          <strong>Founder &amp; Creator:</strong> Nikhil Deswal<br/>
+          <strong>Platform:</strong> PromptVault.site 🇮🇳
+        </div>
+      </div>
+    `;
+  } else if (type === 'contact') {
+    body.innerHTML = `
+      <h3>📬 Contact Support &amp; Community</h3>
+      <div class="legal-modal-content">
+        <p>Have a question, feedback, or want to submit your prompt designs to PromptVault? We'd love to hear from you!</p>
+        <div style="background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:14px;padding:16px;margin:16px 0;">
+          <div style="font-size:0.8rem;color:#166534;font-weight:800;text-transform:uppercase;margin-bottom:4px;">Official Support Email:</div>
+          <a href="mailto:nikhildswll@gmail.com" style="font-size:1.05rem;font-weight:800;color:#15803d;text-decoration:none;">nikhildswll@gmail.com</a>
+        </div>
+        <p>We typically respond to community inquiries within 24 hours.</p>
+      </div>
+    `;
+  } else if (type === 'disclaimer') {
+    body.innerHTML = `
+      <h3>⚠️ AI Generation Disclaimer</h3>
+      <div class="legal-modal-content">
+        <p>PromptVault is an independent prompt directory and educational tool. We are not officially affiliated with, endorsed by, or sponsored by Google, OpenAI, Anthropic, Midjourney, or DeepSeek.</p>
+        <p>All brand names and logos (ChatGPT, Gemini, Claude, Midjourney, DeepSeek, Grok) belong to their respective trademark owners and are used purely for educational compatibility indexing.</p>
+      </div>
+    `;
+  }
+
+  overlay.classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLegalModal() {
+  const overlay = document.getElementById('legal-modal-overlay');
+  if (overlay) {
+    overlay.classList.remove('show');
+    document.body.style.overflow = '';
+  }
+}
+
 function checkAndTriggerWelcomeShowcase() {
   const isPreview = window.location.search.includes('previewShowcase=true');
   const alreadySeen = localStorage.getItem('promptvault_welcome_shown_v1');
@@ -2947,7 +3478,11 @@ async function startApp() {
   if (typeof loadShowcaseIds === 'function') {
     await loadShowcaseIds();
   }
+  if (typeof loadAllSections === 'function') {
+    await loadAllSections();
+  }
   initShuffledPrompts(); // Shuffled designs on every page load / visit!
+  renderCuratedSections(); // Render rich horizontal swipe sections!
   renderCategorySection();
   renderSearchCategoryPills();
   renderPrompts();
