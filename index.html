@@ -1810,6 +1810,86 @@ footer{background:#0d0d1a;color:#fff;padding:50px 80px 26px}
   gap:4px;
 }
 
+/* ── PROMPTS PAGINATION (16 Prompts Per Page) ── */
+.prompts-pagination-wrap{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  margin-top:40px;
+  padding:18px 24px;
+  background:#ffffff;
+  border-radius:20px;
+  border:1.5px solid var(--bd);
+  box-shadow:0 4px 20px rgba(0,0,0,0.03);
+}
+.pagination-controls-row{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.btn-page-nav{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:10px 22px;
+  background:linear-gradient(135deg,#5b4cff,#7c6dff);
+  color:#ffffff;
+  border:none;
+  border-radius:12px;
+  font-size:0.88rem;
+  font-weight:800;
+  cursor:pointer;
+  transition:all 0.2s cubic-bezier(0.16,1,0.3,1);
+  box-shadow:0 4px 14px rgba(91,76,255,0.25);
+}
+.btn-page-nav:hover:not(:disabled){
+  transform:translateY(-2px);
+  box-shadow:0 6px 18px rgba(91,76,255,0.38);
+}
+.btn-page-nav:disabled{
+  background:#f1f5f9;
+  color:#94a3b8;
+  box-shadow:none;
+  cursor:not-allowed;
+  opacity:0.7;
+}
+.btn-page-num{
+  min-width:38px;
+  height:38px;
+  padding:0 8px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  background:#ffffff;
+  color:var(--dk);
+  border:1.5px solid var(--bd);
+  border-radius:10px;
+  font-size:0.88rem;
+  font-weight:800;
+  cursor:pointer;
+  transition:all 0.2s ease;
+}
+.btn-page-num:hover{
+  border-color:var(--p);
+  color:var(--p);
+  background:#f8f8ff;
+}
+.btn-page-num.active{
+  background:var(--p);
+  color:#ffffff;
+  border-color:var(--p);
+  box-shadow:0 4px 12px rgba(91,76,255,0.3);
+}
+.page-info-tag{
+  font-size:0.84rem;
+  font-weight:700;
+  color:var(--mu);
+}
+
 /* Lightbox & Legal Modals for Homepage */
 .lightbox-overlay{
   position:fixed;inset:0;background:rgba(10,10,18,0.95);
@@ -2161,6 +2241,9 @@ footer{background:#0d0d1a;color:#fff;padding:50px 80px 26px}
 
   <!-- CARDS GRID -->
   <div class="pgrid" id="prompts-grid"></div>
+
+  <!-- PAGINATION CONTROLS (16 Prompts Per Page) -->
+  <div id="prompts-pagination" class="prompts-pagination-wrap"></div>
 </section>
 
 <!-- HOW IT WORKS -->
@@ -2439,9 +2522,9 @@ footer{background:#0d0d1a;color:#fff;padding:50px 80px 26px}
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
-<script src="auth.js?v=3.1"></script>
-<script src="db.js?v=3.1"></script>
-<script src="prompts.js?v=3.1"></script>
+<script src="auth.js?v=3.2"></script>
+<script src="db.js?v=3.2"></script>
+<script src="prompts.js?v=3.2"></script>
 <script>
 let currentAI = 'all';
 let currentCat = 'all';
@@ -2793,19 +2876,95 @@ function getFiltered() {
   });
 }
 
-function renderPrompts() {
+const PROMPTS_PER_PAGE = 16;
+let currentPage = 1;
+
+function goToPage(pageNum, shouldScroll = true) {
+  currentPage = pageNum;
+  renderPrompts(false);
+  if (shouldScroll) {
+    const el = document.getElementById('prompts') || document.getElementById('prompts-grid');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+}
+
+function renderPaginationControls(curPage, totalPgs, totalItems, startIdx, endIdx) {
+  const container = document.getElementById('prompts-pagination');
+  if (!container) return;
+
+  if (totalItems === 0) {
+    container.style.display = 'none';
+    return;
+  }
+
+  if (totalPgs <= 1) {
+    container.style.display = 'flex';
+    container.innerHTML = `
+      <div class="page-info-tag">Showing all <strong>${totalItems}</strong> prompts</div>
+    `;
+    return;
+  }
+
+  container.style.display = 'flex';
+
+  let numButtons = '';
+  for (let i = 1; i <= totalPgs; i++) {
+    if (i === 1 || i === totalPgs || (i >= curPage - 2 && i <= curPage + 2)) {
+      numButtons += `
+        <button type="button" class="btn-page-num ${i === curPage ? 'active' : ''}" onclick="goToPage(${i})" aria-label="Page ${i}">${i}</button>
+      `;
+    } else if (i === curPage - 3 || i === curPage + 3) {
+      numButtons += `<span style="color:var(--mu);font-weight:800;padding:0 4px;">...</span>`;
+    }
+  }
+
+  container.innerHTML = `
+    <div class="pagination-controls-row">
+      <button type="button" class="btn-page-nav" onclick="goToPage(${curPage - 1})" ${curPage === 1 ? 'disabled' : ''} aria-label="Previous Page">
+        ‹ Previous
+      </button>
+      ${numButtons}
+      <button type="button" class="btn-page-nav" onclick="goToPage(${curPage + 1})" ${curPage === totalPgs ? 'disabled' : ''} aria-label="Next Page">
+        View Next ›
+      </button>
+    </div>
+    <div class="page-info-tag">
+      Showing <strong>${startIdx + 1}–${endIdx}</strong> of <strong>${totalItems}</strong> prompts (Page ${curPage} of ${totalPgs})
+    </div>
+  `;
+}
+
+function renderPrompts(resetPage = true) {
   const grid = document.getElementById('prompts-grid');
+  if (!grid) return;
+
+  if (resetPage === true) {
+    currentPage = 1;
+  }
+
   const filtered = getFiltered();
+  const totalPrompts = filtered.length;
   updateCounters();
   renderTrendingSection();
   renderCuratedSections();
 
-  if(!filtered.length) {
+  if(!totalPrompts) {
     grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--mu)"><div style="font-size:2.5rem;margin-bottom:12px">🔍</div><div style="font-weight:700;font-size:1rem">No prompts found matching your filters</div><div style="font-size:.85rem;margin-top:6px"><button onclick="resetAllFilters()" style="padding:6px 14px;background:var(--p);color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer;margin-top:8px;">Reset All Filters</button></div></div>';
+    renderPaginationControls(1, 1, 0, 0, 0);
     return;
   }
 
-  grid.innerHTML = filtered.map(p => {
+  const totalPages = Math.ceil(totalPrompts / PROMPTS_PER_PAGE) || 1;
+  if (currentPage > totalPages) currentPage = totalPages;
+  if (currentPage < 1) currentPage = 1;
+
+  const startIndex = (currentPage - 1) * PROMPTS_PER_PAGE;
+  const endIndex = Math.min(startIndex + PROMPTS_PER_PAGE, totalPrompts);
+  const pagePrompts = filtered.slice(startIndex, endIndex);
+
+  grid.innerHTML = pagePrompts.map(p => {
     const logo = AI_LOGOS[p.ai] || AI_LOGOS.chatgpt;
     const hasImagesArray = Array.isArray(p.images) && p.images.length > 0;
     const primaryImgUrl = hasImagesArray ? (p.images[0].url || p.images[0]) : p.customImage;
@@ -2868,6 +3027,8 @@ function renderPrompts() {
       </div>
     </a>`;
   }).join('');
+
+  renderPaginationControls(currentPage, totalPages, totalPrompts, startIndex, endIndex);
 }
 
 function toggleHrt(el) {
