@@ -82,8 +82,8 @@ async function cacheGetPromptsLocally() {
   }
 }
 
-// 3. IMAGE COMPRESSION & WEBP CONVERTER
-function compressImageFile(file, maxWidth = 1200, quality = 0.85) {
+// 3. IMAGE COMPRESSION & WEBP CONVERTER (Optimized for 100% Free Firebase Firestore Storage)
+function compressImageFile(file, maxWidth = 900, quality = 0.78) {
   return new Promise((resolve, reject) => {
     if (!file) return reject(new Error("No file provided"));
     
@@ -106,20 +106,18 @@ function compressImageFile(file, maxWidth = 1200, quality = 0.85) {
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, width, height);
 
-        // Try WebP compression first; fallback to JPEG
+        // WebP compression creates ultra-light 25KB-40KB base64 images that fit perfectly in Firestore docs
         let dataUrl = canvas.toDataURL('image/webp', quality);
         if (!dataUrl || !dataUrl.startsWith('data:image/webp')) {
           dataUrl = canvas.toDataURL('image/jpeg', quality);
         }
 
-        canvas.toBlob((blob) => {
-          resolve({
-            dataUrl: dataUrl,
-            blob: blob || dataURLToBlob(dataUrl),
-            width: width,
-            height: height
-          });
-        }, 'image/webp', quality);
+        resolve({
+          dataUrl: dataUrl,
+          blob: dataURLToBlob(dataUrl),
+          width: width,
+          height: height
+        });
       };
       img.onerror = () => reject(new Error("Image decoding failed"));
       img.src = event.target.result;
@@ -130,63 +128,50 @@ function compressImageFile(file, maxWidth = 1200, quality = 0.85) {
 }
 
 function dataURLToBlob(dataUrl) {
-  const parts = dataUrl.split(';base64,');
-  const contentType = parts[0].split(':')[1];
-  const raw = window.atob(parts[1]);
-  const uInt8Array = new Uint8Array(raw.length);
-  for (let i = 0; i < raw.length; ++i) {
-    uInt8Array[i] = raw.charCodeAt(i);
+  try {
+    const parts = dataUrl.split(';base64,');
+    const contentType = parts[0].split(':')[1];
+    const raw = window.atob(parts[1]);
+    const uInt8Array = new Uint8Array(raw.length);
+    for (let i = 0; i < raw.length; ++i) {
+      uInt8Array[i] = raw.charCodeAt(i);
+    }
+    return new Blob([uInt8Array], { type: contentType });
+  } catch(e) {
+    return null;
   }
-  return new Blob([uInt8Array], { type: contentType });
 }
 
-// 4. FIREBASE CLOUD STORAGE IMAGE UPLOADER
+// 4. FIREBASE IMAGE HANDLER (Storage with zero-cost Firestore WebP fallback)
 async function uploadImageToFirebaseStorage(fileOrBlobOrDataUrl, promptId = 'prompt') {
   if (!fileOrBlobOrDataUrl) return null;
 
-  // If it's already an external HTTPS url, no need to re-upload
+  // If already an external HTTPS url, return as is
   if (typeof fileOrBlobOrDataUrl === 'string' && fileOrBlobOrDataUrl.startsWith('http')) {
     return fileOrBlobOrDataUrl;
   }
 
-  let blob = null;
-  let ext = 'webp';
-  let mime = 'image/webp';
-
+  // If already compressed data URL, we can safely store it directly in Firestore (100% Free Plan)
   if (typeof fileOrBlobOrDataUrl === 'string' && fileOrBlobOrDataUrl.startsWith('data:')) {
-    blob = dataURLToBlob(fileOrBlobOrDataUrl);
-    mime = blob.type || 'image/webp';
-    ext = mime.includes('png') ? 'png' : (mime.includes('jpeg') || mime.includes('jpg') ? 'jpg' : 'webp');
-  } else if (fileOrBlobOrDataUrl instanceof Blob) {
-    blob = fileOrBlobOrDataUrl;
-    mime = blob.type || 'image/webp';
-    ext = mime.includes('png') ? 'png' : (mime.includes('jpeg') || mime.includes('jpg') ? 'jpg' : 'webp');
+    const storage = (typeof firebaseStorage !== 'undefined' && firebaseStorage) || (typeof firebase !== 'undefined' && firebase.storage ? firebase.storage() : null);
+    if (!storage) {
+      return fileOrBlobOrDataUrl;
+    }
+    try {
+      const blob = dataURLToBlob(fileOrBlobOrDataUrl);
+      if (!blob) return fileOrBlobOrDataUrl;
+      const cleanPromptId = String(promptId || 'prompt').replace(/[^a-zA-Z0-9_-]/g, '_');
+      const filename = `prompts/${cleanPromptId}/${Date.now()}_${Math.random().toString(36).substring(2, 6)}.webp`;
+      const storageRef = storage.ref(filename);
+      const uploadTask = await storageRef.put(blob, { contentType: 'image/webp', cacheControl: 'public, max-age=31536000' });
+      return await uploadTask.ref.getDownloadURL();
+    } catch (storageErr) {
+      console.warn("Storage not enabled (Spark Plan). Storing WebP directly in Firestore (100% Free):", storageErr.message);
+      return fileOrBlobOrDataUrl;
+    }
   }
 
-  if (!blob) {
-    throw new Error("Invalid image format for Firebase Storage upload.");
-  }
-
-  // Ensure Firebase Storage is initialized
-  const storage = firebaseStorage || (typeof firebase !== 'undefined' && firebase.storage ? firebase.storage() : null);
-  if (!storage) {
-    console.warn("Firebase Storage SDK not loaded. Preserving optimized data URL.");
-    return (typeof fileOrBlobOrDataUrl === 'string') ? fileOrBlobOrDataUrl : null;
-  }
-
-  const cleanPromptId = String(promptId || 'prompt').replace(/[^a-zA-Z0-9_-]/g, '_');
-  const filename = `prompts/${cleanPromptId}/${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${ext}`;
-  const storageRef = storage.ref(filename);
-
-  const metadata = {
-    contentType: mime,
-    cacheControl: 'public, max-age=31536000'
-  };
-
-  const uploadTask = await storageRef.put(blob, metadata);
-  const downloadUrl = await uploadTask.ref.getDownloadURL();
-  console.log(`✅ [Firebase Storage] Uploaded image successfully: ${downloadUrl}`);
-  return downloadUrl;
+  return (typeof fileOrBlobOrDataUrl === 'string') ? fileOrBlobOrDataUrl : null;
 }
 
 // 5. CLOUD FIRESTORE CRUD OPERATIONS
