@@ -1107,9 +1107,9 @@ tr:hover{background:#fafbff}
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
-<script src="auth.js?v=3.8"></script>
-<script src="db.js?v=3.8"></script>
-<script src="prompts.js?v=3.8"></script>
+<script src="auth.js?v=3.9"></script>
+<script src="db.js?v=3.9"></script>
+<script src="prompts.js?v=3.9"></script>
 <script>
 let currentAspectRatio = '1/1';
 let currentUploadedImage = null;
@@ -2460,21 +2460,7 @@ async function handleDeleteSection(id, title) {
   showToast(`🗑️ Section "${title}" deleted.`);
 }
 
-async function startAdmin() {
-  await loadAllCategories();
-  await loadAllCustomPrompts();
-  if (typeof loadShowcaseIds === 'function') {
-    await loadShowcaseIds();
-  }
-  if (typeof loadAllSections === 'function') {
-    await loadAllSections();
-    if (typeof firestoreSaveAllSections === 'function') {
-      const currentSecs = getAllSections();
-      if (currentSecs.length > 0) {
-        firestoreSaveAllSections(currentSecs).catch(() => {});
-      }
-    }
-  }
+function renderAllAdminViews() {
   setupPreviewDrag();
   renderAdminTable();
   renderTrendingManager();
@@ -2483,13 +2469,28 @@ async function startAdmin() {
   renderFormSectionTicks();
   renderAdminCategoriesManager();
   renderShowcaseManager();
+}
 
-  // Check if edit query parameter is present (e.g. ?edit=user_123)
-  const urlParams = new URLSearchParams(window.location.search);
-  const editId = urlParams.get('edit');
-  if (editId) {
-    editPromptAdmin(editId);
-  }
+async function startAdmin() {
+  // 1. Instant render from local cache
+  renderAllAdminViews();
+
+  // 2. Parallel background sync
+  Promise.all([
+    typeof loadAllCategories === 'function' ? loadAllCategories() : Promise.resolve(),
+    typeof loadAllCustomPrompts === 'function' ? loadAllCustomPrompts() : Promise.resolve(),
+    typeof loadShowcaseIds === 'function' ? loadShowcaseIds() : Promise.resolve(),
+    typeof loadAllSections === 'function' ? loadAllSections() : Promise.resolve()
+  ]).then(() => {
+    renderAllAdminViews();
+    const urlParams = new URLSearchParams(window.location.search);
+    const editId = urlParams.get('edit');
+    if (editId) {
+      editPromptAdmin(editId);
+    }
+  }).catch(err => {
+    console.warn("Admin cloud sync note:", err);
+  });
 }
 
 // ── AUTHENTICATION CLIENT ENGINE ──

@@ -617,23 +617,28 @@ Deliver:
   }
 ];
 
-// ── Database & Storage Engine ────────────────────────────────────────────────
-let cachedCustomPrompts = [];
-
-const SEED_CUSTOM_PROMPTS = (typeof PROMPTS !== 'undefined' && Array.isArray(PROMPTS)) ? [...PROMPTS] : [];
-
-function getDeletedPromptIds() {
+function getUserPrompts() {
   try {
-    return JSON.parse(localStorage.getItem('promptvault_deleted_ids') || '[]');
+    const raw = localStorage.getItem('promptvault_user_prompts');
+    return raw ? JSON.parse(raw) : [];
   } catch(e) {
     return [];
   }
 }
 
-function getUserPrompts() {
+// ── Database & Storage Engine ────────────────────────────────────────────────
+const SEED_CUSTOM_PROMPTS = (typeof PROMPTS !== 'undefined' && Array.isArray(PROMPTS)) ? [...PROMPTS] : [];
+
+// Synchronously hydrate from localStorage so initial render is 0ms instant!
+let cachedCustomPrompts = (function() {
+  const local = getUserPrompts();
+  if (Array.isArray(local) && local.length > 0) return local;
+  return [...SEED_CUSTOM_PROMPTS];
+})();
+
+function getDeletedPromptIds() {
   try {
-    const raw = localStorage.getItem('promptvault_user_prompts');
-    return raw ? JSON.parse(raw) : [];
+    return JSON.parse(localStorage.getItem('promptvault_deleted_ids') || '[]');
   } catch(e) {
     return [];
   }
@@ -1115,34 +1120,20 @@ const DEFAULT_SECTIONS = [
     seoKeyword: 'chatgpt graphic design prompts',
     order: 1,
     enabled: true
-  },
-  {
-    id: 'sec_gemini_insta_stories',
-    title: '✨ Gemini Image Prompts for Instagram Stories',
-    subtitle: 'Cinematic portraits, lifestyle photography and creative visual prompt formulas for Gemini',
-    filterType: 'ai',
-    filterValue: 'gemini',
-    icon: '✨',
-    badge: 'Trending AI',
-    seoKeyword: 'gemini image prompts, gemini instagram story prompts',
-    order: 2,
-    enabled: true
-  },
-  {
-    id: 'sec_deepseek_text_prompts',
-    title: '⚡ DeepSeek Text Prompts',
-    subtitle: 'Deep reasoning, coding, clean architecture, and technical prompt systems',
-    filterType: 'ai',
-    filterValue: 'deepseek',
-    icon: '⚡',
-    badge: 'Popular AI',
-    seoKeyword: 'deepseek prompts',
-    order: 3,
-    enabled: true
   }
 ];
 
-let cachedSections = [];
+// Synchronously hydrate sections so homepage paints swipe sections at 0ms!
+let cachedSections = (function() {
+  try {
+    const raw = localStorage.getItem('promptvault_sections');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch(e){}
+  return [...DEFAULT_SECTIONS];
+})();
 
 function getDeletedSectionIds() {
   try {
@@ -1228,7 +1219,6 @@ function getPromptsForSection(sec) {
   const secId = String(sec.id || '').toLowerCase().trim();
   const val = String(sec.filterValue || '').toLowerCase().trim();
   const filterType = sec.filterType || 'ai';
-  const secTitle = String(sec.title || '').toLowerCase().trim();
 
   // 1. Prompts that have this section explicitly ticked in Admin Studio
   const explicitlyTicked = all.filter(p => {
@@ -1241,48 +1231,37 @@ function getPromptsForSection(sec) {
     return explicitlyTicked;
   }
 
-  // 2. Match on filter criteria
+  // 2. Strict Filter Criteria Matching (Do NOT include prompts explicitly assigned to other sections)
   let filterMatched = [];
-  if (filterType === 'ai') {
+  if (filterType === 'ai' && val) {
     filterMatched = all.filter(p => {
       const pAi = (p.ai || '').toLowerCase();
       const pAiName = (p.aiName || '').toLowerCase();
-      return pAi === val || pAiName === val || (val && (pAi.includes(val) || val.includes(pAi)));
+      const matches = (pAi === val || pAiName === val);
+      const assignedToOther = Array.isArray(p.sectionIds) && p.sectionIds.length > 0 && !p.sectionIds.some(sid => String(sid).toLowerCase() === secId);
+      return matches && !assignedToOther;
     });
-  } else if (filterType === 'category') {
+  } else if (filterType === 'category' && val) {
     filterMatched = all.filter(p => {
       const pCat = (p.cat || '').toLowerCase();
-      return pCat === val || (val && (pCat.includes(val) || val.includes(pCat)));
+      const matches = (pCat === val);
+      const assignedToOther = Array.isArray(p.sectionIds) && p.sectionIds.length > 0 && !p.sectionIds.some(sid => String(sid).toLowerCase() === secId);
+      return matches && !assignedToOther;
     });
-  } else if (filterType === 'tag') {
-    filterMatched = all.filter(p => Array.isArray(p.tags) && p.tags.some(t => {
-      const tLow = t.toLowerCase();
-      return tLow === val || tLow.includes(val) || (val && val.includes(tLow));
-    }));
-  } else if (filterType === 'promptType') {
+  } else if (filterType === 'tag' && val) {
+    filterMatched = all.filter(p => {
+      const matches = Array.isArray(p.tags) && p.tags.some(t => t.toLowerCase() === val);
+      const assignedToOther = Array.isArray(p.sectionIds) && p.sectionIds.length > 0 && !p.sectionIds.some(sid => String(sid).toLowerCase() === secId);
+      return matches && !assignedToOther;
+    });
+  } else if (filterType === 'promptType' && val) {
     filterMatched = all.filter(p => {
       const pType = (p.promptType || '').toLowerCase();
-      if (val === 'image') return pType === 'image' || p.customImage || (Array.isArray(p.images) && p.images.length > 0);
-      if (val === 'text') return pType === 'text' || (!p.customImage && (!p.images || p.images.length === 0));
-      return pType === val;
+      const isImg = pType === 'image' || p.customImage || (Array.isArray(p.images) && p.images.length > 0);
+      const matches = val === 'image' ? isImg : !isImg;
+      const assignedToOther = Array.isArray(p.sectionIds) && p.sectionIds.length > 0 && !p.sectionIds.some(sid => String(sid).toLowerCase() === secId);
+      return matches && !assignedToOther;
     });
-  }
-
-  // 3. Fallback: Check if any prompt matches words from the section title (e.g. "gemini", "instagram", "story", "deepseek")
-  if (filterMatched.length === 0) {
-    const titleWords = `${secTitle} ${val}`.split(/[\s,&+—-]+/).map(w => w.trim()).filter(w => w.length >= 4);
-    if (titleWords.length > 0) {
-      filterMatched = all.filter(p => {
-        const text = `${p.title} ${p.desc || ''} ${p.cat} ${p.ai} ${p.aiName} ${(p.tags || []).join(' ')}`.toLowerCase();
-        return titleWords.some(w => text.includes(w));
-      });
-    }
-  }
-
-  // 4. If still empty, backfill with relevant AI prompts
-  if (filterMatched.length === 0 && (sec.filterType === 'ai' || secTitle.includes('gemini') || secTitle.includes('chatgpt') || secTitle.includes('deepseek'))) {
-    const targetAi = (sec.filterValue || '').toLowerCase() || (secTitle.includes('gemini') ? 'gemini' : (secTitle.includes('deepseek') ? 'deepseek' : 'chatgpt'));
-    filterMatched = all.filter(p => (p.ai || '').toLowerCase() === targetAi || (p.aiName || '').toLowerCase() === targetAi);
   }
 
   return filterMatched;

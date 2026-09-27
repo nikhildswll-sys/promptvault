@@ -2522,9 +2522,9 @@ footer{background:#0d0d1a;color:#fff;padding:50px 80px 26px}
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
-<script src="auth.js?v=3.8"></script>
-<script src="db.js?v=3.8"></script>
-<script src="prompts.js?v=3.8"></script>
+<script src="auth.js?v=3.9"></script>
+<script src="db.js?v=3.9"></script>
+<script src="prompts.js?v=3.9"></script>
 <script>
 let currentAI = 'all';
 let currentCat = 'all';
@@ -3628,24 +3628,31 @@ function checkAndTriggerWelcomeShowcase() {
   }
 }
 
-// Initial async render
-async function startApp() {
-  await loadAllCategories();
-  await loadAllCustomPrompts();
-  if (typeof loadShowcaseIds === 'function') {
-    await loadShowcaseIds();
-  }
-  if (typeof loadAllSections === 'function') {
-    await loadAllSections();
-  }
-  initShuffledPrompts(); // Shuffled designs on every page load / visit!
-  renderCuratedSections(); // Render rich horizontal swipe sections!
+// Instant 0ms Render on load + parallel background sync
+function renderAllViews() {
+  initShuffledPrompts();
+  renderCuratedSections();
   renderCategorySection();
   renderSearchCategoryPills();
   renderPrompts();
-  checkAndTriggerWelcomeShowcase();
 }
-startApp();
+
+// 1. Render immediately from local memory/cache (0ms instant paint)
+renderAllViews();
+
+// 2. Parallel background fetch from Cloud Firestore (Promise.all - no sequential lag)
+Promise.all([
+  typeof loadAllCategories === 'function' ? loadAllCategories() : Promise.resolve(),
+  typeof loadAllCustomPrompts === 'function' ? loadAllCustomPrompts() : Promise.resolve(),
+  typeof loadShowcaseIds === 'function' ? loadShowcaseIds() : Promise.resolve(),
+  typeof loadAllSections === 'function' ? loadAllSections() : Promise.resolve()
+]).then(() => {
+  renderAllViews();
+  checkAndTriggerWelcomeShowcase();
+}).catch(err => {
+  console.warn("Background cloud sync note:", err);
+  checkAndTriggerWelcomeShowcase();
+});
 </script>
 </body>
 </html>
