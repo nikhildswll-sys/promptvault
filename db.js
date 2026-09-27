@@ -83,47 +83,78 @@ async function cacheGetPromptsLocally() {
 }
 
 // 3. IMAGE COMPRESSION & WEBP CONVERTER (Optimized for 100% Free Firebase Firestore Storage)
-function compressImageFile(file, maxWidth = 900, quality = 0.78) {
+function compressImageFile(file, maxWidth = 800, quality = 0.72) {
   return new Promise((resolve, reject) => {
     if (!file) return reject(new Error("No file provided"));
     
     const reader = new FileReader();
     reader.onload = function(event) {
-      const img = new Image();
-      img.onload = function() {
-        let width = img.width;
-        let height = img.height;
-
-        if (width > maxWidth) {
-          height = Math.round((height * maxWidth) / width);
-          width = maxWidth;
-        }
-
-        const canvas = document.createElement('canvas');
-        canvas.width = width;
-        canvas.height = height;
-
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, width, height);
-
-        // WebP compression creates ultra-light 25KB-40KB base64 images that fit perfectly in Firestore docs
-        let dataUrl = canvas.toDataURL('image/webp', quality);
-        if (!dataUrl || !dataUrl.startsWith('data:image/webp')) {
-          dataUrl = canvas.toDataURL('image/jpeg', quality);
-        }
-
-        resolve({
-          dataUrl: dataUrl,
-          blob: dataURLToBlob(dataUrl),
-          width: width,
-          height: height
-        });
-      };
-      img.onerror = () => reject(new Error("Image decoding failed"));
-      img.src = event.target.result;
+      compressDataUrl(event.target.result, maxWidth, quality)
+        .then(resolve)
+        .catch(reject);
     };
     reader.onerror = () => reject(new Error("File reading failed"));
     reader.readAsDataURL(file);
+  });
+}
+
+function compressDataUrl(srcDataUrl, maxWidth = 800, quality = 0.72) {
+  return new Promise((resolve, reject) => {
+    if (!srcDataUrl) return reject(new Error("No image source provided"));
+    const img = new Image();
+    img.onload = function() {
+      let width = img.width;
+      let height = img.height;
+
+      // Scale down so neither dimension exceeds maxWidth
+      if (width > maxWidth || height > maxWidth) {
+        if (width > height) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        } else {
+          width = Math.round((width * maxWidth) / height);
+          height = maxWidth;
+        }
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+
+      // WebP compression creates ultra-light 25KB-50KB base64 images that easily fit in Firestore docs
+      let dataUrl = canvas.toDataURL('image/webp', quality);
+      if (!dataUrl || !dataUrl.startsWith('data:image/webp')) {
+        dataUrl = canvas.toDataURL('image/jpeg', quality);
+      }
+
+      // If dataUrl exceeds 200KB (approx 270,000 chars), downscale further
+      if (dataUrl.length > 270000) {
+        const smallerCanvas = document.createElement('canvas');
+        const downscale = 0.75;
+        smallerCanvas.width = Math.round(width * downscale);
+        smallerCanvas.height = Math.round(height * downscale);
+        const sCtx = smallerCanvas.getContext('2d');
+        sCtx.drawImage(img, 0, 0, smallerCanvas.width, smallerCanvas.height);
+        
+        let smallerDataUrl = smallerCanvas.toDataURL('image/webp', 0.62);
+        if (!smallerDataUrl || !smallerDataUrl.startsWith('data:image/webp')) {
+          smallerDataUrl = smallerCanvas.toDataURL('image/jpeg', 0.62);
+        }
+        dataUrl = smallerDataUrl;
+      }
+
+      resolve({
+        dataUrl: dataUrl,
+        blob: dataURLToBlob(dataUrl),
+        width: width,
+        height: height
+      });
+    };
+    img.onerror = () => reject(new Error("Image decoding failed"));
+    img.src = srcDataUrl;
   });
 }
 

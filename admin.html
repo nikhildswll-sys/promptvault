@@ -1107,9 +1107,9 @@ tr:hover{background:#fafbff}
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
-<script src="auth.js?v=3.4"></script>
-<script src="db.js?v=3.4"></script>
-<script src="prompts.js?v=3.4"></script>
+<script src="auth.js?v=3.5"></script>
+<script src="db.js?v=3.5"></script>
+<script src="prompts.js?v=3.5"></script>
 <script>
 let currentAspectRatio = '1/1';
 let currentUploadedImage = null;
@@ -1992,7 +1992,7 @@ async function handleImageUpload(e) {
 
   for (const file of files) {
     try {
-      const compressed = await compressImageFile(file, 1200, 0.85);
+      const compressed = await compressImageFile(file, 800, 0.72);
       currentUploadedImages.push({
         url: compressed.dataUrl || compressed,
         blob: compressed.blob || null,
@@ -2195,13 +2195,20 @@ async function handleAdminSubmit(e) {
   btn.disabled = true;
 
   try {
-    // 1. Prepare images (instant zero-blocking)
-    const finalImages = currentUploadedImages.map(item => {
+    // 1. Prepare images with strict Firestore 1MB document safety
+    const finalImages = [];
+    for (const item of currentUploadedImages) {
       const img = { ...item };
       delete img.blob;
       delete img.file;
-      return img;
-    });
+      if (img.url && img.url.startsWith('data:') && img.url.length > 250000) {
+        if (typeof compressDataUrl === 'function') {
+          const recompressed = await compressDataUrl(img.url, 750, 0.65);
+          img.url = recompressed.dataUrl;
+        }
+      }
+      finalImages.push(img);
+    }
 
     const primaryImg = finalImages[0] || null;
     const catIcon = (typeof getCategoryIcon === 'function') ? getCategoryIcon(cat) : (CAT_ICONS[cat] || '📁');
