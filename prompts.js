@@ -620,7 +620,7 @@ Deliver:
 // ── Database & Storage Engine ────────────────────────────────────────────────
 let cachedCustomPrompts = [];
 
-const SEED_CUSTOM_PROMPTS = [];
+const SEED_CUSTOM_PROMPTS = (typeof PROMPTS !== 'undefined' && Array.isArray(PROMPTS)) ? [...PROMPTS] : [];
 
 function getDeletedPromptIds() {
   try {
@@ -646,7 +646,7 @@ async function loadAllCustomPrompts() {
   if (typeof firestoreGetAllPrompts === 'function') {
     try {
       const fsPrompts = await firestoreGetAllPrompts();
-      if (Array.isArray(fsPrompts) && fsPrompts.length >= 0) {
+      if (Array.isArray(fsPrompts) && fsPrompts.length > 0) {
         loaded = fsPrompts;
       }
     } catch(e) {
@@ -673,7 +673,7 @@ async function loadAllCustomPrompts() {
     }
 
     if (!loaded || !loaded.length) {
-      loaded = typeof SEED_CUSTOM_PROMPTS !== 'undefined' ? [...SEED_CUSTOM_PROMPTS] : [];
+      loaded = typeof PROMPTS !== 'undefined' ? [...PROMPTS] : [];
     }
   }
 
@@ -683,10 +683,12 @@ async function loadAllCustomPrompts() {
 
 function getAllPrompts() {
   const deletedIds = getDeletedPromptIds().map(String);
-  // Show ONLY user uploaded prompts - no dummy/default prompts!
-  const all = [...cachedCustomPrompts];
+  let all = (Array.isArray(cachedCustomPrompts) && cachedCustomPrompts.length > 0)
+    ? [...cachedCustomPrompts]
+    : ((typeof PROMPTS !== 'undefined' && Array.isArray(PROMPTS)) ? [...PROMPTS] : []);
+
   return all
-    .filter(p => !deletedIds.includes(String(p.id)))
+    .filter(p => p && !deletedIds.includes(String(p.id)))
     .map(p => {
       const ratingData = getPromptRatingData(p.id);
       // Ensure images array exists

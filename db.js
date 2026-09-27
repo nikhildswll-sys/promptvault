@@ -207,16 +207,19 @@ async function firestoreGetAllPrompts() {
   
   if (db) {
     try {
-      const snapshot = await db.collection('prompts').orderBy('created_at', 'desc').get();
+      const snapshot = await db.collection('prompts').get();
       const prompts = [];
       snapshot.forEach(doc => {
         prompts.push({ id: doc.id, ...doc.data() });
       });
+      prompts.sort((a, b) => (Number(b.created_at) || 0) - (Number(a.created_at) || 0));
       console.log(`✅ [Cloud Firestore] Fetched ${prompts.length} prompts from cloud database.`);
       
-      // Cache to IndexedDB for instant offline-first speeds
-      cacheSavePromptsLocally(prompts).catch(() => {});
-      return prompts;
+      if (prompts.length > 0) {
+        // Cache to IndexedDB for instant offline-first speeds
+        cacheSavePromptsLocally(prompts).catch(() => {});
+        return prompts;
+      }
     } catch(err) {
       console.warn("⚠️ [Cloud Firestore] Fetch error (fallback to local cache):", err.message);
     }
