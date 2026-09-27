@@ -144,11 +144,17 @@ nav{
 
 /* ── CREATE FORM SECTION ── */
 .creator-grid{
-  display:grid;grid-template-columns:1.2fr 0.8fr;gap:36px;align-items:start;
+  display:grid;grid-template-columns:minmax(0, 1.15fr) minmax(0, 0.85fr);gap:32px;align-items:start;width:100%;
+}
+.sections-grid{
+  display:grid;grid-template-columns:minmax(0, 480px) minmax(0, 1fr);gap:32px;align-items:start;width:100%;
+}
+@media(max-width: 1080px){
+  .sections-grid{grid-template-columns:1fr;}
 }
 .creator-form-card{
   background:#fff;border:1.5px solid var(--bd);border-radius:22px;
-  padding:32px;box-shadow:0 6px 20px rgba(0,0,0,0.04);
+  padding:32px;box-shadow:0 6px 20px rgba(0,0,0,0.04);min-width:0;
 }
 .form-group{margin-bottom:18px}
 .form-group label{
@@ -224,7 +230,7 @@ nav{
 /* Preview card */
 .creator-preview-wrap{
   background:#fff;border:1.5px solid var(--bd);border-radius:22px;padding:26px;
-  position:sticky;top:90px;box-shadow:0 6px 20px rgba(0,0,0,0.04);
+  position:sticky;top:90px;box-shadow:0 6px 20px rgba(0,0,0,0.04);min-width:0;width:100%;box-sizing:border-box;
 }
 .pc{background:#fff;border-radius:18px;border:1.5px solid var(--bd);overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.06)}
 .pt{position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
@@ -1012,7 +1018,7 @@ tr:hover{background:#fafbff}
 
   <!-- TAB 6: HOMEPAGE SWIPE SECTIONS & SEO MANAGER -->
   <div id="tab-sections" style="display:none;">
-    <div class="creator-grid">
+    <div class="sections-grid">
       <!-- CREATE / EDIT SECTION FORM -->
       <div class="creator-form-card">
         <h3 style="font-size:1.15rem;font-weight:900;color:var(--dk);margin-bottom:6px;">📑 Create / Edit Homepage Swipe Section</h3>
@@ -1101,9 +1107,9 @@ tr:hover{background:#fafbff}
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
-<script src="auth.js?v=3.3"></script>
-<script src="db.js?v=3.3"></script>
-<script src="prompts.js?v=3.3"></script>
+<script src="auth.js?v=3.4"></script>
+<script src="db.js?v=3.4"></script>
+<script src="prompts.js?v=3.4"></script>
 <script>
 let currentAspectRatio = '1/1';
 let currentUploadedImage = null;
@@ -2329,21 +2335,21 @@ function renderAdminSectionsManager() {
       : `<span style="background:#fee2e2;color:#b91c1c;font-size:0.7rem;font-weight:800;padding:2px 8px;border-radius:6px;">Disabled</span>`;
 
     return `
-      <div style="background:#fff;border:1.5px solid var(--bd);border-radius:14px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 2px 10px rgba(0,0,0,0.02);">
-        <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;">
+      <div style="background:#fff;border:1.5px solid var(--bd);border-radius:14px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 2px 10px rgba(0,0,0,0.02);min-width:0;overflow:hidden;">
+        <div style="display:flex;align-items:flex-start;gap:12px;flex:1;min-width:0;overflow:hidden;">
           <span style="font-size:1.6rem;width:40px;height:40px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${sec.icon || '✨'}</span>
-          <div style="min-width:0;flex:1;">
-            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:2px;">
-              <strong style="font-size:0.88rem;color:var(--dk);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${sec.title}</strong>
+          <div style="min-width:0;flex:1;overflow:hidden;">
+            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:3px;">
+              <strong style="font-size:0.88rem;color:var(--dk);word-break:break-word;">${sec.title}</strong>
               ${statusTag}
               <span style="font-size:0.68rem;background:#ede9fe;color:#6d28d9;padding:1px 6px;border-radius:4px;font-weight:700;">Order: #${sec.order || (idx + 1)}</span>
             </div>
-            <p style="font-size:0.74rem;color:var(--mu);margin:0 0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${sec.subtitle || 'No description'}</p>
-            <div style="display:flex;align-items:center;gap:8px;font-size:0.7rem;color:#64748b;">
+            <p style="font-size:0.75rem;color:var(--mu);margin:0 0 6px;line-height:1.45;word-break:break-word;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${sec.subtitle || 'No description'}</p>
+            <div style="display:flex;align-items:center;gap:8px;font-size:0.7rem;color:#64748b;flex-wrap:wrap;">
               <span>🎯 Filter: <strong>${sec.filterType} = ${sec.filterValue}</strong></span>
               <span>•</span>
               <span>📸 <strong>${prompts.length} Prompts</strong> found</span>
-              ${sec.seoKeyword ? `<span>•</span><span>🔍 SEO: <em>${sec.seoKeyword}</em></span>` : ''}
+              ${sec.seoKeyword ? `<span>•</span><span style="word-break:break-all;">🔍 SEO: <em>${sec.seoKeyword}</em></span>` : ''}
             </div>
           </div>
         </div>
