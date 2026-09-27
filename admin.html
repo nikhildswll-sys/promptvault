@@ -1081,9 +1081,9 @@ tr:hover{background:#fafbff}
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
-<script src="auth.js"></script>
-<script src="db.js"></script>
-<script src="prompts.js"></script>
+<script src="auth.js?v=2.2"></script>
+<script src="db.js?v=2.2"></script>
+<script src="prompts.js?v=2.2"></script>
 <script>
 let currentAspectRatio = '1/1';
 let currentUploadedImage = null;
@@ -1152,6 +1152,7 @@ function switchTab(tab) {
   } else if (tab === 'trending') {
     renderTrendingManager();
   } else if (tab === 'sections') {
+    if (typeof updateSectionFilterOptions === 'function') updateSectionFilterOptions();
     renderAdminSectionsManager();
   } else if (tab === 'create') {
     renderFormCategoryTicks();
