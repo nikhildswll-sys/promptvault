@@ -1215,32 +1215,45 @@ function getPromptsForSection(sec) {
   const all = getAllPrompts();
   if (!sec) return all.slice(0, 8);
 
-  let filtered = [];
+  const secId = String(sec.id);
   const val = (sec.filterValue || '').toLowerCase().trim();
 
+  // 1. Prompts that have this section explicitly ticked in Admin Studio
+  const explicitlyTicked = all.filter(p => Array.isArray(p.sectionIds) && p.sectionIds.map(String).includes(secId));
+
+  // 2. Prompts matching filter rules (AI tool, Category, Tag, or PromptType)
+  let filterMatched = [];
   if (sec.filterType === 'ai') {
-    filtered = all.filter(p => (p.ai || '').toLowerCase() === val || (p.aiName || '').toLowerCase() === val);
+    filterMatched = all.filter(p => (p.ai || '').toLowerCase() === val || (p.aiName || '').toLowerCase() === val);
   } else if (sec.filterType === 'category') {
-    filtered = all.filter(p => (p.cat || '').toLowerCase() === val);
+    filterMatched = all.filter(p => (p.cat || '').toLowerCase() === val);
   } else if (sec.filterType === 'tag') {
-    filtered = all.filter(p => Array.isArray(p.tags) && p.tags.some(t => t.toLowerCase().includes(val)));
+    filterMatched = all.filter(p => Array.isArray(p.tags) && p.tags.some(t => t.toLowerCase().includes(val)));
   } else if (sec.filterType === 'promptType') {
-    filtered = all.filter(p => (p.promptType || '').toLowerCase() === val || (val === 'image' && (p.customImage || (p.images && p.images.length > 0))));
+    filterMatched = all.filter(p => (p.promptType || '').toLowerCase() === val || (val === 'image' && (p.customImage || (p.images && p.images.length > 0))));
   } else {
-    filtered = all;
+    filterMatched = all;
   }
 
+  // Combine explicitly ticked first, followed by filter matched prompts (no duplicates)
+  const combined = [...explicitlyTicked];
+  filterMatched.forEach(p => {
+    if (!combined.some(cp => String(cp.id) === String(p.id))) {
+      combined.push(p);
+    }
+  });
+
   // If specific filter doesn't have enough, backfill from related prompts
-  if (filtered.length < 3) {
+  if (combined.length < 3) {
     for (const p of all) {
-      if (!filtered.some(fp => String(fp.id) === String(p.id))) {
-        filtered.push(p);
-        if (filtered.length >= 6) break;
+      if (!combined.some(fp => String(fp.id) === String(p.id))) {
+        combined.push(p);
+        if (combined.length >= 6) break;
       }
     }
   }
 
-  return filtered;
+  return combined;
 }
 
 async function saveSectionAsync(secData) {
