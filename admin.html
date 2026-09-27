@@ -1101,9 +1101,9 @@ tr:hover{background:#fafbff}
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
-<script src="auth.js?v=2.4"></script>
-<script src="db.js?v=2.4"></script>
-<script src="prompts.js?v=2.4"></script>
+<script src="auth.js?v=2.5"></script>
+<script src="db.js?v=2.5"></script>
+<script src="prompts.js?v=2.5"></script>
 <script>
 let currentAspectRatio = '1/1';
 let currentUploadedImage = null;
@@ -2189,24 +2189,13 @@ async function handleAdminSubmit(e) {
   btn.disabled = true;
 
   try {
-    // 1. Upload any new blob/dataUrl images to Firebase Cloud Storage
-    const finalImages = [];
-    for (let i = 0; i < currentUploadedImages.length; i++) {
-      const item = { ...currentUploadedImages[i] };
-      const imgSource = item.blob || item.url;
-
-      if (typeof item.url === 'string' && item.url.startsWith('data:')) {
-        btn.textContent = `⏳ Processing photo ${i + 1}/${currentUploadedImages.length}...`;
-        try {
-          const storageUrl = await uploadImageToFirebaseStorage(imgSource, promptId);
-          if (storageUrl) item.url = storageUrl;
-        } catch(e) {
-          console.warn("Storage upload skipped, saving optimized WebP directly:", e);
-        }
-      }
-      delete item.blob;
-      finalImages.push(item);
-    }
+    // 1. Prepare images (instant zero-blocking)
+    const finalImages = currentUploadedImages.map(item => {
+      const img = { ...item };
+      delete img.blob;
+      delete img.file;
+      return img;
+    });
 
     const primaryImg = finalImages[0] || null;
     const catIcon = (typeof getCategoryIcon === 'function') ? getCategoryIcon(cat) : (CAT_ICONS[cat] || '📁');

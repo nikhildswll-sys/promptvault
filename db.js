@@ -146,32 +146,26 @@ function dataURLToBlob(dataUrl) {
 async function uploadImageToFirebaseStorage(fileOrBlobOrDataUrl, promptId = 'prompt') {
   if (!fileOrBlobOrDataUrl) return null;
 
-  // If already an external HTTPS url, return as is
-  if (typeof fileOrBlobOrDataUrl === 'string' && fileOrBlobOrDataUrl.startsWith('http')) {
+  // If already an HTTP URL or compressed WebP data URL, return immediately
+  if (typeof fileOrBlobOrDataUrl === 'string') {
     return fileOrBlobOrDataUrl;
   }
 
-  // If already compressed data URL, we can safely store it directly in Firestore (100% Free Plan)
-  if (typeof fileOrBlobOrDataUrl === 'string' && fileOrBlobOrDataUrl.startsWith('data:')) {
-    const storage = (typeof firebaseStorage !== 'undefined' && firebaseStorage) || (typeof firebase !== 'undefined' && firebase.storage ? firebase.storage() : null);
-    if (!storage) {
-      return fileOrBlobOrDataUrl;
-    }
+  // If Blob or File, convert to data URL instantly
+  if (fileOrBlobOrDataUrl instanceof Blob || fileOrBlobOrDataUrl instanceof File) {
     try {
-      const blob = dataURLToBlob(fileOrBlobOrDataUrl);
-      if (!blob) return fileOrBlobOrDataUrl;
-      const cleanPromptId = String(promptId || 'prompt').replace(/[^a-zA-Z0-9_-]/g, '_');
-      const filename = `prompts/${cleanPromptId}/${Date.now()}_${Math.random().toString(36).substring(2, 6)}.webp`;
-      const storageRef = storage.ref(filename);
-      const uploadTask = await storageRef.put(blob, { contentType: 'image/webp', cacheControl: 'public, max-age=31536000' });
-      return await uploadTask.ref.getDownloadURL();
-    } catch (storageErr) {
-      console.warn("Storage not enabled (Spark Plan). Storing WebP directly in Firestore (100% Free):", storageErr.message);
-      return fileOrBlobOrDataUrl;
+      return await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => resolve(null);
+        reader.readAsDataURL(fileOrBlobOrDataUrl);
+      });
+    } catch(e) {
+      return null;
     }
   }
 
-  return (typeof fileOrBlobOrDataUrl === 'string') ? fileOrBlobOrDataUrl : null;
+  return null;
 }
 
 // 5. CLOUD FIRESTORE CRUD OPERATIONS
