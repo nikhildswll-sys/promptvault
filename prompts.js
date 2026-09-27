@@ -1197,10 +1197,9 @@ function getAllSections() {
 
 function getPromptsForSection(sec) {
   const all = getAllPrompts();
-  if (!sec) return all.slice(0, 8);
+  if (!sec) return [];
 
   const secId = String(sec.id || '').toLowerCase().trim();
-  const secTitle = String(sec.title || '').toLowerCase().trim();
   const val = String(sec.filterValue || '').toLowerCase().trim();
   const filterType = sec.filterType || 'ai';
 
@@ -1210,61 +1209,36 @@ function getPromptsForSection(sec) {
     return p.sectionIds.some(sid => String(sid).toLowerCase() === secId || (sec.id && String(sid) === String(sec.id)));
   });
 
-  // 2. Prompts matching filter rules (AI tool, Category, Tag, or PromptType)
+  // If the admin has explicitly ticked/assigned prompts to this section, show ONLY those!
+  if (explicitlyTicked.length > 0) {
+    return explicitlyTicked;
+  }
+
+  // 2. If NO prompts have been explicitly ticked yet, match strictly on filter criteria without cross-adding
   let filterMatched = [];
   if (filterType === 'ai') {
     filterMatched = all.filter(p => {
       const pAi = (p.ai || '').toLowerCase();
       const pAiName = (p.aiName || '').toLowerCase();
-      return pAi === val || pAiName === val || pAi.includes(val) || (val && val.includes(pAi));
+      return pAi === val || pAiName === val;
     });
   } else if (filterType === 'category') {
     filterMatched = all.filter(p => {
       const pCat = (p.cat || '').toLowerCase();
-      return pCat === val || pCat.includes(val) || (val && val.includes(pCat));
+      return pCat === val;
     });
   } else if (filterType === 'tag') {
-    filterMatched = all.filter(p => Array.isArray(p.tags) && p.tags.some(t => {
-      const tLow = t.toLowerCase();
-      return tLow.includes(val) || (val && val.includes(tLow));
-    }));
+    filterMatched = all.filter(p => Array.isArray(p.tags) && p.tags.some(t => t.toLowerCase() === val));
   } else if (filterType === 'promptType') {
-    filterMatched = all.filter(p => (p.promptType || '').toLowerCase() === val || (val === 'image' && (p.customImage || (p.images && p.images.length > 0))));
-  }
-
-  // 3. Keyword / title smart match (e.g. "chatgpt", "graphic", "design", "gemini", "art")
-  const searchWords = `${secTitle} ${val}`.split(/[\s,&+—-]+/).map(w => w.trim()).filter(w => w.length >= 3);
-  const keywordMatched = all.filter(p => {
-    const haystack = `${p.title} ${p.desc || ''} ${p.cat || ''} ${p.ai || ''} ${p.aiName || ''} ${(p.tags || []).join(' ')}`.toLowerCase();
-    return searchWords.some(w => haystack.includes(w));
-  });
-
-  // Combine results in priority order without duplicates
-  const combined = [];
-  const seenIds = new Set();
-
-  function addPrompt(p) {
-    if (!p || !p.id) return;
-    const strId = String(p.id);
-    if (!seenIds.has(strId)) {
-      seenIds.add(strId);
-      combined.push(p);
-    }
-  }
-
-  explicitlyTicked.forEach(addPrompt);
-  filterMatched.forEach(addPrompt);
-  keywordMatched.forEach(addPrompt);
-
-  // If still fewer than 4 prompts, backfill from related prompts
-  if (combined.length < 4) {
-    all.forEach(p => {
-      if (combined.length >= 8) return;
-      addPrompt(p);
+    filterMatched = all.filter(p => {
+      const pType = (p.promptType || '').toLowerCase();
+      if (val === 'image') return pType === 'image' || p.customImage || (Array.isArray(p.images) && p.images.length > 0);
+      if (val === 'text') return pType === 'text' || (!p.customImage && (!p.images || p.images.length === 0));
+      return pType === val;
     });
   }
 
-  return combined;
+  return filterMatched;
 }
 
 async function saveSectionAsync(secData) {
