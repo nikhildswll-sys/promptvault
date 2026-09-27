@@ -1103,39 +1103,15 @@ async function saveShowcaseIdsAsync(ids) {
 // ── DYNAMIC CURATED HOMEPAGE SECTIONS (Swipeable Carousels) ───────────────────
 const DEFAULT_SECTIONS = [
   {
-    id: 'sec_gemini',
-    title: '✨ Gemini AI & Image Prompts',
-    subtitle: 'Explore cinematic lighting, photorealistic portraits, and 3D avatar prompts for Gemini',
-    filterType: 'ai',
-    filterValue: 'gemini',
-    icon: '✨',
-    badge: 'Trending AI',
-    seoKeyword: 'gemini image prompt',
-    order: 1,
-    enabled: true
-  },
-  {
-    id: 'sec_chatgpt',
-    title: '⚡ ChatGPT Super Prompts',
-    subtitle: 'High-converting marketing hooks, ATS resumes, Python automation & business strategies',
+    id: 'sec_chatgpt_graphic_design',
+    title: '🎨 ChatGPT Graphic Design',
+    subtitle: 'Ultra-realistic food photography, commercial ads, bold typography & poster designs',
     filterType: 'ai',
     filterValue: 'chatgpt',
-    icon: '⚡',
-    badge: 'Popular',
-    seoKeyword: 'chatgpt prompts',
-    order: 2,
-    enabled: true
-  },
-  {
-    id: 'sec_art_design',
-    title: '🎨 Art, Photography & Midjourney',
-    subtitle: 'Ultra-realistic photography, 8K wallpapers, and commercial advertising compositions',
-    filterType: 'category',
-    filterValue: 'Art & Design',
     icon: '🎨',
-    badge: 'Visual Masterclass',
-    seoKeyword: 'midjourney realistic photography',
-    order: 3,
+    badge: 'Graphic Design',
+    seoKeyword: 'chatgpt graphic design',
+    order: 1,
     enabled: true
   }
 ];
@@ -1193,7 +1169,12 @@ async function loadAllSections() {
     } catch(e){}
   }
 
-  // 3. First time fallback to default sections
+  // Clean out legacy test templates (sec_gemini, sec_chatgpt, sec_art_design)
+  if (Array.isArray(loaded)) {
+    loaded = loaded.filter(s => s && s.id !== 'sec_gemini' && s.id !== 'sec_chatgpt' && s.id !== 'sec_art_design');
+  }
+
+  // 3. Fallback to default section if empty
   if (!loaded || loaded.length === 0) {
     loaded = [...DEFAULT_SECTIONS];
   }
