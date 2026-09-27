@@ -323,9 +323,13 @@ async function firestoreGetAllSections() {
   const db = firestoreDb || (typeof firebase !== 'undefined' && firebase.firestore ? firebase.firestore() : null);
   if (db) {
     try {
-      const snapshot = await db.collection('sections').orderBy('order', 'asc').get();
+      const snapshot = await db.collection('sections').get();
       const sections = [];
-      snapshot.forEach(doc => sections.push({ id: doc.id, ...doc.data() }));
+      snapshot.forEach(doc => {
+        const d = doc.data() || {};
+        sections.push({ id: doc.id, ...d });
+      });
+      sections.sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0));
       if (sections.length > 0) return sections;
     } catch(e) {
       console.warn("Sections fetch note:", e.message);

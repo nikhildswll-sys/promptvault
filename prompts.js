@@ -1175,27 +1175,30 @@ async function loadAllSections() {
       if (Array.isArray(fsSecs) && fsSecs.length > 0) {
         loaded = fsSecs;
       }
-    } catch(e){}
+    } catch(e){
+      console.warn("Firestore loadAllSections note:", e);
+    }
   }
 
   // 2. Fetch from localStorage backup
   if (loaded === null) {
     try {
       const raw = localStorage.getItem('promptvault_sections');
-      if (raw !== null) loaded = JSON.parse(raw);
+      if (raw !== null) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          loaded = parsed;
+        }
+      }
     } catch(e){}
   }
 
   // 3. First time fallback to default sections
-  const isInitialized = localStorage.getItem('promptvault_sections_initialized') === 'true';
-  if (loaded === null && !isInitialized) {
+  if (!loaded || loaded.length === 0) {
     loaded = [...DEFAULT_SECTIONS];
-    try { localStorage.setItem('promptvault_sections_initialized', 'true'); } catch(e){}
-  } else if (!loaded) {
-    loaded = [];
   }
 
-  cachedSections = loaded.filter(s => s && !deleted.includes(String(s.id))).sort((a, b) => (a.order || 0) - (b.order || 0));
+  cachedSections = loaded.filter(s => s && !deleted.includes(String(s.id))).sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0));
   try {
     localStorage.setItem('promptvault_sections', JSON.stringify(cachedSections));
   } catch(e){}
@@ -1215,42 +1218,69 @@ function getPromptsForSection(sec) {
   const all = getAllPrompts();
   if (!sec) return all.slice(0, 8);
 
-  const secId = String(sec.id);
-  const val = (sec.filterValue || '').toLowerCase().trim();
+  const secId = String(sec.id || '').toLowerCase().trim();
+  const secTitle = String(sec.title || '').toLowerCase().trim();
+  const val = String(sec.filterValue || '').toLowerCase().trim();
+  const filterType = sec.filterType || 'ai';
 
   // 1. Prompts that have this section explicitly ticked in Admin Studio
-  const explicitlyTicked = all.filter(p => Array.isArray(p.sectionIds) && p.sectionIds.map(String).includes(secId));
+  const explicitlyTicked = all.filter(p => {
+    if (!p.sectionIds || !Array.isArray(p.sectionIds)) return false;
+    return p.sectionIds.some(sid => String(sid).toLowerCase() === secId || (sec.id && String(sid) === String(sec.id)));
+  });
 
   // 2. Prompts matching filter rules (AI tool, Category, Tag, or PromptType)
   let filterMatched = [];
-  if (sec.filterType === 'ai') {
-    filterMatched = all.filter(p => (p.ai || '').toLowerCase() === val || (p.aiName || '').toLowerCase() === val);
-  } else if (sec.filterType === 'category') {
-    filterMatched = all.filter(p => (p.cat || '').toLowerCase() === val);
-  } else if (sec.filterType === 'tag') {
-    filterMatched = all.filter(p => Array.isArray(p.tags) && p.tags.some(t => t.toLowerCase().includes(val)));
-  } else if (sec.filterType === 'promptType') {
+  if (filterType === 'ai') {
+    filterMatched = all.filter(p => {
+      const pAi = (p.ai || '').toLowerCase();
+      const pAiName = (p.aiName || '').toLowerCase();
+      return pAi === val || pAiName === val || pAi.includes(val) || (val && val.includes(pAi));
+    });
+  } else if (filterType === 'category') {
+    filterMatched = all.filter(p => {
+      const pCat = (p.cat || '').toLowerCase();
+      return pCat === val || pCat.includes(val) || (val && val.includes(pCat));
+    });
+  } else if (filterType === 'tag') {
+    filterMatched = all.filter(p => Array.isArray(p.tags) && p.tags.some(t => {
+      const tLow = t.toLowerCase();
+      return tLow.includes(val) || (val && val.includes(tLow));
+    }));
+  } else if (filterType === 'promptType') {
     filterMatched = all.filter(p => (p.promptType || '').toLowerCase() === val || (val === 'image' && (p.customImage || (p.images && p.images.length > 0))));
-  } else {
-    filterMatched = all;
   }
 
-  // Combine explicitly ticked first, followed by filter matched prompts (no duplicates)
-  const combined = [...explicitlyTicked];
-  filterMatched.forEach(p => {
-    if (!combined.some(cp => String(cp.id) === String(p.id))) {
-      combined.push(p);
-    }
+  // 3. Keyword / title smart match (e.g. "chatgpt", "graphic", "design", "gemini", "art")
+  const searchWords = `${secTitle} ${val}`.split(/[\s,&+—-]+/).map(w => w.trim()).filter(w => w.length >= 3);
+  const keywordMatched = all.filter(p => {
+    const haystack = `${p.title} ${p.desc || ''} ${p.cat || ''} ${p.ai || ''} ${p.aiName || ''} ${(p.tags || []).join(' ')}`.toLowerCase();
+    return searchWords.some(w => haystack.includes(w));
   });
 
-  // If specific filter doesn't have enough, backfill from related prompts
-  if (combined.length < 3) {
-    for (const p of all) {
-      if (!combined.some(fp => String(fp.id) === String(p.id))) {
-        combined.push(p);
-        if (combined.length >= 6) break;
-      }
+  // Combine results in priority order without duplicates
+  const combined = [];
+  const seenIds = new Set();
+
+  function addPrompt(p) {
+    if (!p || !p.id) return;
+    const strId = String(p.id);
+    if (!seenIds.has(strId)) {
+      seenIds.add(strId);
+      combined.push(p);
     }
+  }
+
+  explicitlyTicked.forEach(addPrompt);
+  filterMatched.forEach(addPrompt);
+  keywordMatched.forEach(addPrompt);
+
+  // If still fewer than 4 prompts, backfill from related prompts
+  if (combined.length < 4) {
+    all.forEach(p => {
+      if (combined.length >= 8) return;
+      addPrompt(p);
+    });
   }
 
   return combined;
