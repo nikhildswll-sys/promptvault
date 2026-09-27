@@ -1110,8 +1110,32 @@ const DEFAULT_SECTIONS = [
     filterValue: 'chatgpt',
     icon: '🎨',
     badge: 'Graphic Design',
-    seoKeyword: 'chatgpt graphic design',
+    seoKeyword: 'chatgpt graphic design prompts',
     order: 1,
+    enabled: true
+  },
+  {
+    id: 'sec_gemini_insta_stories',
+    title: '✨ Gemini Image Prompts for Instagram Stories',
+    subtitle: 'Cinematic portraits, lifestyle photography and creative visual prompt formulas for Gemini',
+    filterType: 'ai',
+    filterValue: 'gemini',
+    icon: '✨',
+    badge: 'Trending AI',
+    seoKeyword: 'gemini image prompts, gemini instagram story prompts',
+    order: 2,
+    enabled: true
+  },
+  {
+    id: 'sec_deepseek_text_prompts',
+    title: '⚡ DeepSeek Text Prompts',
+    subtitle: 'Deep reasoning, coding, clean architecture, and technical prompt systems',
+    filterType: 'ai',
+    filterValue: 'deepseek',
+    icon: '⚡',
+    badge: 'Popular AI',
+    seoKeyword: 'deepseek prompts',
+    order: 3,
     enabled: true
   }
 ];
@@ -1174,7 +1198,7 @@ async function loadAllSections() {
     loaded = loaded.filter(s => s && s.id !== 'sec_gemini' && s.id !== 'sec_chatgpt' && s.id !== 'sec_art_design');
   }
 
-  // 3. Fallback to default section if empty
+  // 3. Fallback to default sections if empty
   if (!loaded || loaded.length === 0) {
     loaded = [...DEFAULT_SECTIONS];
   }
@@ -1215,7 +1239,7 @@ function getPromptsForSection(sec) {
     return explicitlyTicked;
   }
 
-  // 2. Match strictly on filter criteria
+  // 2. Match on filter criteria
   let filterMatched = [];
   if (filterType === 'ai') {
     filterMatched = all.filter(p => {
@@ -1251,6 +1275,12 @@ function getPromptsForSection(sec) {
         return titleWords.some(w => text.includes(w));
       });
     }
+  }
+
+  // 4. If still empty, backfill with relevant AI prompts
+  if (filterMatched.length === 0 && (sec.filterType === 'ai' || secTitle.includes('gemini') || secTitle.includes('chatgpt') || secTitle.includes('deepseek'))) {
+    const targetAi = (sec.filterValue || '').toLowerCase() || (secTitle.includes('gemini') ? 'gemini' : (secTitle.includes('deepseek') ? 'deepseek' : 'chatgpt'));
+    filterMatched = all.filter(p => (p.ai || '').toLowerCase() === targetAi || (p.aiName || '').toLowerCase() === targetAi);
   }
 
   return filterMatched;
